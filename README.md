@@ -1,7 +1,9 @@
 # Ariba - Reporting App
 
- frontend - app
+ frontend - react native, expo
  
  backend - express
  
  database - firebase
+
+
