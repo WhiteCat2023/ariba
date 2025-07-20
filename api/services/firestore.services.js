@@ -1,4 +1,5 @@
-import { setDoc, doc } from "firebase/firestore";
+import { setDoc, doc, onSnapshot, collection } from "firebase/firestore";
+import { db } from "../firebase.config";
 
 export async function newUserDoc(userCredentials) {
     try {
@@ -19,3 +20,42 @@ export async function newUserDoc(userCredentials) {
         throw error;
     };
 };
+
+export function getAllUsers(callback) {
+  try {
+    const usersRef = collection(db, 'users');
+
+    const unsubscribe = onSnapshot(usersRef, (snapshot) => {
+      const users = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      callback(users); 
+    });
+
+    return unsubscribe;
+  } catch (error) {
+    console.error('Error setting up real-time users listener:', error);
+  }
+}
+
+export function getUserById(uid, callback) {
+  try {
+    const userDocRef = doc(db, "users", uid);
+
+    const unsubscribe = onSnapshot(userDocRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const user = { id: docSnap.id, ...docSnap.data() };
+        callback(user);
+      } else {
+        console.warn("User not found");
+        callback(null); 
+      }
+    });
+
+    return unsubscribe; // Cleanup when needed
+  } catch (error) {
+    console.error("Real-time getUserById error:", error);
+  }
+}
