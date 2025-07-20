@@ -1,6 +1,6 @@
 // working on this
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "firebase/auth";
-import { auth } from "../../firebase.config";
+import { auth } from "../firebase.config";
 
 export async function signInUser(email, password){
    return await signInWithEmailAndPassword(auth, email, password);

@@ -1,42 +1,40 @@
-import { signInUser, createUser, signOutUser } from "../auth/services/auth.sevices";
+import { signInUser, createUser, signOutUser } from "../services/auth.sevices";
 import { newUserDoc } from "../services/firestore.services";
+// import { HttpStatus }  from "../../enums/status";
 
-export const signIn = async ( req, res ) => {
-    const {email, password} = req.body;
+export const signIn = async ( req ) => {
+    const { email, password} = req.body;
     try{
         const userCredentials = await signInUser(email, password);
-        res.status(200).json({
-            message: userCredentials.email
-        });
+        
         return userCredentials;
     }catch(error){
-        console.log(`Sign In Error: ${error.message}`);
-        res.status(400).json({message: error.message});
+        console.error(`Sign In Error: ${error.message}`);
     };
 };
 
-export const user = async ( req, res ) => {
+export const user = async ( req ) => {
     const {email, password} = req.body;
     try{
         const userCredentials = await createUser(email, password);
         const userDoc = await newUserDoc(userCredentials);
-        res.status(200).json({
-            message: userCredentials.user.email,
-            uid: userDoc
-        });
+
+        console.log(userDoc)
+        
         return userCredentials;
     }catch(error){
-        console.log(`Creating User Error: ${error.message}`);
-        res.status(400).json({message: error.message});
+        console.error(`Creating User Error: ${error.message}`);
     };
 };
 
-export const signOut = async (req, res) => {
+export const signOut = async ( req ) => {
     try{
+        const idExist = req.uid;
+        if(!idExist) throw new Error("User id not found")
+
         await signOutUser();
-        res.status(200).json({ message: "User sign out" });
+
     }catch(error){
-        console.log(`Sign out Error: ${error.message}`);
-        res.status(400).json({message: error.message});
+        console.error(`Sign out Error: ${error.message}`);
     };
 };
