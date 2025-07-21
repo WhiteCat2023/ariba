@@ -1,43 +1,63 @@
-import { signInUser, createUser, signOutUser } from "../services/auth.sevices";
-import { newUserDoc } from "../services/firestore.services";
+import { signInUser, createUser, signOutUser } from "../services/firebase/auth.sevices";
+import { newUserDoc } from "../services/firebase/users.services";
 // import { HttpStatus }  from "../../enums/status";
+import { HttpStatus } from "../../enums/status";
 
 export const signIn = async ( req ) => {
-    const { email, password } = req.body;
+    const { email, password } = req;
     try{
-        const userCredentials = await signInUser(email, password);
+        const userData = await signInUser(email, password);
         
-        return userCredentials;
+        return { 
+            status: HttpStatus.OK, 
+            message: "User signed in successfully",
+            data: userData  
+        };
     }catch(error){
         console.error(`Sign In Error: ${error.message}`);
-        throw error
+        return { 
+            status: HttpStatus.BAD_REQUEST, 
+            message: error.message 
+        };
     };
 };
 
-export const user = async ( req ) => {
-    const { email, password } = req.body;
+export const newUser = async ( req ) => {
+    const { email, password } = req;
     try{
         const userCredentials = await createUser(email, password);
-        const userDoc = await newUserDoc(userCredentials);
+        await newUserDoc(userCredentials);
 
-        console.log(userDoc)
+        // console.log(userDoc)
 
-        return userCredentials;
+        return { 
+            status: HttpStatus.OK, 
+            message: "User created successfully" 
+        };
     }catch(error){
         console.error(`Creating User Error: ${error.message}`);
-        throw error
+        return { 
+            status: HttpStatus.BAD_REQUEST, 
+            message: error.message 
+        };
     };
 };
 
 export const signOut = async ( req ) => {
     try{
-        const idExist = req.uid;
-        if(!idExist) throw new Error("User id not found")
+        const {uid} = req;
+        if(!uid) throw new Error("User id not found")
 
         await signOutUser();
-
+        return { 
+            status: HttpStatus.OK, 
+            message: "User signed out successfully" 
+        };
     }catch(error){
         console.error(`Sign out Error: ${error.message}`);
-        throw error
+        return { 
+            status: HttpStatus.BAD_REQUEST, 
+            message: error.message 
+        };
     };
 };
