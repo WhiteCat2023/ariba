@@ -1,7 +1,5 @@
-<<<<<<< HEAD
 import { Text, View } from "react-native";
 import "../global.css";
-=======
 import { Text, TextInput, View } from "react-native";
 import "../global.css"
 import { useEffect, useId, useState } from "react";
@@ -10,7 +8,6 @@ import { newUser, signIn } from "../api/controller/auth.controller";
 import { allUsers } from "../api/controller/users.controller";
 import { getAllUsers } from "../api/services/firebase/users.services";
 
->>>>>>> 8dd0812d3fb265c1911bd494ca3f0b4265d84e45
 
 export default function Index() {
 
