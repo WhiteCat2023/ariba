@@ -1,42 +1,63 @@
-import { signInUser, createUser, signOutUser } from "../auth/services/auth.sevices";
-import { newUserDoc } from "../services/firestore.services";
+import { signInUser, createUser, signOutUser } from "../services/firebase/auth.sevices";
+import { newUserDoc } from "../services/firebase/users.services";
+// import { HttpStatus }  from "../../enums/status";
+import { HttpStatus } from "../../enums/status";
 
-export const signIn = async ( req, res ) => {
-    const {email, password} = req.body;
+export const signIn = async ( req ) => {
+    const { email, password } = req;
     try{
-        const userCredentials = await signInUser(email, password);
-        res.status(200).json({
-            message: userCredentials.email
-        });
-        return userCredentials;
+        const userData = await signInUser(email, password);
+        
+        return { 
+            status: HttpStatus.OK, 
+            message: "User signed in successfully",
+            data: userData  
+        };
     }catch(error){
-        console.log(`Sign In Error: ${error.message}`);
-        res.status(400).json({message: error.message});
+        console.error(`Sign In Error: ${error.message}`);
+        return { 
+            status: HttpStatus.BAD_REQUEST, 
+            message: error.message 
+        };
     };
 };
 
-export const user = async ( req, res ) => {
-    const {email, password} = req.body;
+export const newUser = async ( req ) => {
+    const { email, password } = req;
     try{
         const userCredentials = await createUser(email, password);
-        const userDoc = await newUserDoc(userCredentials);
-        res.status(200).json({
-            message: userCredentials.user.email,
-            uid: userDoc
-        });
-        return userCredentials;
+        await newUserDoc(userCredentials);
+
+        // console.log(userDoc)
+
+        return { 
+            status: HttpStatus.OK, 
+            message: "User created successfully" 
+        };
     }catch(error){
-        console.log(`Creating User Error: ${error.message}`);
-        res.status(400).json({message: error.message});
+        console.error(`Creating User Error: ${error.message}`);
+        return { 
+            status: HttpStatus.BAD_REQUEST, 
+            message: error.message 
+        };
     };
 };
 
-export const signOut = async (req, res) => {
+export const signOut = async ( req ) => {
     try{
+        const {uid} = req;
+        if(!uid) throw new Error("User id not found")
+
         await signOutUser();
-        res.status(200).json({ message: "User sign out" });
+        return { 
+            status: HttpStatus.OK, 
+            message: "User signed out successfully" 
+        };
     }catch(error){
-        console.log(`Sign out Error: ${error.message}`);
-        res.status(400).json({message: error.message});
+        console.error(`Sign out Error: ${error.message}`);
+        return { 
+            status: HttpStatus.BAD_REQUEST, 
+            message: error.message 
+        };
     };
 };
