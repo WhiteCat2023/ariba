@@ -4,7 +4,7 @@ import { Text, TextInput, View } from "react-native";
 import "../global.css"
 import { useEffect, useId, useState } from "react";
 import { Button } from "react-native";
-import { newUser, signIn } from "../api/controller/auth.controller";
+import { signUp, signIn } from "../api/controller/auth.controller";
 import { allUsers } from "../api/controller/users.controller";
 import { getAllUsers } from "../api/services/firebase/users.services";
 
