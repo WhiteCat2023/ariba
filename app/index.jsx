@@ -29,7 +29,7 @@ export default function Index() {
         <Text style={stylesMobile.welcome}>Welcome Back!</Text>
 
         <Text style={[stylesMobile.logo, { fontFamily: "Pacifico" }]}>
-          Ariba
+            Ariba
         </Text>
         <Text style={[stylesMobile.tagline, {fontFamily: "Roboto"}]  }>Locate - Report- Connect</Text>
 
@@ -267,6 +267,7 @@ const styles = StyleSheet.create({
   },
   signupPrompt: {
     textAlign: "center",
+    fontWeight: "bold",
     color: "#000000",
     marginBottom: 8,
   },
@@ -281,20 +282,21 @@ const stylesMobile = StyleSheet.create({
     paddingHorizontal: 24,
   },
   welcome: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 16,
+    fontSize: 22,
+    fontWeight: "bold"
   },
   logo: {
-    fontSize: 42,
-    fontWeight: "bold",
-    color: "#34A853",
-    marginBottom: 4,
-  },
+  color: "#34A853",
+  fontSize: 80, // make it bigger
+  textAlign: "center",
+},
   tagline: {
-    color: "#000000",
-    marginBottom: 24,
-  },
+  color: "#000000",
+  fontSize: 16,
+  marginBottom: 20,
+  bottom: 25,
+  textAlign: "center",
+},
   socialRow: {
     flexDirection: "row",
     marginBottom: 24,
@@ -325,6 +327,7 @@ const stylesMobile = StyleSheet.create({
     alignSelf: "flex-end",
     fontSize: 12,
     color: "#000",
+    bottom: 35,
     marginBottom: 16,
   },
   loginButton: {
@@ -337,6 +340,7 @@ const stylesMobile = StyleSheet.create({
   dividerContainer: {
     flexDirection: "row",
     alignItems: "center",
+    bottom: 30,
     marginVertical: 16,
   },
   divider: {

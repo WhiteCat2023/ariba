@@ -14,30 +14,31 @@ const Input = ({
   secureTextEntry,
   value,
   onChangeText,
-  icon,         // right icon (for eye/eye-off)
+  icon,
   onIconPress,
-  leftIconName, // NEW: left-side icon (user, key)
+  leftIconName,
 }) => {
   const [isFocused, setIsFocused] = useState(false);
+  const isWeb = Platform.OS === "web";
+
+  const currentStyles = isWeb ? stylesWeb : stylesMobile;
 
   return (
     <View
       style={[
-        styles.inputContainer,
-        isFocused && styles.focusedBorder,
+        currentStyles.inputContainer,
+        isFocused && currentStyles.focusedBorder,
       ]}
     >
-      {/* Left icon */}
       {leftIconName && (
         <Feather
           name={leftIconName}
           size={20}
           color="#4b5563"
-          style={styles.leftIcon}
+          style={currentStyles.leftIcon}
         />
       )}
 
-      {/* Text input */}
       <TextInput
         placeholder={placeholder}
         secureTextEntry={secureTextEntry}
@@ -45,11 +46,10 @@ const Input = ({
         onChangeText={onChangeText}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
-        style={styles.input}
+        style={currentStyles.input}
         placeholderTextColor="#111827"
       />
 
-      {/* Right icon (if any) */}
       {icon && (
         <TouchableOpacity onPress={onIconPress}>
           <Ionicons name={icon} size={20} color="#4b5563" />
@@ -59,20 +59,17 @@ const Input = ({
   );
 };
 
-const styles = StyleSheet.create({
+const baseStyles = {
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
     borderWidth: 2,
-    borderColor: "#22c55e", // green border
+    borderColor: "#22c55e",
     borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: Platform.OS === "web" ? 4 : 4,
-    marginBottom: 16,
     backgroundColor: "white",
   },
   focusedBorder: {
-    borderColor: "#16a34a", // darker green when focused
+    borderColor: "#16a34a",
   },
   leftIcon: {
     marginRight: 8,
@@ -83,6 +80,29 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
     color: "#111827",
+  },
+};
+
+// Web-specific styles
+const stylesWeb = StyleSheet.create({
+  ...baseStyles,
+  inputContainer: {
+    ...baseStyles.inputContainer,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    marginBottom: 16,
+  },
+});
+
+// Mobile-specific styles
+const stylesMobile = StyleSheet.create({
+  ...baseStyles,
+  inputContainer: {
+    ...baseStyles.inputContainer,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    marginBottom: 12,
+    bottom: 30
   },
 });
 
