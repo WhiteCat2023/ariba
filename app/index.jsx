@@ -79,7 +79,7 @@ export default function Index() {
   }
 
   return (
-    <View className="flex-1 flex-row bg-white">
+    <View className="flex-1 flex-row bg-white" head>
       {/* Left Side */}
       <View className="flex-1 justify-center items-center">
         <View className="items-center">
