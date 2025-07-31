@@ -10,7 +10,7 @@ export async function createUser(email, password){
    return await createUserWithEmailAndPassword(auth, email, password);
 }
 
-export async function signOutUser(uid){
+export async function signOutUser(){
    return await signOut(auth)
 } 
 
@@ -46,3 +46,5 @@ export async function newUserDoc(userCredentials, role) {
         throw error;
     };
 };
+
+

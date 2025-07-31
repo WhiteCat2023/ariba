@@ -1,11 +1,12 @@
 import { useFonts } from "expo-font";
 import { useState } from "react";
 import { Alert, Image, Platform, SafeAreaView, Text, View } from "react-native";
-import { signIn } from "../api/controller/auth.controller";
+import { signIn, signUp } from "../api/controller/auth.controller";
 import Button from "../components/Button";
 import Card from "../components/Card";
 import Input from "../components/Input";
 import "../global.css";
+import { Role } from "../enums/roles";
 import { useRouter } from "expo-router";
 
 export default function Index() {
@@ -14,6 +15,7 @@ export default function Index() {
     name: "",
     password: ""
   });
+
   const router = useRouter()
  
   const [fontsLoaded] = useFonts({
@@ -30,7 +32,7 @@ export default function Index() {
   };
 
   const handleSubmit =  async () => {
-    await signIn(credentials)
+    await signUp(credentials, Role.USER)
     Alert.alert("Your logged in")
   }
 
@@ -149,15 +151,15 @@ export default function Index() {
 
           <Text className="text-right text-xs text-gray-500 mb-4">Forgot Password?</Text>
 
-          <Button title="Login" onPress={handleSubmit} className="bg-green-500 mb-4" textStyle={{ color: "white", background: "green" }} />
+          <Button title="Sign Up" onPress={handleSubmit} className="bg-green-500 mb-4" />
 
           <View className="flex-row items-center my-4">
             <View className="flex-1 h-px bg-black mx-2" />
-            <Text className="text-center font-bold text-black">Don’t have an account?</Text>
+            <Text className="text-center font-bold text-black">Already have an account?</Text>
             <View className="flex-1 h-px bg-black mx-2" />
           </View>
 
-          <Button title="Sign up" onPress={() => router.push("/signup")} className="bg-orange-400" textStyle={{ color: "white", background: "green" }} />
+          <Button title="Log In" onPress={() => router.push("/")} className="bg-orange-400"  />
         </Card>
       </View>
     </SafeAreaView>
