@@ -7,14 +7,16 @@ import Card from "../components/Card";
 import Input from "../components/Input";
 import "../global.css";
 import { useRouter } from "expo-router";
+import { useAuth } from "../context/AuthContext";
 
 export default function Index() {
   const [showPassword, setShowPassword] = useState(false);
   const [credentials, setCredentials] = useState({
-    name: "",
+    email: "",
     password: ""
   });
   const router = useRouter()
+  const { login } = useAuth()
  
   const [fontsLoaded] = useFonts({
     Pacifico: require("../assets/fonts/Pacifico-Regular.ttf"),
@@ -29,8 +31,8 @@ export default function Index() {
     }));
   };
 
-  const handleSubmit =  async () => {
-    await signIn(credentials)
+  const handleSubmit = () => {
+    login(credentials)
     Alert.alert("Your logged in")
   }
 
@@ -63,8 +65,8 @@ export default function Index() {
 
         <Input
           placeholder="Username"
-          value={credentials.name}
-          onChangeText={text => handleChange("name", text)}
+          value={credentials.email}
+          onChangeText={text => handleChange("email", text)}
           leftIconName="user"
           className="w-full mb-4"
         />
@@ -130,8 +132,8 @@ export default function Index() {
 
           <Input
             placeholder="Username"
-            value={credentials.name}
-            onChangeText={text => handleChange("name", text)}
+            value={credentials.email}
+            onChangeText={text => handleChange("email", text)}
             leftIconName="user"
             className="mb-4 border-0 outline-none"
           />

@@ -12,8 +12,9 @@ import { useRouter } from "expo-router";
 export default function Index() {
   const [showPassword, setShowPassword] = useState(false);
   const [credentials, setCredentials] = useState({
-    name: "",
-    password: ""
+    email: "",
+    password: "",
+    role: Role.USER
   });
 
   const router = useRouter()
@@ -32,7 +33,7 @@ export default function Index() {
   };
 
   const handleSubmit =  async () => {
-    await signUp(credentials, Role.USER)
+    await signUp(credentials)
     Alert.alert("Your logged in")
   }
 
@@ -65,8 +66,8 @@ export default function Index() {
 
         <Input
           placeholder="Username"
-          value={credentials.name}
-          onChangeText={text => handleChange("name", text)}
+          value={credentials.email}
+          onChangeText={text => handleChange("email", text)}
           leftIconName="user"
           className="w-full mb-4"
         />
@@ -132,8 +133,8 @@ export default function Index() {
 
           <Input
             placeholder="Username"
-            value={credentials.name}
-            onChangeText={text => handleChange("name", text)}
+            value={credentials.email}
+            onChangeText={text => handleChange("email", text)}
             leftIconName="user"
             className="mb-4 border-0 outline-none"
           />
