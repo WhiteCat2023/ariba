@@ -36,6 +36,7 @@ export function AuthProvider({ children }) {
 
       if (res.status === HttpStatus.OK) {
         console.log("Login successful");
+        
       } else {
         Alert.alert("Login Failed", res.message);
       }

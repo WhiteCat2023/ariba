@@ -18,12 +18,7 @@ export default function Index() {
   const router = useRouter()
   const { login, session } = useAuth()
 
-  useEffect(() => {
-    if (session) {
-      router.push("/dashboard");
-    }
-  }, [session]);
- 
+
   const [fontsLoaded] = useFonts({
     Pacifico: require("../assets/fonts/Pacifico-Regular.ttf"),
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
@@ -46,6 +41,13 @@ export default function Index() {
       Alert.alert(`Login failed: ${error.message}`)
     }
   }
+
+  useEffect(() => {
+    if (session) {
+      router.replace("/dashboard");
+    }
+  }, [session]);
+ 
 
 
   if (!fontsLoaded) return null;
