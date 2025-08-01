@@ -202,15 +202,15 @@ const styles = StyleSheet.create({
   logo: {
     color: "#34A853",
     fontSize: 75,
-    top: 60
+    top: 50
   },
   tagline: {
     color: "#000000",
-    top: 30,
+    top: 20,
     fontSize: 18,
   },
   image: {
-    width: 650,
+    width: 950,
     height: 650,
   },
   rightContainer: {
