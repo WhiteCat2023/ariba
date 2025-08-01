@@ -15,3 +15,4 @@ export const uploadPhotoOrVideo = async (req) => {
         }
     }
 }
+
