@@ -1,33 +1,6 @@
 import { setDoc, doc, onSnapshot, collection } from "firebase/firestore";
 import { db } from "../../config/firebase.config";
 
-export async function newUserDoc(userCredentials) {
-    try {
-        const {
-          uid, 
-          displayName, 
-          email, 
-          phoneNumber, 
-          photoUrl, 
-          providerId, 
-          metadata } = userCredentials.user;
-
-        await setDoc(doc(db, "users", uid), {
-            name: displayName,
-            email: email,
-            phone: phoneNumber || null,
-            photoUrl: photoUrl  || null,
-            providerId: providerId,
-            createdAt: metadata.creationTime,
-            lastSignedIn: metadata.lastSignInTime
-        });
-        return uid;
-    } catch (error) {
-        console.error(`Firestore Error: ${error.message}`);
-        throw error;
-    };
-};
-
 export async function updateUserName(credentials){
   try {
     const { uid, name } = credentials;
