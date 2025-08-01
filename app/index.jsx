@@ -1,5 +1,5 @@
 import { useFonts } from "expo-font";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert, Image, Platform, SafeAreaView, Text, View } from "react-native";
 import { signIn } from "../api/controller/auth.controller";
 import Button from "../components/Button";
@@ -16,7 +16,13 @@ export default function Index() {
     password: ""
   });
   const router = useRouter()
-  const { login } = useAuth()
+  const { login, session } = useAuth()
+
+  useEffect(() => {
+    if (session) {
+      router.push("/dashboard");
+    }
+  }, [session]);
  
   const [fontsLoaded] = useFonts({
     Pacifico: require("../assets/fonts/Pacifico-Regular.ttf"),
@@ -31,10 +37,16 @@ export default function Index() {
     }));
   };
 
-  const handleSubmit = () => {
-    login(credentials)
-    Alert.alert("Your logged in")
+
+  const handleSubmit = async () => {
+    try {
+      await login(credentials);
+      Alert.alert("You're logged in");
+    } catch (error) {
+      Alert.alert(`Login failed: ${error.message}`)
+    }
   }
+
 
   if (!fontsLoaded) return null;
 
@@ -84,7 +96,7 @@ export default function Index() {
 
         <Text className="self-end text-xs text-black mb-4 -mb-6">Forget Password?</Text>
 
-        <Button title="Login" onPress={() => {}} className="bg-green-500 w-full py-3 rounded-lg mb-4" textStyle={{ color: "white" }} />
+        <Button title="Login" onPress={handleSubmit} className="bg-green-500 w-full py-3 rounded-lg mb-4" textStyle={{ color: "white" }} />
 
         <View className="flex-row items-center my-4 -mb-6">
           <View className="flex-1 h-px bg-black mx-2" />
@@ -92,7 +104,7 @@ export default function Index() {
           <View className="flex-1 h-px bg-black mx-2" />
         </View>
 
-        <Button title="Sign up" onPress={() => {}} className="bg-orange-400 w-full py-3 rounded-lg" textStyle={{ color: "white" }} />
+        <Button title="Sign up" onPress={() => router.push("/signup")} className="bg-orange-400 w-full py-3 rounded-lg" textStyle={{ color: "white" }} />
       </SafeAreaView>
     );
   }
