@@ -8,10 +8,13 @@ export default function dashboard() {
 
   const {user} = useAuth();
   return (
-    <View>
+    <View >
       <Text>
         Dashboard
       </Text>
+      <Text className="text-black font-2xl"> 
+        {}
+        </Text>
       <Button title="Logout" onPress={() => signOut(user)}/>
     </View>
   )

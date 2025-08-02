@@ -42,11 +42,11 @@ export default function Index() {
     }
   }
 
-  useEffect(() => {
-    if (session) {
-      router.replace("/dashboard");
-    }
-  }, [session]);
+  // useEffect(() => {
+  //   if (session) {
+  //     router.replace("/dashboard");
+  //   }
+  // }, [session]);
  
 
 

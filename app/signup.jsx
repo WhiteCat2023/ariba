@@ -8,6 +8,7 @@ import Input from "../components/Input";
 import "../global.css";
 import { Role } from "../enums/roles";
 import { useRouter } from "expo-router";
+import { GoogleSignUp} from "../api/services/firebase/auth.sevices"
 
 export default function Index() {
   const [showPassword, setShowPassword] = useState(false);
@@ -117,12 +118,13 @@ export default function Index() {
           </Text>
 
           <View className="flex-row justify-center mb-5 space-x-4">
-            <Button onPress={() => {}} className="w-12 h-12 rounded-lg bg-white justify-center items-center shadow-md">
+            {/* <Button onPress={() => {}} className="w-12 h-12 rounded-lg bg-white justify-center items-center shadow-md">
               <Image 
                 source={require("../assets/images/google.png")} 
                 style={{ width: 24, height: 24 }}
                 resizeMode="contain" />
-            </Button>
+            </Button> */}
+            <GoogleSignUp/>
             <Button onPress={() => {}} className="w-12 h-12 rounded-lg bg-white justify-center items-center shadow-md">
               <Image 
                 source={require("../assets/images/facebook.png")} className="w-6 h-6"

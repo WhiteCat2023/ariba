@@ -6,6 +6,8 @@ import { Text } from "react-native";
 import { onAuthStateChanged } from "firebase/auth";
 import { useEffect } from "react";
 import { auth } from "../api/config/firebase.config";
+import { useRouter } from "expo-router";
+
 
 const AuthContext = createContext()
 
@@ -13,7 +15,9 @@ export function AuthProvider({ children }) {
 
     const [loading, setLoading] = useState(false);
     const [session, setSession] = useState(false);
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState({});
+    
+    const router = useRouter()
 
     useEffect(() => {
       const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -30,12 +34,19 @@ export function AuthProvider({ children }) {
       return () => unsubscribe();
     }, []);
 
+    useEffect(() => {
+      if (session) {
+        router.replace("/dashboard");
+      }
+    }, [session]);
+
     const login = async (req) => {
       setLoading(true);
       const res = await signIn(req);
 
       if (res.status === HttpStatus.OK) {
         console.log("Login successful");
+        console.log(user.data.displayName)
         
       } else {
         Alert.alert("Login Failed", res.message);
