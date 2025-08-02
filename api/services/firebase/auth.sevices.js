@@ -69,10 +69,9 @@ WebBrowser.maybeCompleteAuthSession();
 
 export function GoogleAuth() {
   const [request, response, promptAsync] = Google.useAuthRequest({
-    expoClientId: "354981369830-co33rt64bbom866klbg7dvsckddcriim.apps.googleusercontent.com",
-    // iosClientId: "354981369830-co33rt64bbom866klbg7dvsckddcriim.apps.googleusercontent.com",
-    androidClientId: "354981369830-vkv1pogoktq6tg7shha660s8ho3kn6c2.apps.googleusercontent.com",
-    webClientId: "354981369830-bb83i0anvo138e872ejgen70ie7qlu1j.apps.googleusercontent.com",
+    // expoClientId: "354981369830-co33rt64bbom866klbg7dvsckddcriim.apps.googleusercontent.com",
+    // androidClientId: "354981369830-vkv1pogoktq6tg7shha660s8ho3kn6c2.apps.googleusercontent.com",
+    webClientId: "48415763259-647328idkkd1m3kct8j50l0t9c19rgc4.apps.googleusercontent.com",
     scopes: ["profile", "email"],
   });
 
@@ -101,16 +100,20 @@ export function GoogleAuth() {
     <Button
       title="Continue with Google"
       disabled={!request}
-      onPress={() => promptAsync()}
+      onPress={() => {
+        promptAsync()
+        console.log("REDIRECT URI", AuthSession.makeRedirectUri());
+
+      }}
     />
   );
 }
 
 export function GoogleSignUp() {
   const [request, response, promptAsync] = Google.useAuthRequest({
-    expoClientId: "354981369830-co33rt64bbom866klbg7dvsckddcriim.apps.googleusercontent.com",
-    androidClientId: "354981369830-vkv1pogoktq6tg7shha660s8ho3kn6c2.apps.googleusercontent.com",
-    webClientId: "354981369830-bb83i0anvo138e872ejgen70ie7qlu1j.apps.googleusercontent.com",
+    // expoClientId: "354981369830-co33rt64bbom866klbg7dvsckddcriim.apps.googleusercontent.com",
+    // androidClientId: "354981369830-vkv1pogoktq6tg7shha660s8ho3kn6c2.apps.googleusercontent.com",
+    webClientId: "48415763259-647328idkkd1m3kct8j50l0t9c19rgc4.apps.googleusercontent.com",
     scopes: ["profile", "email"],
   });
 
