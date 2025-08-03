@@ -90,7 +90,7 @@ const stylesWeb = StyleSheet.create({
     ...baseStyles.inputContainer,
     paddingHorizontal: 12,
     paddingVertical: 4,
-    marginBottom: 16,
+    marginBottom: 18,
   },
 });
 
@@ -101,7 +101,7 @@ const stylesMobile = StyleSheet.create({
     ...baseStyles.inputContainer,
     paddingHorizontal: 12,
     paddingVertical: 8,
-    marginBottom: 12,
+    marginBottom: 20,
     bottom: 30
   },
 });
