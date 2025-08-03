@@ -1,12 +1,8 @@
 // working on this
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, sendPasswordResetEmail, GoogleAuthProvider } from "firebase/auth";
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, sendPasswordResetEmail, signInWithCredential} from "firebase/auth";
 import { auth } from "../../config/firebase.config";
 import { setDoc,doc } from "firebase/firestore";
-import * as WebBrowser from "expo-web-browser";
-import * as Google from "expo-auth-session/providers/google";
-import { useEffect } from "react";
-import { Button, Alert } from "react-native";
-import { Role } from "../../../enums/roles";
+
 
 
 export async function signInUser(email, password){
@@ -25,12 +21,8 @@ export async function userForgotPassword(email) {
    return await sendPasswordResetEmail(auth, email)
 }
 
-export async function signInGoogle(params) {
-    return await signInGoogle()  
-}
-
-export async function signInFacebook(params) {
-    return await sign()
+export const signInWithToken = async (credential) => {
+    return await signInWithCredential(auth, credential)     
 }
 
 export async function newUserDoc(userCredentials, role) {
@@ -65,83 +57,5 @@ export async function newUserDoc(userCredentials, role) {
   }
 }
 
-WebBrowser.maybeCompleteAuthSession();
-
-export function GoogleAuth() {
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    // expoClientId: "354981369830-co33rt64bbom866klbg7dvsckddcriim.apps.googleusercontent.com",
-    // androidClientId: "354981369830-vkv1pogoktq6tg7shha660s8ho3kn6c2.apps.googleusercontent.com",
-    webClientId: "48415763259-647328idkkd1m3kct8j50l0t9c19rgc4.apps.googleusercontent.com",
-    scopes: ["profile", "email"],
-  });
-
-  useEffect(() => {
-    if (response?.type === "success") {
-      const { authentication } = response;
-      fetchUserInfo(authentication.accessToken);
-    }
-  }, [response]);
-
-  const fetchUserInfo = async (accessToken) => {
-    try {
-      const res = await fetch("https://www.googleapis.com/userinfo/v2/me", {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      });
-      const user = await res.json();
-      Alert.alert("Welcome", `Hello ${user.name}`);
-      console.log("User Info:", user);
-    } catch (error) {
-      Alert.alert("Error", "Failed to fetch user info");
-      console.error(error);
-    }
-  };
-
-  return (
-    <Button
-      title="Continue with Google"
-      disabled={!request}
-      onPress={() => {
-        promptAsync()
-        console.log("REDIRECT URI", AuthSession.makeRedirectUri());
-
-      }}
-    />
-  );
-}
-
-export function GoogleSignUp() {
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    // expoClientId: "354981369830-co33rt64bbom866klbg7dvsckddcriim.apps.googleusercontent.com",
-    // androidClientId: "354981369830-vkv1pogoktq6tg7shha660s8ho3kn6c2.apps.googleusercontent.com",
-    webClientId: "48415763259-647328idkkd1m3kct8j50l0t9c19rgc4.apps.googleusercontent.com",
-    scopes: ["profile", "email"],
-  });
-
-  useEffect(() => {
-    if (response?.type === "success") {
-      const { id_token } = response.authentication;
-      const credential = GoogleAuthProvider.credential(id_token);
-      signInWithCredential(auth, credential)
-        .then((userCredential) => {
-          const user = userCredential.user;
-          newUserDoc(userCredential, Role.USER)
-          Alert.alert("Welcome!", `Signed in as ${user.displayName}`);
-          console.log("Signed up user:", user);
-        })
-        .catch((error) => {
-          console.error("Firebase sign-in error:", error);
-          Alert.alert("Sign in failed", error.message);
-        });
-    }
-  }, [response]);
-
-  return (
-    <Button
-      title="Sign up with Google"
-      disabled={!request}
-      onPress={() => promptAsync()}
-    />
-  );
-}
 
 

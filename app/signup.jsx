@@ -8,7 +8,7 @@ import Input from "../components/Input";
 import "../global.css";
 import { Role } from "../enums/roles";
 import { useRouter } from "expo-router";
-import { GoogleSignUp} from "../api/services/firebase/auth.sevices"
+import { GoogleSignUpButton } from "../components/button/googleAuthButtons";
 
 export default function Index() {
   const [showPassword, setShowPassword] = useState(false);
@@ -124,7 +124,7 @@ export default function Index() {
                 style={{ width: 24, height: 24 }}
                 resizeMode="contain" />
             </Button> */}
-            <GoogleSignUp/>
+            <GoogleSignUpButton/>
             <Button onPress={() => {}} className="w-12 h-12 rounded-lg bg-white justify-center items-center shadow-md">
               <Image 
                 source={require("../assets/images/facebook.png")} className="w-6 h-6"
