@@ -9,8 +9,7 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true,
-      "googleServicesFile": "./GoogleService-Info.plist"
+      "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
@@ -18,8 +17,7 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.whitecat2023.ariba",
-      "googleServicesFile": "./google-services.json"
+      "package": "com.whitecat2023.ariba"
     },
     "web": {
       "bundler": "metro",
@@ -37,8 +35,7 @@
           "backgroundColor": "#ffffff"
         }
       ],
-      "expo-web-browser",
-      "@react-native-google-signin/google-signin"
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true

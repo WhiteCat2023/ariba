@@ -1,13 +1,14 @@
 import * as WebBrowser from "expo-web-browser";
 import * as Google from "expo-auth-session/providers/google";
-import { useEffect } from "react";
-import { Button, Alert } from "react-native";
+import { useEffect, useState } from "react";
+import { Button, Alert, Pressable, Image } from "react-native";
 import { Role } from "../../enums/roles";
 import { GoogleAuthProvider, signInWithCredential } from "firebase/auth";
 import { auth } from "../../api/config/firebase.config";
 import { googleSignUp } from "../../api/controller/auth.controller";
 import { signInWithToken } from "../../api/services/firebase/auth.sevices";
 import * as AuthSession from "expo-auth-session";
+import { newUserDoc } from "../../api/services/firebase/auth.sevices";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -55,25 +56,24 @@ export function GoogleSignInButton() {
 
 export function GoogleSignUpButton() {
   const [request, response, promptAsync] = Google.useAuthRequest({
-    webClientId: "48415763259-647328idkkd1m3kct8j50l0t9c19rgc4.apps.googleusercontent.com",
-    androidClientId: "48415763259-4n5rr73sq826erl82cch1d19nct3etad.apps.googleusercontent.com",
+    webClientId: "171583954238-942e4itp9jo655aaf6rjf85p892jdfra.apps.googleusercontent.com",
+    androidClientId: "171583954238-tis828c1rgbaos9e9uom9majjr9c4s8f.apps.googleusercontent.com",
     scopes: ["profile", "email", "openid"],
-    responseType: "id_token", 
-    usePKCE: false
+    responseType: "id_token",
+    usePKCE: false,
+    redirectUri: AuthSession.makeRedirectUri({ useProxy: false }),
   });
 
   useEffect(() => {
     if (response?.type === "success") {
-      const { idToken, accessToken, tokenType} = response.authentication;
-      
-    //   console.log("Received ID Token:", idToken);
-    //   console.log("Received ID Token:", accessToken);
-    //   console.log("Received ID Token:", tokenType);
-    //   console.log("Redirect URI:", AuthSession.makeRedirectUri());
-     console.log("Full response object:", JSON.stringify(response, null, 2));
 
-      if (idToken) {
-        const credential = GoogleAuthProvider.credential(idToken);
+      console.log(response)
+      const {  id_token } = response.params;
+      
+      console.log("Full response object:", JSON.stringify(response, null, 2));
+
+      if (id_token) {
+        const credential = GoogleAuthProvider.credential(id_token);
         signInWithToken(credential)
           .then((userCredential) => {
             const user = userCredential.user;
@@ -92,12 +92,16 @@ export function GoogleSignUpButton() {
     }
   }, [response]);
 
-
   return (
-    <Button
-      title="Sign up with Google"
+
+    <Pressable
       disabled={!request}
       onPress={() => promptAsync()}
-    />
+      className="w-12 h-12 rounded-lg bg-white justify-center items-center shadow-sm">
+      <Image 
+        source={require("../../assets/images/google.png")} 
+        style={{ width: 24, height: 24 }}
+        resizeMode="contain" />
+    </Pressable  >
   );
 }

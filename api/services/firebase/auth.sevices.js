@@ -1,7 +1,8 @@
 // working on this
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, sendPasswordResetEmail, signInWithCredential} from "firebase/auth";
-import { auth } from "../../config/firebase.config";
+import { auth, db } from "../../config/firebase.config";
 import { setDoc,doc } from "firebase/firestore";
+
 
 
 

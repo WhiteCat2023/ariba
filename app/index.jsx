@@ -32,6 +32,9 @@ export default function Index() {
     }));
   };
 
+  // useEffect(() => {
+  //   GoogleSignIn
+  // })
 
   const handleSubmit = async () => {
     try {
