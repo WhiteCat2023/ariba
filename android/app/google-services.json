@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "171583954238",
+    "project_id": "ariba-d40cc",
+    "storage_bucket": "ariba-d40cc.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:171583954238:android:a738164abbc6615929a06f",
+        "android_client_info": {
+          "package_name": "com.whitecat2023.ariba"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAH27gsG_cJI9YgUlTZY3X7cDWxotrvkX0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

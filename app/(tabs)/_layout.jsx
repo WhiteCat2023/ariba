@@ -3,7 +3,7 @@ import { useAuth } from "../../context/AuthContext"
 
 export default function TabLayout() {
   const {session} = useAuth()
-  return !session ? <Redirect  href="/signin"/> : <Slot/>
+  return !session ? <Redirect  href="/"/> : <Slot/>
 }
 
 

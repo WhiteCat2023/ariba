@@ -1,7 +1,10 @@
 // working on this
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, sendPasswordResetEmail } from "firebase/auth";
-import { auth } from "../../config/firebase.config";
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, sendPasswordResetEmail, signInWithCredential} from "firebase/auth";
+import { auth, db } from "../../config/firebase.config";
 import { setDoc,doc } from "firebase/firestore";
+
+
+
 
 export async function signInUser(email, password){
    return await signInWithEmailAndPassword(auth, email, password);
@@ -17,6 +20,10 @@ export async function signOutUser(){
 
 export async function userForgotPassword(email) {
    return await sendPasswordResetEmail(auth, email)
+}
+
+export const signInWithToken = async (credential) => {
+    return await signInWithCredential(auth, credential)     
 }
 
 export async function newUserDoc(userCredentials, role) {
