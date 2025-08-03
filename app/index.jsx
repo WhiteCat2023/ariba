@@ -7,23 +7,26 @@ import Button from "../components/Button";
 import Card from "../components/Card";
 import Input from "../components/Input";
 import "../global.css";
+import { signIn } from "../api/controller/auth.controller";
+
+
 
 export default function Index() {
   const [showPassword, setShowPassword] = useState(false);
   const [credentials, setCredentials] = useState({
     email: "",
-    password: "",
+    password: ""
   });
-  const router = useRouter();
-  const { login, session } = useAuth();
+  const router = useRouter()
+  const { login, session } = useAuth()
 
   useEffect(() => {
     if (session) {
       router.push("/dashboard");
     }
   }, [session]);
- 
-  const [fontsLoaded] = useFonts({
+
+   const [fontsLoaded] = useFonts({
     Pacifico: require("../assets/fonts/Pacifico-Regular.ttf"),
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
     Roboto: require("../assets/fonts/Roboto-Bold.ttf"),
@@ -36,15 +39,24 @@ export default function Index() {
     }));
   };
 
+  // useEffect(() => {
+  //   GoogleSignIn
+  // })
 
   const handleSubmit = async () => {
     try {
       await login(credentials);
       Alert.alert("You're logged in");
     } catch (error) {
-      Alert.alert(`Login failed: ${error.message}`);
+      Alert.alert(`Login failed: ${error.message}`)
     }
   }
+
+  // useEffect(() => {
+  //   if (session) {
+  //     router.replace("/dashboard");
+  //   }
+  // }, [session]);
 
 
   if (!fontsLoaded) return null;
@@ -253,182 +265,6 @@ export default function Index() {
           />
         </Card>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: "row",
-    backgroundColor: "white",
-  },
-  leftContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  centered: {
-    alignItems: "center",
-  },
-  logo: {
-    color: "#34A853",
-    fontSize: 75,
-    top: 60
-  },
-  tagline: {
-    color: "#000000",
-    top: 30,
-    fontSize: 18,
-  },
-  image: {
-    width: 650,
-    height: 650,
-  },
-  rightContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  welcomeText: {
-    color: "#16a34a",
-    fontSize: 20,
-    fontWeight: "600",
-    textAlign: "center",
-    marginBottom: 20,
-  },
-  socialRow: {
-    flexDirection: "row",
-    justifyContent: "center",
-    marginBottom: 20,
-  },
-  socialButton: {
-    backgroundColor: "white",
-    width: 48,
-    height: 48,
-    borderRadius: 8,
-    justifyContent: "center",
-    alignItems: "center",
-    marginHorizontal: 8,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  socialIcon: {
-    width: 24,
-    height: 24,
-    resizeMode: "contain",
-  },
-  forgotPassword: {
-    textAlign: "right",
-    fontSize: 12,
-    color: "#6b7280",
-    marginBottom: 16,
-  },
-  dividerContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: 16,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: "#000000",
-    marginHorizontal: 8,
-  },
-  signupPrompt: {
-    textAlign: "center",
-    fontWeight: "bold",
-    color: "#000000",
-    marginBottom: 8,
-  },
-});
-
-const stylesMobile = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "white",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 24,
-  },
-  welcome: {
-    fontSize: 22,
-    fontWeight: "bold"
-  },
-  logo: {
-  color: "#34A853",
-  fontSize: 80, // make it bigger
-  textAlign: "center",
-},
-  tagline: {
-  color: "#000000",
-  fontSize: 16,
-  marginBottom: 20,
-  bottom: 25,
-  textAlign: "center",
-},
-  socialRow: {
-    flexDirection: "row",
-    marginBottom: 24,
-  },
-  socialButton: {
-    width: 48,
-    height: 48,
-    marginHorizontal: 8,
-    borderRadius: 8,
-    backgroundColor: "white",
-    justifyContent: "center",
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  socialIcon: {
-    width: 24,
-    height: 24,
-    resizeMode: "contain",
-  },
-  input: {
-    width: "100%",
-    marginBottom: 16,
-  },
-  forgot: {
-    alignSelf: "flex-end",
-    fontSize: 12,
-    color: "#000",
-    bottom: 35,
-    marginBottom: 16,
-  },
-  loginButton: {
-    backgroundColor: "#22c55e",
-    width: "100%",
-    paddingVertical: 14,
-    borderRadius: 8,
-    marginBottom: 16,
-  },
-  dividerContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    bottom: 30,
-    marginVertical: 16,
-  },
-  divider: {
-    flex: 1,
-    height: 1,
-    backgroundColor: "#000",
-    marginHorizontal: 8,
-  },
-  dividerText: {
-    fontSize: 12,
-    color: "#000",
-  },
-  signupButton: {
-    backgroundColor: "#fb923c",
-    width: "100%",
-    paddingVertical: 14,
-    borderRadius: 8,
-  },
-});
