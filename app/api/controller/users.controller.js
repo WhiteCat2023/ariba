@@ -1,5 +1,5 @@
-import { getAllUsers, getUserById, updateUserName, updateUserPhoneNumber } from "../services/firebase/users.services"
 import { HttpStatus } from "../../enums/status";
+import { getAllUsers, getUserById, updateUserName, updateUserPhoneNumber } from "../services/firebase/users.services";
 
 export const updateName =  async ( req ) => {
     try {

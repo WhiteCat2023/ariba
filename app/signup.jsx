@@ -1,14 +1,15 @@
   import { useFonts } from "expo-font";
-  import { useState } from "react";
-  import { Alert, Image, Platform, SafeAreaView, Text, View } from "react-native";
-  import { signUp } from "../api/controller/auth.controller";
-  import Button from "../components/Button";
-  import Card from "../components/Card";
-  import Input from "../components/Input";
-  import "../global.css";
-  import { Role } from "../enums/roles";
-  import { useRouter } from "expo-router";
-  import { GoogleSignUpButton } from "../components/button/googleAuthButtons";
+import { useRouter } from "expo-router";
+import { useState } from "react";
+import { Alert, Image, Platform, SafeAreaView, Text, View } from "react-native";
+import { signUp } from "./api/controller/auth.controller";
+import "../global.css";
+import Button from "./components/Button";
+import { GoogleSignUpButton } from "./components/button/googleAuthButtons";
+import Card from "./components/Card";
+import Input from "./components/Input";
+import { Role } from "./enums/roles";
+import { FacebookSignInButton } from "./components/button/facebookAuthButton";
 
   export default function SignUp() {
     const [showPassword, setShowPassword] = useState(false);
@@ -46,7 +47,7 @@
       Alert.alert("Account created successfully");
     };
 
-    if (!fontsLoaded) return null;
+    if (!fontsLoaded) return;
 
     const isWeb = Platform.OS === "web";
 
@@ -117,7 +118,7 @@
 
           {/* Social buttons */}
           <View className="flex-row justify-center space-x-6 mt-8">
-            <Button 
+            {/* <Button 
             onPress={() => {}}
             style={{ marginRight: 20 }} // Add spacing here
             className="w-12 h-12 rounded-lg bg-white justify-center items-center shadow-md"
@@ -127,7 +128,12 @@
                 style={{ width: 18, height: 18 }}
                 resizeMode="contain"
               />
-            </Button>
+            </Button> */}
+            <View
+              style={{ marginRight: 20 }} // Add spacing here
+              className="w-12 h-12 rounded-lg bg-white justify-center items-center shadow-md">
+              <GoogleSignUpButton/>
+            </View>
 
             
             <Button className="w-12 h-12 rounded-lg bg-white justify-center items-center shadow-md">
@@ -215,15 +221,23 @@
                 resizeMode="contain" />
             </Button> */}
             <GoogleSignUpButton/>
+            <FacebookSignInButton/>
 
-              <Button className="w-12 h-12 rounded-lg bg-white justify-center items-center shadow-md">
+              {/* <Button className="w-12 h-12 rounded-lg bg-white justify-center items-center shadow-md">
                 <Image
                   source={require("../assets/images/facebook.png")}
                   style={{ width: 24, height: 24 }}
                   resizeMode="contain"
                 />
-              </Button>
+              </Button> */}
             </View>
+            <Text
+             className="w-full text-center">
+              Already have an account?&nbsp; 
+              <Text 
+                onPress={() => router.replace("/")}
+                className="font-semibold text-decoration: underline">Sign In</Text>
+            </Text>
           </Card>
         </View>
 

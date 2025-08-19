@@ -1,7 +1,7 @@
-import { View, Text } from "react-native";
-import Button from "../../components/Button";
-import { signOut } from "../../api/controller/auth.controller";
-import { useAuth } from "../../context/AuthContext";
+import { Text, View } from "react-native";
+import { signOut } from "../api/controller/auth.controller";
+import Button from "../components/Button";
+import { useAuth } from "../context/AuthContext";
 
 
 export default function dashboard() {

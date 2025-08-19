@@ -1,9 +1,10 @@
-import { useState } from "react";
-import { SafeAreaView, Text, Platform, Image, View, Alert } from "react-native";
 import { useRouter } from "expo-router";
-import Button from "../components/Button";
-import Card from "../components/Card";
-import Input from "../components/Input";
+import { useState } from "react";
+import { Alert, Image, Platform, SafeAreaView, Text, View } from "react-native";
+import Button from "./components/Button";
+import Card from "./components/Card";
+import Input from "./components/Input";
+import { GoogleSignUpButton } from "./components/button/googleAuthButtons";
 
 export default function ResetPassword() {
   const [password, setPassword] = useState("");
@@ -81,7 +82,7 @@ export default function ResetPassword() {
     />
 
     <View className="flex-row justify-center mt-2">
-      <Button
+      {/* <Button
         style={{ marginRight: 14 }}
         className="w-12 h-12 rounded-lg bg-white justify-center items-center shadow-md"
       >
@@ -90,7 +91,8 @@ export default function ResetPassword() {
           style={{ width: 24, height: 24 }}
           resizeMode="contain"
         />
-      </Button>
+      </Button> */}
+      <GoogleSignUpButton/>
       <Button
         className="w-12 h-12 rounded-lg bg-white justify-center items-center shadow-md"
       >
@@ -158,7 +160,7 @@ export default function ResetPassword() {
         />
 
         <View className="flex-row justify-center mt-2">
-          <Button
+          {/* <Button
             style={{ marginRight: 14 }}
             className="w-12 h-12 rounded-lg bg-white justify-center items-center shadow-md"
           >
@@ -167,7 +169,8 @@ export default function ResetPassword() {
               style={{ width: 24, height: 24 }}
               resizeMode="contain"
             />
-          </Button>
+          </Button> */}
+          <GoogleSignUpButton/>
           <Button
             className="w-12 h-12 rounded-lg bg-white justify-center items-center shadow-md"
           >

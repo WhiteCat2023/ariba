@@ -1,31 +1,39 @@
-import { useState } from "react";
-import { SafeAreaView, Text, View, Image, Alert, Platform } from "react-native";
 import { useRouter } from "expo-router";
-import Button from "../components/Button";
-import Card from "../components/Card";
-import Input from "../components/Input";
+import { useState } from "react";
+import { Alert, Image, Platform, SafeAreaView, Text, View } from "react-native";
+import { forgotPassword } from "./api/controller/auth.controller";
+import Button from "./components/Button";
+import Card from "./components/Card";
+import Input from "./components/Input";
+import { GoogleSignUpButton } from "./components/button/googleAuthButtons";
+import { HttpStatus } from "./enums/status";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
   const router = useRouter();
   const isWeb = Platform.OS === "web";
 
-  const handleSendEmail = () => {
-  if (!email) {
-    Alert.alert("Please enter your email");
-    return;
-  }
+  const handleSendEmail = async () => {
+    if (!email) {
+      Alert.alert("Please enter your email");
+      return;
+    }
 
-  Alert.alert(
-    "Password reset link sent",
-    "Check your email for the reset link.",
-    [
-      {
-        text: "OK",
-        onPress: () => router.push("/reset-password"),
-      },
-    ]
-  );
+    const req = await forgotPassword(email)
+    if(req.status === HttpStatus.OK){
+      console.log("REQ SENT")
+    }
+
+  // Alert.alert(
+  //   "Password reset link sent",
+  //   "Check your email for the reset link.",
+  //   [
+  //     {
+  //       text: "OK",
+  //       onPress: () => router.push("/reset-password"),
+  //     },
+  //   ]
+  // );
 };
 
 // ===== MOBILE VERSION =====
@@ -81,7 +89,7 @@ export default function ForgotPassword() {
 
         {/* Social login buttons */}
         <View className="flex-row justify-center mt-6 space-x-6">
-          <Button
+          {/* <Button
           onPress={() => {}}
           style={{ marginRight: 30 }} // Add spacing here
           className="w-12 h-12 rounded-lg bg-white justify-center items-center shadow-md">
@@ -90,7 +98,12 @@ export default function ForgotPassword() {
               style={{ width: 24, height: 24 }}
               resizeMode="contain"
             />
-          </Button>
+          </Button> */}
+          <View 
+            style={{ marginRight: 30 }} // Add spacing here
+            className="w-12 h-12 rounded-lg bg-white justify-center items-center shadow-md">
+            <GoogleSignUpButton/>
+          </View>
           <Button className="w-12 h-12 rounded-lg bg-white justify-center items-center shadow-md">
             <Image
               source={require("../assets/images/facebook.png")}
@@ -149,16 +162,12 @@ export default function ForgotPassword() {
 
         {/* Social login buttons */}
         <View className="flex-row justify-center mt-2">
-          <Button
+          <View
             style={{ marginRight: 14 }}
-            className="w-12 h-12 rounded-lg bg-white justify-center items-center shadow-md"
-          >
-            <Image
-              source={require("../assets/images/google.png")}
-              style={{ width: 24, height: 24 }}
-              resizeMode="contain"
-            />
-          </Button>
+            className="w-12 h-12 rounded-lg bg-white justify-center items-center">
+            <GoogleSignUpButton/>
+          </View>
+          
           <Button className="w-12 h-12 rounded-lg bg-white justify-center items-center shadow-md">
             <Image
               source={require("../assets/images/facebook.png")}

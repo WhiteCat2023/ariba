@@ -1,13 +1,13 @@
 import { useFonts } from "expo-font";
+import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Alert, Image, Platform, SafeAreaView, Text, View } from "react-native";
-import { useRouter } from "expo-router";
-import { useAuth } from "../context/AuthContext";
-import Button from "../components/Button";
-import Card from "../components/Card";
-import Input from "../components/Input";
 import "../global.css";
-import { signIn } from "../api/controller/auth.controller";
+import Button from "./components/Button";
+import { GoogleSignUpButton } from "./components/button/googleAuthButtons";
+import Card from "./components/Card";
+import Input from "./components/Input";
+import { useAuth } from "./context/AuthContext";
 
 
 
@@ -82,17 +82,13 @@ export default function Index() {
 
         {/* Social buttons */}
         <View className="flex-row justify-center mb-6 space-x-6">
-          <Button
-            onPress={() => {}}
-            style={{ marginRight: 20 }} // Add spacing here
-            className="w-12 h-12 rounded-lg bg-white justify-center items-center shadow-md"
-          >
-            <Image
-              source={require("../assets/images/google.png")}
-              style={{ width: 18, height: 18 }}
-              resizeMode="contain"
-            />
-          </Button>
+      
+          <View
+            style={{ marginRight: 20 }}
+            className="w-12 h-2 rounded-lg bg-white justify-center items-center">
+            <GoogleSignUpButton/>
+          </View>
+          
 
           <Button
             onPress={() => {}}
@@ -191,17 +187,13 @@ export default function Index() {
           </Text>
 
           <View className="flex-row justify-center mb-5 space-x-4">
-            <Button
-              onPress={() => {}}
-              style={{ marginRight: 14 }} // Add spacing here
-              className="w-12 h-12 rounded-lg bg-white justify-center items-center shadow-md"
-            >
-              <Image
-                source={require("../assets/images/google.png")}
-                style={{ width: 24, height: 24 }}
-                resizeMode="contain"
-              />
-            </Button>
+     
+            <View
+              style={{ marginRight: 20 }} // Add spacing here
+              className="w-12 h-12 rounded-lg bg-white justify-center items-center">
+                <GoogleSignUpButton/>
+            </View>
+            
             <Button
               onPress={() => {}}
               className="w-12 h-12 rounded-lg bg-white justify-center items-center shadow-md"

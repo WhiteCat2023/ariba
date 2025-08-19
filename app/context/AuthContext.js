@@ -1,14 +1,10 @@
-import { createContext, useContext, useState } from "react";
-import { Alert, SafeAreaView } from "react-native";
-import { googleSignUp, signIn, signOut} from "../api/controller/auth.controller";
-import { HttpStatus } from "../enums/status";
-import { Text } from "react-native";
-import { onAuthStateChanged } from "firebase/auth";
-import { useEffect } from "react";
-import { auth } from "../api/config/firebase.config";
 import { useRouter } from "expo-router";
-import { GoogleAuthProvider } from "firebase/auth";
-import { newUserDoc } from "../api/services/firebase/auth.sevices";
+import { onAuthStateChanged } from "firebase/auth";
+import { createContext, useContext, useEffect, useState } from "react";
+import { Alert, SafeAreaView, Text } from "react-native";
+import { auth } from "../api/config/firebase.config";
+import { signIn, signOut } from "../api/controller/auth.controller";
+import { HttpStatus } from "../enums/status";
 
 
 
