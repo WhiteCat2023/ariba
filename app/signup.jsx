@@ -4,10 +4,10 @@ import { useState } from "react";
 import { Alert, Image, Platform, SafeAreaView, Text, View } from "react-native";
 import { signUp } from "./api/controller/auth.controller";
 import "../global.css";
-import Button from "./components/Button";
+import Button from "./components/button/Button";
 import { GoogleSignUpButton } from "./components/button/googleAuthButtons";
-import Card from "./components/Card";
-import Input from "./components/Input";
+import Card from "./components/cards/Card";
+import Input from "./components/inputs/Input";
 import { Role } from "./enums/roles";
 import { FacebookSignInButton } from "./components/button/facebookAuthButton";
 

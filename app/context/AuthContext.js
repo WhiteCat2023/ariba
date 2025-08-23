@@ -23,6 +23,7 @@ export function AuthProvider({ children }) {
         if (currentUser) {
           setUser(currentUser);
           setSession(true);
+          router.replace("/(tabs)");
         } else {
           setUser(null);
           setSession(false);
@@ -33,11 +34,11 @@ export function AuthProvider({ children }) {
       return () => unsubscribe();
     }, []);
 
-    useEffect(() => {
-      if (session) {
-        router.replace("/dashboard");
-      }
-    }, [session]);
+    // useEffect(() => {
+    //   if (session) {
+    //     router.replace("/(tabs)");
+    //   }
+    // }, [session]);
 
     const login = async (req) => {
       setLoading(true);

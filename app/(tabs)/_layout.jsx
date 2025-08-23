@@ -1,21 +1,27 @@
-import { Redirect, Slot } from "expo-router"
+// import { Redirect, Slot } from "expo-router"
 import { useAuth } from "../context/AuthContext"
+import { Platform } from "react-native";
+import { Redirect } from "expo-router";
+import AdminTab from "../components/navigation/admin/AdminTab";
+import AdminDrawer from "../components/navigation/admin/AdminDrawer";
+import { Drawer } from "@/components/ui/drawer";
+
 
 export default function TabLayout() {
   const {session} = useAuth()
-  return !session ? <Redirect  href="/"/> : <Slot/>
+
+  const isWeb = Platform.OS === "web";
+
+  if(!isWeb && session){
+    return(
+      <AdminTab/>
+    );
+  }else if(isWeb && session){
+    return(
+      <AdminDrawer/>
+    );
+  }else{
+    return <Redirect  href="/"/>;
+  }
+  // return !session ? <Redirect  href="/"/> : <Slot/>
 }
-
-
-// export default function TabLayout() {
-//   const { session } = useAuth()
-//   console.log("Session:", session)
-
-//   if (!session) {
-//     console.log("Redirecting to signin")
-//     return <Redirect href="/signin" />
-//   }
-
-//   console.log("Rendering Slot")
-//   return <Slot />
-// }

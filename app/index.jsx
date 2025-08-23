@@ -3,13 +3,12 @@ import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Alert, Image, Platform, SafeAreaView, Text, View } from "react-native";
 import "../global.css";
-import Button from "./components/Button";
+import Button from "./components/button/Button";
 import { GoogleSignUpButton } from "./components/button/googleAuthButtons";
-import Card from "./components/Card";
-import Input from "./components/Input";
+import Card from "./components/cards/Card";
+import Input from "./components/inputs/Input";
 import { useAuth } from "./context/AuthContext";
-
-
+import { signIn } from "./api/controller/auth.controller";
 
 export default function Index() {
   const [showPassword, setShowPassword] = useState(false);
@@ -39,25 +38,14 @@ export default function Index() {
     }));
   };
 
-  // useEffect(() => {
-  //   GoogleSignIn
-  // })
-
   const handleSubmit = async () => {
     try {
-      await login(credentials);
-      Alert.alert("You're logged in");
+      await signIn(credentials);
+      // Alert.alert("You're logged in");
     } catch (error) {
       Alert.alert(`Login failed: ${error.message}`)
     }
   }
-
-  // useEffect(() => {
-  //   if (session) {
-  //     router.replace("/dashboard");
-  //   }
-  // }, [session]);
-
 
   if (!fontsLoaded) return null;
 
