@@ -1,4 +1,4 @@
-import { SafeAreaView, View, StatusBar, ScrollView, Platform } from 'react-native';
+import { SafeAreaView, StatusBar, ScrollView, Platform } from 'react-native';
 import { useAuth } from "../../../context/AuthContext";
 import { useState } from "react";
 // import Button from '../components/button/Button';
@@ -25,11 +25,11 @@ export default function AdminDashboard() {
 
   return (
       <SafeAreaView className="flex-1 bg-[#D9E9DD] h-full">
-        {/* <StatusBar barStyle="dark-content" /> */}
-          <ScrollView className='h-full'>
+        <StatusBar barStyle="dark-content" />
+          <ScrollView className='p-4'>
             <Grid 
              _extra={{
-              className: "lg:grid-cols-12 grid-cols-1 auto-rows-auto gap-4 p-4 h-full"
+              className: "lg:grid-cols-12 grid-cols-1 auto-rows-auto gap-4 h-full"
              }}>
               <GridItem
                _extra={{

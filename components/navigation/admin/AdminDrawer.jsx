@@ -33,13 +33,17 @@ const AdminDrawer = () => {
         route: "/admin"
       },
       {
-        name: "Notifications",
-        route: "/admin/notifications"
+        name: "Reports",
+        route: "/admin/reports"
       },
       {
         name: "Map",
         route: "/admin/map"
-      }
+      },
+      {
+        name: "Notifications",
+        route: "/admin/notifications"
+      },
     ]
 
     return (
