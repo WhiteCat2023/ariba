@@ -1,5 +1,5 @@
 import { SafeAreaView, StatusBar, ScrollView, Platform } from 'react-native';
-import { useAuth } from "../../../context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
 // import Button from '../components/button/Button';
 import { signOut } from '@/api/controller/auth.controller';
@@ -36,6 +36,7 @@ export default function AdminDashboard() {
                 className: "lg:col-span-8"
                }}>
                 <Box>
+                  
                   <Text 
                     size='lg'>
                     Greetings! Welcome Back

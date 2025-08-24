@@ -8,18 +8,18 @@ const map = () => {
   return (
     <SafeAreaView className="flex-1 bg-[#D9E9DD] h-full p-4">
       <StatusBar barStyle="dark-content" />
-            <ScrollView className='h-full'>
-                <Box>
-                    <Heading size='5xl' className='mt-6'>
-                        Map
-                    </Heading>
-                </Box>
-                <Box>
+        <ScrollView className='h-full'>
+        <Box>
+          <Heading size='5xl' className='mt-6'>
+            Map
+          </Heading>
+        </Box>
+        <Box>
 
-                </Box>
+        </Box>
             
-            </ScrollView>
-        </SafeAreaView>
+      </ScrollView>
+    </SafeAreaView>
   )
 }
 

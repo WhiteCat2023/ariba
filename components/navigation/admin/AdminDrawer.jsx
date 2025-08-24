@@ -44,6 +44,10 @@ const AdminDrawer = () => {
         name: "Notifications",
         route: "/admin/notifications"
       },
+        {
+        name: "Profile",
+        route: "/admin/profile"
+      },
     ]
 
     return (
