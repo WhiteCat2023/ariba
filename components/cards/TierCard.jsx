@@ -22,11 +22,22 @@ const TierCard = () => {
         </Box>
 
         <Card className='rounded-xl' >
-            <Box>
-                <Heading>Tier name</Heading>
-                <Text>date</Text>
-            </Box>
-            <Text>2 reports</Text>
+            <Card>
+                <Box>
+                    <Heading>Tier name</Heading>
+                    <Text>date</Text>
+                </Box>
+            </Card>
+            
+        </Card>
+        <Card className='rounded-xl' >
+            <Card>
+                <Box>
+                    <Heading>Tier name</Heading>
+                    <Text>date</Text>
+                </Box>
+            </Card>
+            
         </Card>
 
     </Card>

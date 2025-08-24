@@ -1,9 +1,29 @@
-import { Text, View } from "react-native";
+import { Box } from "@/components/ui/box";
+import { Heading } from "@/components/ui/heading";
+import { HStack } from "@/components/ui/hstack";
+import { Image } from "@/components/ui/image";
+import { Text } from "@/components/ui/text";
 
 export default function NotFound() {
   return (
-    <View className="flex-1 items-center justify-center">
-      <Text className="text-xl font-bold">404 - Page Not Found</Text>
-    </View>
+    <Box 
+      className="flex-1 items-center">
+        <HStack
+          className="mx-auto">
+          <Image
+            size="2xl"
+            source={{
+                uri: "@/assets/images/NotFoundImage.png"
+            }}/>
+            <Heading 
+              size="5xl">404</Heading>
+            <Heading
+              size="4xl">PAGE NOT FOUND</Heading>
+            <Text
+              className="text-center">
+              The resource could not  be found on this serveror the error has occured
+            </Text>
+        </HStack>
+    </Box>
   );
 }
