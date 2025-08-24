@@ -12,7 +12,7 @@ const SearchBar = () => {
       isDisabled={false}
       isInvalid={false}
       isReadOnly={false}
-      className='m-3 rounded-xl'
+      className=' bg-white rounded-xl flex-1'
     >
       <InputSlot
        className='ms-3'>

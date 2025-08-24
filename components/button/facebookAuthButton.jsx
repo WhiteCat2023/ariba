@@ -3,7 +3,7 @@ import * as Facebook from "expo-auth-session/providers/facebook";
 import * as WebBrowser from "expo-web-browser";
 import { useEffect } from "react";
 import { Alert, Image, Pressable } from "react-native";
-import { signInWithToken } from "../../api/services/firebase/auth.sevices";
+import { signInWithToken } from "@/api/services/firebase/auth.sevices";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -43,7 +43,7 @@ export const FacebookSignInButton = () => {
             onPress={() => promptAsync()}
             className="w-12 h-12 rounded-lg bg-white justify-center items-center shadow-md">
             <Image
-                source={require("../../../assets/images/facebook.png")}
+                source={require("@/assets/images/facebook.png")}
                 style={{ width: 24, height: 24 }}
                 resizeMode="contain"
             />

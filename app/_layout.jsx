@@ -1,7 +1,7 @@
 import { Slot, Stack } from "expo-router";
 import "@/global.css";
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider } from '@/context/AuthContext';
 import { Platform } from "react-native";
 
 export default function RootLayout() {
@@ -11,13 +11,17 @@ export default function RootLayout() {
   return (
     <GluestackUIProvider mode="light">
       <AuthProvider>
-        {isWeb ? (
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="/admin/(tabs)" />
+          {/* <Stack.Screen name="/user/(tabs)" /> */}
+        </Stack>
+        {/* {isWeb ? (
           <Slot />
         ) : (
           <Stack screenOptions={{ headerShown: false }}>
             <Slot />
           </Stack>
-        )}
+        )} */}
       </AuthProvider>
     </GluestackUIProvider>
   );

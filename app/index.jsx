@@ -3,12 +3,12 @@ import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Alert, Image, Platform, SafeAreaView, Text, View } from "react-native";
 import "../global.css";
-import Button from "./components/button/Button";
-import { GoogleSignUpButton } from "./components/button/googleAuthButtons";
-import Card from "./components/cards/Card";
-import Input from "./components/inputs/Input";
-import { useAuth } from "./context/AuthContext";
-import { signIn } from "./api/controller/auth.controller";
+import Button from "@/components/button/Button";
+import { GoogleSignUpButton } from "@/components/button/googleAuthButtons";
+import Card from "@/components/cards/Card";
+import Input from "@/components/inputs/Input";
+import { useAuth } from "@/context/AuthContext";
+import { signIn } from "@/api/controller/auth.controller";
 
 export default function Index() {
   const [showPassword, setShowPassword] = useState(false);
@@ -17,13 +17,13 @@ export default function Index() {
     password: ""
   });
   const router = useRouter()
-  const { login, session } = useAuth()
+  // const { login, session } = useAuth()
 
-  useEffect(() => {
-    if (session) {
-      router.push("/dashboard");
-    }
-  }, [session]);
+  // useEffect(() => {
+  //   if (session) {
+  //     router.push("/dashboard");
+  //   }
+  // }, [session]);
 
    const [fontsLoaded] = useFonts({
     Pacifico: require("../assets/fonts/Pacifico-Regular.ttf"),

@@ -2,14 +2,14 @@
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Alert, Image, Platform, SafeAreaView, Text, View } from "react-native";
-import { signUp } from "./api/controller/auth.controller";
+import { signUp } from "@/api/controller/auth.controller";
 import "../global.css";
-import Button from "./components/button/Button";
-import { GoogleSignUpButton } from "./components/button/googleAuthButtons";
-import Card from "./components/cards/Card";
-import Input from "./components/inputs/Input";
-import { Role } from "./enums/roles";
-import { FacebookSignInButton } from "./components/button/facebookAuthButton";
+import Button from "@/components/button/Button";
+import { GoogleSignUpButton } from "@/components/button/googleAuthButtons";
+import Card from "@/components/cards/Card";
+import Input from "@/components/inputs/Input";
+import { Role } from "@/enums/roles";
+import { FacebookSignInButton } from "@/components/button/facebookAuthButton";
 
   export default function SignUp() {
     const [showPassword, setShowPassword] = useState(false);

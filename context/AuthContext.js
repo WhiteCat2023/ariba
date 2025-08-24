@@ -2,9 +2,9 @@ import { useRouter } from "expo-router";
 import { onAuthStateChanged } from "firebase/auth";
 import { createContext, useContext, useEffect, useState } from "react";
 import { Alert, SafeAreaView, Text } from "react-native";
-import { auth } from "../api/config/firebase.config";
-import { signIn, signOut } from "../api/controller/auth.controller";
-import { HttpStatus } from "../enums/status";
+import { auth } from "@/api/config/firebase.config";
+import { signIn, signOut } from "@/api/controller/auth.controller";
+import { HttpStatus } from "@/enums/status";
 
 
 
@@ -23,7 +23,7 @@ export function AuthProvider({ children }) {
         if (currentUser) {
           setUser(currentUser);
           setSession(true);
-          router.replace("/(tabs)");
+          router.replace("/admin/(tabs)");
         } else {
           setUser(null);
           setSession(false);
@@ -33,12 +33,6 @@ export function AuthProvider({ children }) {
 
       return () => unsubscribe();
     }, []);
-
-    // useEffect(() => {
-    //   if (session) {
-    //     router.replace("/(tabs)");
-    //   }
-    // }, [session]);
 
     const login = async (req) => {
       setLoading(true);

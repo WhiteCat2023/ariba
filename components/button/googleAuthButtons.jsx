@@ -4,8 +4,8 @@ import * as WebBrowser from "expo-web-browser";
 import { GoogleAuthProvider } from "firebase/auth";
 import { useEffect } from "react";
 import { Alert, Image, Pressable } from "react-native";
-import { newUserDoc, signInWithToken } from "../../api/services/firebase/auth.sevices";
-import { Role } from "../../enums/roles";
+import { newUserDoc, signInWithToken } from "@/api/services/firebase/auth.sevices";
+import { Role } from "@/enums/roles";
 
 
 
@@ -60,7 +60,7 @@ export function GoogleSignUpButton() {
       onPress={() => promptAsync()}
       className="w-12 h-12 rounded-lg bg-white justify-center items-center shadow-sm">
       <Image 
-        source={require("../../../assets/images/google.png")} 
+        source={require("@/assets/images/google.png")} 
         style={{ width: 24, height: 24 }}
         resizeMode="contain" />
     </Pressable  >

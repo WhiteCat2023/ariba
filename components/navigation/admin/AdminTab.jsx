@@ -1,6 +1,7 @@
 import { View, Text, Platform } from 'react-native'
 import React from 'react'
 import { Tabs } from 'expo-router'
+import { AddIcon, Icon, MenuIcon } from '@/components/ui/icon'
 
 const AdminTab = () => {
   return (
@@ -19,8 +20,9 @@ const AdminTab = () => {
         name="dashboard"
         options={{
         title: 'Dashboard',
-        tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+        tabBarIcon: ({ color }) => <Icon as={MenuIcon} className={`text-[${color}]`} />,
         }}/>
+        
     </Tabs>
   )
 }

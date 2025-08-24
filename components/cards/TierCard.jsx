@@ -9,7 +9,9 @@ import { ArrowRightIcon, Icon } from '@/components/ui/icon'
 
 const TierCard = () => {
   return (
-    <Card className='m-4 border-2 rounded-xl'>
+    <Card 
+    size='lg'
+    className='border-2 rounded-xl'>
         <Box className='flex flex-row justify-between'>
             <Heading>Reports by tier list</Heading>
             <Link 

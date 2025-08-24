@@ -1,4 +1,4 @@
-import { HttpStatus } from "../../enums/status"
+import { HttpStatus } from "@/enums/status"
 import { upload } from "../services/firebase/storage.services"
 
 export const uploadPhotoOrVideo = async (req) => {

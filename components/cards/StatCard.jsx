@@ -9,7 +9,7 @@ import BarGraphIcon from '../icons/BarGraphIcon'
 
 const StatCard = ({header, data, icon = <LineGraphIcon/>}) => {
   return (
-    <Card size="md" variant="elevated" className="flex flex-row justify-between items-center m-3 border-2 rounded-xl">
+    <Card size="md" variant="elevated" className="flex flex-row justify-between items-center border-2 rounded-xl">
         <View>
             <Heading size="xs" className="mb-1">
                 {header}

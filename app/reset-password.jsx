@@ -1,10 +1,10 @@
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Alert, Image, Platform, SafeAreaView, Text, View } from "react-native";
-import Button from "./components/button/Button";
-import Card from "./components/cards/Card";
-import Input from "./components/inputs/Input";
-import { GoogleSignUpButton } from "./components/button/googleAuthButtons";
+import Button from "../components/button/Button";
+import Card from "../components/cards/Card";
+import Input from "../components/inputs/Input";
+import { GoogleSignUpButton } from "../components/button/googleAuthButtons";
 
 export default function ResetPassword() {
   const [password, setPassword] = useState("");

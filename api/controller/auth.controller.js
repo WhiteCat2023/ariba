@@ -1,6 +1,6 @@
 import { createUser, newUserDoc, signInUser, signOutUser, userForgotPassword } from "../services/firebase/auth.sevices";
 // import { HttpStatus }  from "../../enums/status";
-import { HttpStatus } from "../../enums/status";
+import { HttpStatus } from "@/enums/status";
 
 export const signIn = async ( req ) => {
     const { email, password } = req;
