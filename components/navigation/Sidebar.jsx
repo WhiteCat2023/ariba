@@ -1,54 +1,15 @@
 import { Slot, usePathname, useRouter } from "expo-router";
-import { useState } from "react";
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
-import {
-  // Drawer,
-  DrawerBackdrop,
-  DrawerContent,
-  DrawerHeader,
-  DrawerBody,
-  DrawerFooter,
-} from "@/components/ui/drawer";
-import { Heading } from "@/components/ui/heading";
-import { Button, ButtonText } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { Box } from "@/components/ui/box";
-import { Drawer } from "expo-router/drawer"
-import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { VStack } from "@/components/ui/vstack";
 import { HStack } from "@/components/ui/hstack";
 import { Pressable } from "@/components/ui/pressable";
-import { useWindowDimensions } from "react-native";
 
-
-
-const AdminDrawer = () => {
+const SideBar = ({navItem}) => {
 
     const router = useRouter()
     const path = usePathname()
-    
-    const controls = [
-      { 
-        name: "Dashboard",
-        route: "/admin"
-      },
-      {
-        name: "Reports",
-        route: "/admin/reports"
-      },
-      {
-        name: "Map",
-        route: "/admin/map"
-      },
-      {
-        name: "Notifications",
-        route: "/admin/notifications"
-      },
-        {
-        name: "Profile",
-        route: "/admin/profile"
-      },
-    ]
 
     return (
     <GluestackUIProvider>
@@ -68,7 +29,7 @@ const AdminDrawer = () => {
             </Box>
             
             <Box className="gap-y-4">
-              {controls.map(({name, route}, index) => {
+              {navItem.map(({name, route}, index) => {
                 const isActive = path === route;
 
                 return(
@@ -93,4 +54,4 @@ const AdminDrawer = () => {
   );
 }
 
-export default AdminDrawer
+export default SideBar
