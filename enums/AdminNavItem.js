@@ -16,7 +16,7 @@ export const AdminNavItem = Object.freeze(
         name: "Notifications",
         route: "/admin/notifications"
       },
-        {
+      {
         name: "Profile",
         route: "/admin/profile"
       },

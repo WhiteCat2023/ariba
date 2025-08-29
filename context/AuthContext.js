@@ -6,8 +6,6 @@ import { auth } from "@/api/config/firebase.config";
 import { signIn, signOut } from "@/api/controller/auth.controller";
 import { HttpStatus } from "@/enums/status";
 
-
-
 const AuthContext = createContext()
 
 export function AuthProvider({ children }) {
@@ -23,7 +21,7 @@ export function AuthProvider({ children }) {
         if (currentUser) {
           setUser(currentUser);
           setSession(true);
-          router.replace("/admin/(tabs)");
+          router.replace("/user/(tabs)");
         } else {
           setUser(null);
           setSession(false);

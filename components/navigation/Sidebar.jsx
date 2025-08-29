@@ -6,10 +6,13 @@ import { VStack } from "@/components/ui/vstack";
 import { HStack } from "@/components/ui/hstack";
 import { Pressable } from "@/components/ui/pressable";
 
+import {Button, ButtonText } from "../ui/button";
+
 const SideBar = ({navItem}) => {
 
     const router = useRouter()
     const path = usePathname()
+    const user = true
 
     return (
     <GluestackUIProvider>
@@ -46,8 +49,16 @@ const SideBar = ({navItem}) => {
           </VStack>
         </Box>
 
-        <Box className="flex-1 ">
+        <Box className="flex-1 relative">
           <Slot />
+          {user && (
+            <Button
+              className="absolute right-4 bottom-4">
+              <ButtonText>
+                Send a report
+              </ButtonText>
+            </Button>
+            )}
         </Box>
       </HStack>
     </GluestackUIProvider>
