@@ -7,7 +7,7 @@ import { Text } from '../ui/text'
 import { VStack } from '../ui/vstack'
 import { HStack } from '../ui/hstack'
 
-const AdminTab = ({navItem}) => {
+const Tab = ({navItem}) => {
   const router = useRouter()
   const path = usePathname()
 
@@ -48,4 +48,4 @@ const AdminTab = ({navItem}) => {
   )
 }
 
-export default AdminTab
+export default Tab

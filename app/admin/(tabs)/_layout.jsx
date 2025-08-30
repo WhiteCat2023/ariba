@@ -1,7 +1,7 @@
 import { useAuth } from "../../../context/AuthContext"
 import { Platform, useWindowDimensions } from "react-native";
 import { Redirect } from "expo-router";
-import AdminTab from "../../../components/navigation/AdminTab";
+import Tab from "../../../components/navigation/Tab";
 import { AdminNavItem } from "@/enums/AdminNavItem";
 import SideBar from "@/components/navigation/Sidebar";
 
@@ -12,7 +12,7 @@ export default function TabLayout() {
 
   if(hideSidebar && session){
     return(
-      <AdminTab navItem={AdminNavItem}/>
+      <Tab navItem={AdminNavItem}/>
     );
   }else if(!hideSidebar && session){
     return(
