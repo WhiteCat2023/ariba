@@ -1,12 +1,9 @@
-import { Pressable, SafeAreaView, ScrollView, StatusBar} from 'react-native'
+import { SafeAreaView, ScrollView, StatusBar} from 'react-native'
 import React from 'react'
 import { Box } from '@/components/ui/box'
-import { Text } from '@/components/ui/text'
 import { Heading } from '@/components/ui/heading'
 import { useAuth } from '@/context/AuthContext'
 import { Button, ButtonText } from '@/components/ui/button'
-import { signOut } from '@/api/controller/auth.controller'
-
 
 const profile = () => {
     const {logout} = useAuth()

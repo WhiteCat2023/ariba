@@ -12,7 +12,7 @@ export default function TabLayout() {
 
   if(hideSidebar && session){
     return(
-      <AdminTab/>
+      <AdminTab navItem={AdminNavItem}/>
     );
   }else if(!hideSidebar && session){
     return(

@@ -1,10 +1,10 @@
+import { auth } from "@/api/config/firebase.config";
+import { signIn, signOut } from "@/api/controller/auth.controller";
+import { HttpStatus } from "@/enums/status";
 import { useRouter } from "expo-router";
 import { onAuthStateChanged } from "firebase/auth";
 import { createContext, useContext, useEffect, useState } from "react";
 import { Alert, SafeAreaView, Text } from "react-native";
-import { auth } from "@/api/config/firebase.config";
-import { signIn, signOut } from "@/api/controller/auth.controller";
-import { HttpStatus } from "@/enums/status";
 
 const AuthContext = createContext()
 
@@ -21,7 +21,7 @@ export function AuthProvider({ children }) {
         if (currentUser) {
           setUser(currentUser);
           setSession(true);
-          router.replace("/user/(tabs)");
+          router.replace("admin/(tabs)");
         } else {
           setUser(null);
           setSession(false);
