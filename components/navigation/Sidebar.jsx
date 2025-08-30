@@ -8,7 +8,8 @@ import { Pressable } from "@/components/ui/pressable";
 
 import {Button, ButtonText } from "../ui/button";
 import { Icon } from "../ui/icon";
-import { Camera } from "lucide-react-native";
+import { Camera, Send } from "lucide-react-native";
+import { LinearGradient } from "../ui/lineragradient/LinearGradient";
 
 const SideBar = ({navItem}) => {
 
@@ -69,10 +70,20 @@ const SideBar = ({navItem}) => {
           
           {user && (
             <Button
-              className="absolute right-4 bottom-4">
-              <ButtonText>
-                Send a report
-              </ButtonText>
+              className="absolute right-4 bottom-4 p-0 rounded-xl">
+              <LinearGradient
+                className="w-full flex-1 items-center py-2 px-5 rounded-xl"
+                colors={['#FF6348', '#FFA502']}
+                start={[0, 1]}
+                end={[3, 3]}>
+                <ButtonText 
+                  className='flex items-center gap-2'>
+                  <Icon 
+                    as={Send}
+                    className='text-white'/>
+                  Send a report
+                </ButtonText>
+              </LinearGradient>
             </Button>
             )}
         </Box>
