@@ -21,7 +21,7 @@ export function AuthProvider({ children }) {
         if (currentUser) {
           setUser(currentUser);
           setSession(true);
-          router.replace("admin/(tabs)");
+          router.replace("user/(tabs)");
         } else {
           setUser(null);
           setSession(false);

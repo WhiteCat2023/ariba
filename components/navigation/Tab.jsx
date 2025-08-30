@@ -9,18 +9,26 @@ import { HStack } from '../ui/hstack'
 import { Button, ButtonText } from '../ui/button'
 import { Send } from 'lucide-react-native'
 import { LinearGradient } from '../ui/lineragradient/LinearGradient'
+import { useAuth } from '@/context/AuthContext'
 
 const Tab = ({navItem}) => {
+  const {user} = useAuth()
   const router = useRouter()
   const path = usePathname()
-  const user = true
+  const isUser = true
+
+
+  console.log(user)
 
   return(
     <Box className='relative flex-1'>
       <Box className='flex-1'>
         <Slot/>
-        {user && (
+        {isUser && (
             <Button
+              onPress={() => {
+                router.push(`/${user.uid}/new-report`)
+              }}
               className="absolute right-4 bottom-4 p-0 rounded-xl">
               <LinearGradient
                 className="w-full flex-1 items-center py-2 px-5 rounded-xl"
@@ -37,9 +45,7 @@ const Tab = ({navItem}) => {
               </LinearGradient>
             </Button>
             )}
-      </Box>
-
-      
+      </Box> 
       
       <HStack
         className='w-full h-16 border-t bg-white justify-between sticky py-2 px-4'>

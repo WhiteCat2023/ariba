@@ -3,6 +3,7 @@ import { Platform, useWindowDimensions } from "react-native";
 import { Redirect, Tabs } from "expo-router";
 import SideBar from "@/components/navigation/Sidebar";
 import { UserNavItem } from "@/enums/UserNavItem";
+import Tab from "@/components/navigation/Tab";
 
 const TabLayout = () => {
 
@@ -12,7 +13,7 @@ const TabLayout = () => {
 
     if(hideSidebar && session){
         return(
-        <Tabs/>
+        <Tab navItem={UserNavItem}/>
         );
     }else if(!hideSidebar && session){
         return(

@@ -10,12 +10,14 @@ import {Button, ButtonText } from "../ui/button";
 import { Icon } from "../ui/icon";
 import { Camera, Send } from "lucide-react-native";
 import { LinearGradient } from "../ui/lineragradient/LinearGradient";
+import { useAuth } from "@/context/AuthContext";
 
 const SideBar = ({navItem}) => {
 
     const router = useRouter()
     const path = usePathname()
-    const user = true // connect ni sa role session
+    const isUser = true // connect ni sa role session
+    const {user} = useAuth()
 
     return (
     <GluestackUIProvider>
@@ -24,10 +26,6 @@ const SideBar = ({navItem}) => {
         <Box
           className="p-1 justify-start"
           w={220}
-          bg="$blue600"
-          // p="$4"
-          // justifyContent="flex-start"
-          
         >
           <VStack space="4xl" className="w-72 p-4 hover:text-white border bg-white h-full rounded-xl m-4">
             <Box>
@@ -68,8 +66,11 @@ const SideBar = ({navItem}) => {
         <Box className="flex-1 relative">
           <Slot />
           
-          {user && (
+          {isUser && (
             <Button
+              onPress={() => {
+                router.push(`/${user.uid}/new-report`)
+              }}
               className="absolute right-4 bottom-4 p-0 rounded-xl">
               <LinearGradient
                 className="w-full flex-1 items-center py-2 px-5 rounded-xl"
