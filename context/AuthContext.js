@@ -41,8 +41,8 @@ export function AuthProvider({ children }) {
 
     useEffect(() => {
       if (!loading) {
-        if (session && !pathname.startsWith("/admin")) {
-          router.replace("/admin"); 
+        if (session && !pathname.startsWith("/user")) {
+          router.replace("/user"); 
         }
         if (!session && pathname !== "/") {
           router.replace("/"); 
