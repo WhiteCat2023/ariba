@@ -1,5 +1,5 @@
 import { HttpStatus } from "@/enums/status";
-import { getAllUsers, getUserById, updateUserName, updateUserPhoneNumber } from "../services/firebase/users.services";
+import { getAllUsers, getUserById, getUserDoc, updateUserName, updateUserPhoneNumber } from "../services/firebase/users.services";
 
 export const updateName =  async ( req ) => {
     try {
@@ -53,11 +53,9 @@ export const allUsers = ( reqCallback ) => {
     }
 }
 
-
-
-export const userInfo = ( uid, reqCallback ) => {
+export const getUserInfoFromFirestore = ( uid, reqCallback ) => {
     try{
-        getUserById( uid, reqCallback )
+        getUserDoc( uid, reqCallback )
         
         return { 
             status: HttpStatus.OK, 

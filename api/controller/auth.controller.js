@@ -1,6 +1,7 @@
 import { createUser, newUserDoc, setRole, signInUser, signOutUser, userForgotPassword } from "../services/firebase/auth.sevices";
 // import { HttpStatus }  from "../../enums/status";
 import { HttpStatus } from "@/enums/status";
+import { userDocRef } from "../services/firebase/users.services";
 
 export const signIn = async ( req ) => {
     const { email, password } = req;
@@ -20,6 +21,12 @@ export const signIn = async ( req ) => {
         };
     };
 };
+
+export const checkUserIfExist = ( uid ) => {
+    const userCollection = userDocRef("users", uid);
+    if(userCollection) return true;
+    return false;   
+}
 
 export const signUp = async ( req ) => {
     const { email, password, role } = req;
