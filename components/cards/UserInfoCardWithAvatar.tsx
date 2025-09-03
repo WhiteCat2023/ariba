@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import EditPersonalInfoInput from "../inputs/EditPersonalInfoInput"
 import { Avatar, AvatarImage } from "../ui/avatar"
 import { Box } from "../ui/box"
@@ -10,6 +10,8 @@ import { VStack } from "../ui/vstack"
 import { Button, ButtonText } from "../ui/button"
 import SignOutBtn from "../button/SignOutBtn"
 import DeleteAccountBtn from "../button/DeleteAccountBtn"
+import PersonalInfo from "../inputs/PersonalInfo"
+import { getUserInfoFromFirestore } from "@/api/controller/users.controller"
 
 interface UserInfoCardWithAvatarProp{
   user: Object;
@@ -64,12 +66,28 @@ const UserInfoCardWithAvatar: React.FC<UserInfoCardWithAvatarProp> = ({user}) =>
                  
         </HStack>
         <Divider className="my-4"/>
-        <Text
-          bold={true}
-          size="md">
-          Edit Personal Information
-        </Text>
-        <EditPersonalInfoInput isEdit={!isEdit} setEdit={setEdit}/>
+        {isEdit && (
+          <>
+            <Text
+              bold={true}
+              size="md">
+              Edit Personal Information
+            </Text>
+            <EditPersonalInfoInput isEdit={!isEdit} setEdit={setEdit}/>
+          </>
+        )}
+        { !isEdit && (
+          <>
+            <Text
+              bold={true}
+              size="md">
+              Personal Information
+            </Text>
+            <PersonalInfo/>
+          </>
+        )
+
+        }
         <Divider className="my-4"/>
         <Box
           className="lg:w-96">

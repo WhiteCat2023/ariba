@@ -6,9 +6,7 @@ import { useEffect } from "react";
 import { Alert, Image, Pressable } from "react-native";
 import { newUserDoc, signInWithToken } from "@/api/services/firebase/auth.sevices";
 import { Role } from "@/enums/roles";
-
-
-
+import { checkUserIfExist } from "@/api/controller/auth.controller";
 
 // Still need to fix redirectUri when using Expo Go
 
@@ -38,7 +36,10 @@ export function GoogleSignUpButton() {
         signInWithToken(credential)
           .then((userCredential) => {
             const user = userCredential.user;
-            newUserDoc(userCredential, Role.USER);
+            const isUserExist = checkUserIfExist(user.uid)
+            
+            if(!isUserExist) newUserDoc(userCredential, Role.USER);
+            
             Alert.alert("Welcome!", `Signed in as ${user.displayName}`);
             // console.log("Signed up user:", user);
           })

@@ -18,9 +18,7 @@ const profile = () => {
                     </Heading>
                 </Box>
                 <Box>
-                    <UserInfoCardWithAvatar user={user}/>
-                    
-                        
+                    <UserInfoCardWithAvatar user={user}/> 
                 </Box>
             </ScrollView>
         </SafeAreaView>

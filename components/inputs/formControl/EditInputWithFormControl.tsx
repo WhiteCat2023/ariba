@@ -12,6 +12,7 @@ interface EditInputWithFormControlProps {
   setInput?: (value: string) => void;
   isEdit: boolean;
   placeholder: string;
+  fallbackText: string;
 }
 
 const EditInputWithFormControl: React.FC<EditInputWithFormControlProps> = ({
@@ -19,7 +20,8 @@ const EditInputWithFormControl: React.FC<EditInputWithFormControlProps> = ({
     input, 
     setInput = ()=>{},
     isEdit = true,
-    placeholder
+    placeholder,
+    fallbackText
     }) => {
 
     return (
@@ -32,7 +34,7 @@ const EditInputWithFormControl: React.FC<EditInputWithFormControlProps> = ({
         <Input size="md">
           <InputField
             type="text"
-            placeholder={placeholder || 'Ex. John Doe'}
+            placeholder={placeholder || fallbackText}
             value={input}
             onChangeText={(text: string) => setInput(text)}
           />
