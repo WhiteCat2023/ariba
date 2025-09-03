@@ -1,4 +1,4 @@
-import { createUser, newUserDoc, signInUser, signOutUser, userForgotPassword } from "../services/firebase/auth.sevices";
+import { createUser, newUserDoc, setRole, signInUser, signOutUser, userForgotPassword } from "../services/firebase/auth.sevices";
 // import { HttpStatus }  from "../../enums/status";
 import { HttpStatus } from "@/enums/status";
 
@@ -26,7 +26,8 @@ export const signUp = async ( req ) => {
     try{
         const userCredentials = await createUser(email, password);
         await newUserDoc(userCredentials, role);
-
+        // const {uid} = userCredentials.user;
+        // setRole(uid)
         // console.log(userDoc)
 
         return { 
@@ -80,3 +81,4 @@ export const forgotPassword = async ( email ) => {
         };
     }
 }
+

@@ -5,7 +5,6 @@ import { setDoc,doc } from "firebase/firestore";
 
 
 
-
 export async function signInUser(email, password){
    return await signInWithEmailAndPassword(auth, email, password);
 }
@@ -25,6 +24,13 @@ export async function userForgotPassword(email) {
 export const signInWithToken = async (credential) => {
     return await signInWithCredential(auth, credential)     
 }
+
+// export const setRole = async ( id ) => {
+//     return await auth.setCustomUserClaims(uid, {admin: true})
+// }
+
+
+
 
 export async function newUserDoc(userCredentials, role) {
   try {
