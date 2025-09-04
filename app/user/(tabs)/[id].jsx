@@ -29,6 +29,7 @@ import { Heart, ArrowLeft, MoreVertical, Bookmark, MessageCircle, Share2 } from 
 import AsyncStorage from "@react-native-async-storage/async-storage"
 
 // ✅ Gluestack UI
+import { Reply } from "lucide-react-native";
 import { Box } from "@/components/ui/box"
 import { Text } from "@/components/ui/text"
 import { Heading } from "@/components/ui/heading"
@@ -261,7 +262,7 @@ const toggleCommentLike = async (item) => {
   }
 
   // --- Recursive render function ---
-  const renderCommentThread = (item, level = 0) => {
+  const renderCommentThread = (item, level = 0, parentAuthor = null) => {
   const children = commentMap[item.id] || []
   const isOwner = item.authorId === user?.uid
   const isEditing = editingReply?.[item.id] || editingComment === item.id
@@ -288,8 +289,17 @@ const toggleCommentLike = async (item) => {
               {item.timestamp?.toDate ? timeAgo(item.timestamp.toDate(), now) : "..."}
             </Text>
           </Box>
-          {/* ...menu & actions */}
         </Box>
+
+        {/* Replying to parent author */}
+        {parentAuthor && (
+          <Box className="flex-row items-center mb-1">
+            <Reply size={14} color="#555" />
+            <Text className="ml-1 text-sm text-gray-600">
+              Replying to @{parentAuthor}
+            </Text>
+          </Box>
+        )}
 
         {isEditing ? (
           <TextInput
@@ -305,28 +315,34 @@ const toggleCommentLike = async (item) => {
           <Text className="mb-2">{item.content}</Text>
         )}
 
-        {/* Likes & reply button */}
-        <Box className="flex-row items-center mt-1">
-          <TouchableOpacity
-            onPress={() => toggleCommentLike(item)}
-            className="flex-row items-center mr-4"
-          >
-            <Heart
-              size={14}
-              color={commentLikes[item.id] ? "red" : "black"}
-              fill={commentLikes[item.id] ? "red" : "transparent"}
-            />
-            <Text className="ml-1 text-sm">{item.likesCount || 0} Likes</Text>
-          </TouchableOpacity>
-          <Button
-            className="bg-gray-200 px-2 py-1"
-            onPress={() =>
-              setReplyVisible(prev => ({ ...prev, [item.id]: !prev[item.id] }))
-            }
-          >
-            <Text>{replyVisible[item.id] ? "Cancel" : "Reply"}</Text>
-          </Button>
-        </Box>
+        {/* Likes & reply button row */}
+<Box className="flex-row items-center mt-1">
+  {/* Likes */}
+  <TouchableOpacity
+    onPress={() => toggleCommentLike(item)}
+    className="flex-row items-center mr-4"
+  >
+    <Heart
+      size={14}
+      color={commentLikes[item.id] ? "red" : "black"}
+      fill={commentLikes[item.id] ? "red" : "transparent"}
+    />
+    <Text className="ml-1 text-sm">{item.likesCount || 0} Likes</Text>
+  </TouchableOpacity>
+
+  {/* Reply as clickable text with icon */}
+  <TouchableOpacity
+    onPress={() =>
+      setReplyVisible(prev => ({ ...prev, [item.id]: !prev[item.id] }))
+    }
+    className="flex-row items-center"
+  >
+    <Reply size={14} color="#555" />
+    <Text className="ml-1 text-sm text-gray-600">
+      {replyVisible[item.id] ? "Cancel" : "Reply"}
+    </Text>
+  </TouchableOpacity>
+</Box>
 
         {/* Reply input */}
         {replyVisible[item.id] && (
@@ -346,7 +362,7 @@ const toggleCommentLike = async (item) => {
         )}
 
         {/* Render children recursively */}
-        {children.map(child => renderCommentThread(child, level + 1))}
+        {children.map(child => renderCommentThread(child, level + 1, item.authorName))}
       </Card>
     </View>
   )
