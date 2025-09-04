@@ -1,4 +1,12 @@
-import { SafeAreaView, ScrollView, StatusBar, FlatList, TouchableOpacity, Image, TextInput } from "react-native"
+import { 
+  SafeAreaView, 
+  ScrollView, 
+  StatusBar, 
+  FlatList, 
+  TouchableOpacity, 
+  Image, 
+  TextInput 
+} from "react-native"
 import React, { useEffect, useState } from "react"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { Box } from "@/components/ui/box"
@@ -14,8 +22,6 @@ import {
   updateDoc,
   doc,
   increment,
-  query,
-  orderBy,
   onSnapshot,
   setDoc,
   deleteDoc,
@@ -26,6 +32,7 @@ import { Heart, MessageCircle, Trash2, Edit } from "lucide-react-native"
 import { useAuth } from "@/context/AuthContext"
 import SearchBar from "@/components/inputs/searchbar/SearchBar"
 import { useRouter } from "expo-router"
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from "@/components/ui/modal"
 
 const ForumsScreen = () => {
   const { user } = useAuth()
@@ -33,9 +40,10 @@ const ForumsScreen = () => {
 
   const [discussions, setDiscussions] = useState([])
   const [newDiscussion, setNewDiscussion] = useState("")
-  const [editingId, setEditingId] = useState(null) // track if editing
+  const [editingId, setEditingId] = useState(null)
   const [filter, setFilter] = useState("newest")
   const [userLikes, setUserLikes] = useState({})
+  const [isFilterOpen, setIsFilterOpen] = useState(false)
 
   // Load cached likes
   useEffect(() => {
@@ -62,11 +70,7 @@ const ForumsScreen = () => {
 
   // Discussions realtime
   useEffect(() => {
-    let q = collection(db, "forums")
-    if (filter === "newest") {
-      q = query(collection(db, "forums"), orderBy("timestamp", "desc"))
-    }
-
+    const q = collection(db, "forums")
     const unsubscribe = onSnapshot(q, (snapshot) => {
       let fetched = []
       snapshot.forEach((docSnap) => {
@@ -74,9 +78,22 @@ const ForumsScreen = () => {
       })
       setDiscussions(fetched)
     })
-
     return () => unsubscribe()
-  }, [filter])
+  }, [])
+
+  // Apply filter sorting locally
+  const getFilteredDiscussions = () => {
+    if (filter === "newest") {
+      return [...discussions].sort((a, b) => {
+        const ta = a.timestamp?.toDate ? a.timestamp.toDate().getTime() : 0
+        const tb = b.timestamp?.toDate ? b.timestamp.toDate().getTime() : 0
+        return tb - ta
+      })
+    } else if (filter === "ongoing") {
+      return [...discussions].sort((a, b) => (b.commentsCount || 0) - (a.commentsCount || 0))
+    }
+    return discussions
+  }
 
   // Sync likes realtime
   useEffect(() => {
@@ -98,13 +115,11 @@ const ForumsScreen = () => {
     if (!newDiscussion.trim()) return
 
     if (editingId) {
-      // Update existing post
       await updateDoc(doc(db, "forums", editingId), {
         content: newDiscussion,
       })
       setEditingId(null)
     } else {
-      // Create new post
       await addDoc(collection(db, "forums"), {
         title: "Discussion",
         content: newDiscussion,
@@ -120,12 +135,10 @@ const ForumsScreen = () => {
     setNewDiscussion("")
   }
 
-  // Delete post
   const deleteDiscussion = async (forumId) => {
     await deleteDoc(doc(db, "forums", forumId))
   }
 
-  // Toggle like
   const toggleLike = async (forum) => {
     if (!user) return
     const forumRef = doc(db, "forums", forum.id)
@@ -155,13 +168,10 @@ const ForumsScreen = () => {
     <SafeAreaView className="flex-1 bg-[#D9E9DD] h-full p-4">
       <StatusBar barStyle="dark-content" />
       <ScrollView className="h-full">
-        {/* Header */}
         <Grid _extra={{ className: "lg:grid-cols-12 grid-cols-1 auto-rows-auto gap-4 h-full" }}>
           <GridItem _extra={{ className: "col-span-8" }}>
             <Box>
-              <Heading size="5xl" className="mt-6">
-                Ariba
-              </Heading>
+              <Heading size="5xl" className="mt-6 font-poppins">Ariba</Heading>
             </Box>
           </GridItem>
 
@@ -194,12 +204,24 @@ const ForumsScreen = () => {
                       <Text className={`${filter === "ongoing" ? "text-white" : "text-black"}`}>Ongoing</Text>
                     </TouchableOpacity>
                   </Box>
+
+                  {/* Filters Button */}
+                  <TouchableOpacity
+                    className="flex-row items-center border border-gray-400 rounded-lg px-3 py-2"
+                    onPress={() => setIsFilterOpen(true)}
+                  >
+                    <Image
+                      source={{ uri: "https://img.icons8.com/ios-filled/50/000000/filter.png" }}
+                      style={{ width: 16, height: 16, marginRight: 4 }}
+                    />
+                    <Text>Filters</Text>
+                  </TouchableOpacity>
                 </Box>
               </Box>
 
               {/* Forum List */}
               <FlatList
-                data={discussions}
+                data={getFilteredDiscussions()}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => {
                   const liked = userLikes[item.id] || false
@@ -213,9 +235,7 @@ const ForumsScreen = () => {
                               source={{ uri: item.authorPhoto }}
                               style={{ width: 35, height: 35, borderRadius: 18, marginRight: 10 }}
                             />
-                            <Text bold size="md">
-                              {item.authorName}
-                            </Text>
+                            <Text bold size="md">{item.authorName}</Text>
                           </Box>
                           {isOwner && (
                             <Box className="flex-row space-x-3">
@@ -268,6 +288,26 @@ const ForumsScreen = () => {
           </GridItem>
         </Grid>
       </ScrollView>
+
+      {/* Filters Modal */}
+      <Modal isOpen={isFilterOpen} onClose={() => setIsFilterOpen(false)}>
+        <ModalContent>
+          <ModalHeader>
+            <Text bold>Filter Discussions</Text>
+          </ModalHeader>
+          <ModalBody>
+            <TouchableOpacity onPress={() => { setFilter("newest"); setIsFilterOpen(false) }}>
+              <Text className="text-lg mb-3">Newest</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => { setFilter("ongoing"); setIsFilterOpen(false) }}>
+              <Text className="text-lg mb-3">Ongoing</Text>
+            </TouchableOpacity>
+          </ModalBody>
+          <ModalFooter>
+            <Button onPress={() => setIsFilterOpen(false)}>Close</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </SafeAreaView>
   )
 }
