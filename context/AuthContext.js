@@ -37,7 +37,7 @@ export function AuthProvider({ children }) {
     }, []);
 
     useEffect(() => {
-      
+      console.log("Auth state changed:", { session, user, userDoc });
       if (!loading) {
 
         if (session && (userDoc.role === Role.ADMIN || userDoc.role === Role.SUPERADMIN) && !pathname.startsWith("/admin")) {
