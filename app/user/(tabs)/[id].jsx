@@ -265,20 +265,19 @@ const toggleCommentLike = async (item) => {
   const renderCommentThread = (item, level = 0, parentAuthor = null) => {
   const children = commentMap[item.id] || []
   const isOwner = item.authorId === user?.uid
-  const isEditing = editingReply?.[item.id] || editingComment === item.id
+  const isEditing = item.parentId ? editingReply?.[item.id] : editingComment === item.id
 
   return (
-    <View key={item.id} style={{ flexDirection: "row" }}>
-      {/* Left connector line */}
+    <View key={item.id} style={{ flexDirection: "row", marginBottom: 8 }}>
+      {/* Connector line */}
       <View style={{ width: 16 * level, alignItems: "center" }}>
-        {level > 0 && (
-          <View style={{ width: 2, backgroundColor: "#ccc", flex: 1 }} />
-        )}
+        {level > 0 && <View style={{ width: 2, backgroundColor: "#ccc", flex: 1 }} />}
       </View>
 
-      {/* Comment card */}
+      {/* Comment / Reply Card */}
       <Card className="p-3 mb-3 bg-white rounded-xl flex-1">
-        <Box className="flex-row justify-between items-center mb-1">
+        {/* Header: Avatar, Name, Timestamp */}
+        <Box className="flex-row justify-between items-start mb-1">
           <Box className="flex-row items-center">
             <Image
               source={{ uri: item.authorPhoto || "https://i.pravatar.cc/100" }}
@@ -289,9 +288,42 @@ const toggleCommentLike = async (item) => {
               {item.timestamp?.toDate ? timeAgo(item.timestamp.toDate(), now) : "..."}
             </Text>
           </Box>
+
+          {/* Menu for Owner */}
+          {isOwner && (
+            <TouchableOpacity
+              onPress={() =>
+                setMenuVisible(prev => ({ ...(prev || {}), [item.id]: !prev?.[item.id] }))
+              }
+            >
+              <MoreVertical size={18} color="#555" />
+            </TouchableOpacity>
+          )}
         </Box>
 
-        {/* Replying to parent author */}
+        {/* Dropdown menu */}
+        {menuVisible?.[item.id] && (
+          <Box className="absolute top-8 right-3 bg-white shadow-md rounded-md z-10">
+            <TouchableOpacity
+              className="px-4 py-2"
+              onPress={() => {
+                if (item.parentId) setEditingReply(prev => ({ ...prev, [item.id]: true }))
+                else setEditingComment(item.id)
+                setMenuVisible(prev => ({ ...(prev || {}), [item.id]: false }))
+              }}
+            >
+              <Text>Edit</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              className="px-4 py-2"
+              onPress={() => deleteItem(item)}
+            >
+              <Text>Delete</Text>
+            </TouchableOpacity>
+          </Box>
+        )}
+
+        {/* Replying to */}
         {parentAuthor && (
           <Box className="flex-row items-center mb-1">
             <Reply size={14} color="#555" />
@@ -301,6 +333,7 @@ const toggleCommentLike = async (item) => {
           </Box>
         )}
 
+        {/* Content */}
         {isEditing ? (
           <TextInput
             value={item.parentId ? editReplyText[item.id] : editText}
@@ -315,34 +348,54 @@ const toggleCommentLike = async (item) => {
           <Text className="mb-2">{item.content}</Text>
         )}
 
-        {/* Likes & reply button row */}
-<Box className="flex-row items-center mt-1">
-  {/* Likes */}
-  <TouchableOpacity
-    onPress={() => toggleCommentLike(item)}
-    className="flex-row items-center mr-4"
-  >
-    <Heart
-      size={14}
-      color={commentLikes[item.id] ? "red" : "black"}
-      fill={commentLikes[item.id] ? "red" : "transparent"}
-    />
-    <Text className="ml-1 text-sm">{item.likesCount || 0} Likes</Text>
-  </TouchableOpacity>
+        {/* Edit / Save buttons */}
+        {isEditing && (
+          <Box className="flex-row space-x-2 mb-2">
+            <Button
+              className="bg-green-600 px-3"
+              onPress={() => saveEditItem(item)}
+            >
+              <Text className="text-white">Save</Text>
+            </Button>
+            <Button
+              className="bg-gray-300 px-3"
+              onPress={() => {
+                if (item.parentId)
+                  setEditingReply(prev => ({ ...prev, [item.id]: false }))
+                else setEditingComment(null)
+              }}
+            >
+              <Text>Cancel</Text>
+            </Button>
+          </Box>
+        )}
 
-  {/* Reply as clickable text with icon */}
-  <TouchableOpacity
-    onPress={() =>
-      setReplyVisible(prev => ({ ...prev, [item.id]: !prev[item.id] }))
-    }
-    className="flex-row items-center"
-  >
-    <Reply size={14} color="#555" />
-    <Text className="ml-1 text-sm text-gray-600">
-      {replyVisible[item.id] ? "Cancel" : "Reply"}
-    </Text>
-  </TouchableOpacity>
-</Box>
+        {/* Actions: Like / Reply */}
+        <Box className="flex-row items-center mt-1">
+          <TouchableOpacity
+            onPress={() => toggleCommentLike(item)}
+            className="flex-row items-center mr-4"
+          >
+            <Heart
+              size={14}
+              color={commentLikes[item.id] ? "red" : "black"}
+              fill={commentLikes[item.id] ? "red" : "transparent"}
+            />
+            <Text className="ml-1 text-sm">{item.likesCount || 0} Likes</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() =>
+              setReplyVisible(prev => ({ ...(prev || {}), [item.id]: !prev?.[item.id] }))
+            }
+            className="flex-row items-center"
+          >
+            <Reply size={14} color="#555" />
+            <Text className="ml-1 text-sm text-gray-600">
+              {replyVisible[item.id] ? "Cancel" : "Reply"}
+            </Text>
+          </TouchableOpacity>
+        </Box>
 
         {/* Reply input */}
         {replyVisible[item.id] && (
@@ -355,14 +408,16 @@ const toggleCommentLike = async (item) => {
               }
               className="border border-gray-300 rounded-md p-2 mb-2"
             />
-            <Button className="bg-green-600 px-3" onPress={() => addNestedReply(item.id)}>
+            <Button className="bg-green-600 px-3" onPress={() => addReply(item.id)}>
               <Text className="text-white">Reply</Text>
             </Button>
           </Box>
         )}
 
-        {/* Render children recursively */}
-        {children.map(child => renderCommentThread(child, level + 1, item.authorName))}
+        {/* Recursive children */}
+        {children.map(child =>
+          renderCommentThread(child, level + 1, item.authorName)
+        )}
       </Card>
     </View>
   )
