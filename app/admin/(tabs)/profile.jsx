@@ -5,6 +5,7 @@ import { Heading } from '@/components/ui/heading'
 import { useAuth } from '@/context/AuthContext'
 import { Button, ButtonText } from '@/components/ui/button'
 import UserInfoCardWithAvatar from '@/components/cards/UserInfoCardWithAvatar'
+import UserInfo from '@/components/cards/UserInfo'
 
 const profile = () => {
     const {user, logout} = useAuth();
@@ -18,7 +19,8 @@ const profile = () => {
                     </Heading>
                 </Box>
                 <Box>
-                    <UserInfoCardWithAvatar user={user}/> 
+                    {/* <UserInfoCardWithAvatar user={user}/>  */}
+                    <UserInfo user={user}/>
                 </Box>
             </ScrollView>
         </SafeAreaView>

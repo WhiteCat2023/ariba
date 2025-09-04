@@ -120,7 +120,7 @@ export function getAllUsers(callback) {
  * By: Berndt Dennis F. Canaya
  * 
  * @param {string} uid 
- * @param {*} callback 
+ * @param {function} callback 
  * @returns 
  */
 export function getUserDoc(uid, callback) {
@@ -145,4 +145,6 @@ export function getUserDoc(uid, callback) {
     throw error;
   }
 }
+
+
 
