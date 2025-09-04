@@ -6,6 +6,8 @@ import {
   ScrollView,
   TextInput,
   TouchableOpacity,
+  Modal,
+  View,
 } from "react-native"
 import { useLocalSearchParams, useRouter } from "expo-router"
 import { db } from "@/api/config/firebase.config"
@@ -27,10 +29,10 @@ import { useAuth } from "@/context/AuthContext"
 import {
   Heart,
   MessageCircle,
-  Trash2,
   ArrowLeft,
   Bookmark,
   Share2,
+  MoreVertical,
 } from "lucide-react-native"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 
@@ -43,6 +45,27 @@ import { Card } from "@/components/ui/card"
 import SearchBar from "@/components/inputs/searchbar/SearchBar"
 import { Grid, GridItem } from "@/components/ui/grid"
 
+// ⏱️ Helper: format timestamp into Twitter-style relative time
+const timeAgo = (date, now) => {
+  if (!date) return "..."
+  const seconds = Math.floor((now - date) / 1000)
+
+  if (seconds < 5) return "just now"
+  if (seconds < 60) return `${seconds}s ago`
+  const minutes = Math.floor(seconds / 60)
+  if (minutes < 60) return `${minutes}m ago`
+  const hours = Math.floor(minutes / 60)
+  if (hours < 24) return `${hours}h ago`
+  const days = Math.floor(hours / 24)
+  if (days < 7) return `${days}d ago`
+  const weeks = Math.floor(days / 7)
+  if (weeks < 4) return `${weeks}w ago`
+  const months = Math.floor(days / 30)
+  if (months < 12) return `${months}mo ago`
+  const years = Math.floor(days / 365)
+  return `${years}y ago`
+}
+
 const ForumDetails = () => {
   const { id } = useLocalSearchParams()
   const { user } = useAuth()
@@ -54,6 +77,18 @@ const ForumDetails = () => {
   const [userLikes, setUserLikes] = useState({})
   const [commentLikes, setCommentLikes] = useState({})
   const [searchQuery, setSearchQuery] = useState("")
+  const [now, setNow] = useState(new Date()) // ⏱️ real-time ticker
+
+  // 🔄 Menu state
+  const [menuVisible, setMenuVisible] = useState(null) // stores commentId if open
+  const [editingComment, setEditingComment] = useState(null) // stores commentId if editing
+  const [editText, setEditText] = useState("")
+
+  // 🔄 update current time every second
+  useEffect(() => {
+    const interval = setInterval(() => setNow(new Date()), 1000)
+    return () => clearInterval(interval)
+  }, [])
 
   // --- Local Storage Helpers ---
   const loadLikesFromStorage = async () => {
@@ -147,6 +182,18 @@ const ForumDetails = () => {
   const deleteComment = async (commentId) => {
     await deleteDoc(doc(db, "forums", id, "comments", commentId))
     await updateDoc(doc(db, "forums", id), { commentsCount: increment(-1) })
+    setMenuVisible(null)
+  }
+
+  // Edit comment
+  const saveEditComment = async (commentId) => {
+    if (!editText.trim()) return
+    await updateDoc(doc(db, "forums", id, "comments", commentId), {
+      content: editText,
+    })
+    setEditingComment(null)
+    setEditText("")
+    setMenuVisible(null)
   }
 
   // Toggle forum like
@@ -196,7 +243,7 @@ const ForumDetails = () => {
   return (
     <SafeAreaView className="flex-1 bg-[#D9E9DD] p-4">
       <ScrollView className="h-full">
-        {/* 🔝 Top row: ARIBA + Search Bar */}
+        {/* Top row: ARIBA + Search Bar */}
         <Grid _extra={{ className: "grid-cols-12 gap-4 items-center mb-4" }}>
           <GridItem _extra={{ className: "col-span-8" }}>
             <Heading size="5xl" className="mt-6">
@@ -243,7 +290,7 @@ const ForumDetails = () => {
                     />
                     <Text bold>{forum.authorName}</Text>
                     <Text className="text-gray-500 ml-2 text-sm">
-                      {forum.timestamp?.toDate ? forum.timestamp.toDate().toLocaleString() : "..."}
+                      {forum.timestamp?.toDate ? timeAgo(forum.timestamp.toDate(), now) : "..."}
                     </Text>
                   </Box>
 
@@ -271,73 +318,129 @@ const ForumDetails = () => {
                   </Box>
 
                   {/* Comment Input */}
-<Heading size="xl" className="mb-3">
-  Comments
-</Heading>
+                  <Heading size="xl" className="mb-3">
+                    Comments
+                  </Heading>
 
-<Box className="mb-6">
-  {/* Text Input */}
-  <TextInput
-    placeholder="Write your insights about the discussion"
-    value={newComment}
-    onChangeText={setNewComment}
-    multiline
-    className="w-full min-h-[60px] px-3 py-2 rounded-md border border-gray-300 bg-gray-100"
-  />
+                  <Box className="mb-6">
+                    <TextInput
+                      placeholder="Write your insights about the discussion"
+                      value={newComment}
+                      onChangeText={setNewComment}
+                      multiline
+                      className="w-full min-h-[60px] px-3 py-2 rounded-md border border-gray-300 bg-gray-100"
+                    />
 
-  {/* Buttons Row - Right Aligned */}
-  <Box className="flex-row justify-end space-x-3 mt-3">
-    <Button
-      className="bg-green-600 px-4"
-      onPress={addComment}
-    >
-      <Text className="text-white">Comment</Text>
-    </Button>            
+                    <Box className="flex-row justify-end space-x-3 mt-3">
+                      <Button className="bg-green-600 px-4" onPress={addComment}>
+                        <Text className="text-white">Comment</Text>
+                      </Button>
 
-    <Button
-      className="bg-gray-400 px-4"
-      onPress={() => setNewComment("")} // cancel clears input
-    >
-      <Text className="text-white">Cancel</Text>
-    </Button>
-    
-  </Box>
-</Box>
+                      <Button className="bg-white px-4" onPress={() => setNewComment("")}>
+                        <Text className="text-black">Cancel</Text>
+                      </Button>
+                    </Box>
+                  </Box>
                 </>
               }
               renderItem={({ item }) => {
                 const isOwner = item.authorId === user?.uid
                 return (
-                  <Card className="p-4 mb-4 rounded-xl border border-gray-200 bg-white">
-                    <Box className="flex-row justify-between mb-1">
-                      <Text bold>{item.authorName}</Text>
-                      <Text className="text-gray-400 text-sm">
-                        {item.timestamp?.toDate ? item.timestamp.toDate().toLocaleString() : "..."}
-                      </Text>
-                    </Box>
-                    <Text className="mb-3">{item.content}</Text>
-                    <Box className="flex-row items-center justify-between">
-                      <TouchableOpacity
-                        onPress={() => toggleCommentLike(item)}
-                        className="flex-row items-center"
-                      >
-                        <Heart
-                          size={16}
-                          color={commentLikes[item.id] ? "red" : "black"}
-                          fill={commentLikes[item.id] ? "red" : "transparent"}
+                  <Card className="p-3 mb-6 rounded-xl bg-white">
+                    {/* Author + Timestamp + Menu Row */}
+<Box className="flex-row justify-between items-center mb-1 relative">
+  <Box className="flex-row items-center">
+    <Text bold>{item.authorName}</Text>
+    <Text className="text-gray-400 text-sm ml-2">
+      {item.timestamp?.toDate ? timeAgo(item.timestamp.toDate(), now) : "..."}
+    </Text>
+  </Box>
+
+  {isOwner && (
+    <Box>
+      <TouchableOpacity onPress={() => setMenuVisible(menuVisible === item.id ? null : item.id)}>
+        <MoreVertical size={18} color="black" />
+      </TouchableOpacity>
+
+      {/* Dropdown Menu */}
+      {menuVisible === item.id && (
+        <>
+          {/* Overlay to detect outside taps */}
+          <TouchableOpacity
+            className="absolute inset-0"
+            activeOpacity={1}
+            onPress={() => setMenuVisible(null)}
+          />
+
+          {/* Dropdown itself */}
+          <View className="absolute right-0 top-6 bg-white p-3 rounded-lg shadow-lg z-50 w-28">
+            <TouchableOpacity
+              onPress={() => {
+                setEditingComment(item.id)
+                setEditText(item.content)
+                setMenuVisible(null)
+              }}
+            >
+              <Text className="mb-3 text-blue-600">Edit</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => deleteComment(item.id)}>
+              <Text className="text-red-600">Delete</Text>
+            </TouchableOpacity>
+          </View>
+        </>
+      )}
+    </Box>
+  )}
+</Box>
+                    {/* Comment Content OR Edit Box */}
+                    {editingComment === item.id ? (
+                      <Box>
+                        <TextInput
+                          value={editText}
+                          onChangeText={setEditText}
+                          className="border border-gray-300 rounded-md p-2 mb-2"
                         />
-                        <Text className="ml-1">{item.likesCount || 0} Likes</Text>
-                      </TouchableOpacity>
-                      <Box className="flex-row items-center">
-                        <MessageCircle size={16} />
-                        <Text className="ml-1 text-gray-600">Reply</Text>
+                        <Box className="flex-row space-x-3">
+                          <Button className="bg-green-600 px-4" onPress={() => saveEditComment(item.id)}>
+                            <Text className="text-white">Save</Text>
+                          </Button>
+                          <Button
+                            className="bg-white px-4"
+                            onPress={() => {
+                              setEditingComment(null)
+                              setEditText("")
+                            }}
+                          >
+                            <Text className="text-black">Cancel</Text>
+                          </Button>
+                        </Box>
                       </Box>
-                      {isOwner && (
-                        <TouchableOpacity onPress={() => deleteComment(item.id)}>
-                          <Trash2 size={16} color="red" />
-                        </TouchableOpacity>
-                      )}
-                    </Box>
+                    ) : (
+                      <Text className="mb-3">{item.content}</Text>
+                    )}
+
+                    {/* Actions Row */}
+<Box className="flex-row items-center mt-1">
+  <TouchableOpacity
+    onPress={() => toggleCommentLike(item)}
+    className="flex-row items-center mr-4"
+  >
+    <Heart
+      size={16}
+      color={commentLikes[item.id] ? "red" : "black"}
+      fill={commentLikes[item.id] ? "red" : "transparent"}
+    />
+    <Text className="ml-1 text-sm text-gray-700">
+      {item.likesCount || 0} Likes
+    </Text>
+  </TouchableOpacity>
+
+  <TouchableOpacity className="flex-row items-center">
+    <MessageCircle size={16} color="black" />
+    <Text className="ml-1 text-sm text-gray-600">Reply</Text>
+  </TouchableOpacity>
+</Box>
+
                   </Card>
                 )
               }}
