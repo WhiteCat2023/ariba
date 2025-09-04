@@ -24,17 +24,6 @@ export function AuthProvider({ children }) {
     useEffect(() => {
       const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
 
-        // if (currentUser) {
-        //   setUser(currentUser);
-        //   setSession(true);
-        //   router.replace("admin/(tabs)");
-        // } else {
-        //   setUser(null);
-        //   setSession(false);
-        //   router.replace("/")
-        // }
-        // setLoading(false);
-
         setUser(currentUser);
         setSession(!!currentUser);
         setLoading(false);
@@ -51,7 +40,7 @@ export function AuthProvider({ children }) {
       
       if (!loading) {
 
-        if (session && userDoc.role === Role.ADMIN && !pathname.startsWith("/admin")) {
+        if (session && (userDoc.role === Role.ADMIN || userDoc.role === Role.SUPERADMIN) && !pathname.startsWith("/admin")) {
           router.replace("/admin"); 
         }
         if (session && userDoc.role === Role.USER && !pathname.startsWith("/user")) {
