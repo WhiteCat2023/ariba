@@ -27,7 +27,7 @@ export function GoogleSignUpButton() {
   useEffect(() => {
     if (response?.type === "success") {
 
-      const {  id_token } = response.params;
+      const { id_token } = response.params;
       
       // console.log("Full response object:", JSON.stringify(response, null, 2));
 

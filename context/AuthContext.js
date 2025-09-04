@@ -1,5 +1,8 @@
 import { auth } from "@/api/config/firebase.config";
 import { signIn, signOut } from "@/api/controller/auth.controller";
+import { getUserInfoFromFirestore } from "@/api/controller/users.controller";
+import { getUserDoc } from "@/api/services/firebase/users.services";
+import { Role } from "@/enums/roles";
 import { HttpStatus } from "@/enums/status";
 import { usePathname, useRouter } from "expo-router";
 import { onAuthStateChanged } from "firebase/auth";
@@ -13,6 +16,7 @@ export function AuthProvider({ children }) {
     const [loading, setLoading] = useState(true);
     const [session, setSession] = useState(false);
     const [user, setUser] = useState({});
+    const [userDoc, setUserDoc] = useState({});
     
     const router = useRouter()
     const pathname = usePathname()
@@ -34,29 +38,41 @@ export function AuthProvider({ children }) {
         setUser(currentUser);
         setSession(!!currentUser);
         setLoading(false);
+
+        if (currentUser) {
+          getUserDoc(currentUser.uid, setUserDoc);
+        }
       });
 
       return () => unsubscribe();
     }, []);
 
     useEffect(() => {
+      
       if (!loading) {
-        if (session && !pathname.startsWith("/admin")) {
+
+        if (session && userDoc.role === Role.ADMIN && !pathname.startsWith("/admin")) {
           router.replace("/admin"); 
+        }
+        if (session && userDoc.role === Role.USER && !pathname.startsWith("/user")) {
+          router.replace("/user"); 
         }
         if (!session && pathname !== "/") {
           router.replace("/"); 
         }
+        
       }
-    }, [session, loading, pathname]);
+    }, [session, loading, pathname, userDoc]);
 
     const login = async (req) => {
       setLoading(true);
       const res = await signIn(req);
-
+      console.log(userDoc)
       if (res.status === HttpStatus.OK) {
         console.log("Login successful");
         console.log(user.data.displayName)
+        console.log(user.data.uid)
+
         
       } else {
         Alert.alert("Login Failed", res.message);
@@ -86,7 +102,7 @@ export function AuthProvider({ children }) {
       }
     };
 
-    const contextData = {session, user, login, logout, register}
+    const contextData = {session, user, login, logout, register, userDoc}
 
     return(
         <AuthContext.Provider value={contextData}>
