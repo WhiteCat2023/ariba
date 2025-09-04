@@ -1,21 +1,13 @@
-import { SafeAreaView, ScrollView, StatusBar, FlatList, TouchableOpacity, Image } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { Box } from '@/components/ui/box'
-import { Text } from '@/components/ui/text'
-import { Heading } from '@/components/ui/heading'
-import { Button } from '@/components/ui/button'
-import { Input, InputField } from '@/components/ui/input'
-import { Card } from '@/components/ui/card'
-import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-} from '@/components/ui/modal'
-import { Grid, GridItem } from '@/components/ui/grid'
-import { db } from '@/api/config/firebase.config'
+import { SafeAreaView, ScrollView, StatusBar, FlatList, TouchableOpacity, Image, TextInput } from "react-native"
+import React, { useEffect, useState } from "react"
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import { Box } from "@/components/ui/box"
+import { Text } from "@/components/ui/text"
+import { Heading } from "@/components/ui/heading"
+import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
+import { Grid, GridItem } from "@/components/ui/grid"
+import { db } from "@/api/config/firebase.config"
 import {
   collection,
   addDoc,
@@ -25,31 +17,25 @@ import {
   query,
   orderBy,
   onSnapshot,
-  serverTimestamp,
   setDoc,
   deleteDoc,
   getDoc,
-} from 'firebase/firestore'
-import { Heart, MessageCircle, Edit, Trash2 } from 'lucide-react-native'
-import { useAuth } from '@/context/AuthContext'
-import SearchBar from '@/components/inputs/searchbar/SearchBar'
+  serverTimestamp,
+} from "firebase/firestore"
+import { Heart, MessageCircle, Trash2, Edit } from "lucide-react-native"
+import { useAuth } from "@/context/AuthContext"
+import SearchBar from "@/components/inputs/searchbar/SearchBar"
+import { useRouter } from "expo-router"
 
 const ForumsScreen = () => {
   const { user } = useAuth()
+  const router = useRouter()
 
   const [discussions, setDiscussions] = useState([])
-  const [newDiscussion, setNewDiscussion] = useState('')
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [filter, setFilter] = useState('newest')
-
-  const [selectedForum, setSelectedForum] = useState(null)
-  const [comments, setComments] = useState([])
-  const [newComment, setNewComment] = useState('')
-  const [isCommentsModalOpen, setIsCommentsModalOpen] = useState(false)
-
+  const [newDiscussion, setNewDiscussion] = useState("")
+  const [editingId, setEditingId] = useState(null) // track if editing
+  const [filter, setFilter] = useState("newest")
   const [userLikes, setUserLikes] = useState({})
-  const [isEditPostOpen, setIsEditPostOpen] = useState(false)
-  const [editPostText, setEditPostText] = useState('')
 
   // Load cached likes
   useEffect(() => {
@@ -60,7 +46,7 @@ const ForumsScreen = () => {
           setUserLikes(JSON.parse(cached))
         }
       } catch (e) {
-        console.error('Error loading cached likes:', e)
+        console.error("Error loading cached likes:", e)
       }
     }
     if (user) loadCachedLikes()
@@ -70,15 +56,15 @@ const ForumsScreen = () => {
     try {
       await AsyncStorage.setItem(`userLikes_${user?.uid}`, JSON.stringify(likes))
     } catch (e) {
-      console.error('Error saving likes:', e)
+      console.error("Error saving likes:", e)
     }
   }
 
   // Discussions realtime
   useEffect(() => {
-    let q = collection(db, 'forums')
-    if (filter === 'newest') {
-      q = query(collection(db, 'forums'), orderBy('timestamp', 'desc'))
+    let q = collection(db, "forums")
+    if (filter === "newest") {
+      q = query(collection(db, "forums"), orderBy("timestamp", "desc"))
     }
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -92,10 +78,10 @@ const ForumsScreen = () => {
     return () => unsubscribe()
   }, [filter])
 
-  // Sync likes
+  // Sync likes realtime
   useEffect(() => {
     if (!user) return
-    const likesRef = collection(db, 'userLikes', user.uid, 'forums')
+    const likesRef = collection(db, "userLikes", user.uid, "forums")
     const unsubscribe = onSnapshot(likesRef, (snapshot) => {
       let likedPosts = {}
       snapshot.forEach((docSnap) => {
@@ -107,40 +93,44 @@ const ForumsScreen = () => {
     return () => unsubscribe()
   }, [user])
 
-  const addDiscussion = async () => {
+  // Create or Update Discussion
+  const saveDiscussion = async () => {
     if (!newDiscussion.trim()) return
-    await addDoc(collection(db, 'forums'), {
-      title: 'Discussion Title',
-      content: newDiscussion,
-      likesCount: 0,
-      commentsCount: 0,
-      authorName: user?.displayName || 'Anonymous',
-      authorPhoto: user?.photoURL || 'https://i.pravatar.cc/100',
-      authorId: user?.uid,
-      timestamp: serverTimestamp(),
-    })
-    setNewDiscussion('')
-    setIsModalOpen(false)
+
+    if (editingId) {
+      // Update existing post
+      await updateDoc(doc(db, "forums", editingId), {
+        content: newDiscussion,
+      })
+      setEditingId(null)
+    } else {
+      // Create new post
+      await addDoc(collection(db, "forums"), {
+        title: "Discussion",
+        content: newDiscussion,
+        likesCount: 0,
+        commentsCount: 0,
+        authorName: user?.displayName || "Anonymous",
+        authorPhoto: user?.photoURL || "https://i.pravatar.cc/100",
+        authorId: user?.uid,
+        timestamp: serverTimestamp(),
+      })
+    }
+
+    setNewDiscussion("")
   }
 
-  const editDiscussion = async () => {
-    if (!editPostText.trim() || !selectedForum) return
-    const forumRef = doc(db, 'forums', selectedForum.id)
-    await updateDoc(forumRef, { content: editPostText })
-    setIsEditPostOpen(false)
-    setSelectedForum(null)
-    setEditPostText('')
-  }
-
+  // Delete post
   const deleteDiscussion = async (forumId) => {
-    await deleteDoc(doc(db, 'forums', forumId))
+    await deleteDoc(doc(db, "forums", forumId))
   }
 
+  // Toggle like
   const toggleLike = async (forum) => {
     if (!user) return
-    const forumRef = doc(db, 'forums', forum.id)
-    const likeRef = doc(db, 'forums', forum.id, 'likes', user.uid)
-    const userLikeRef = doc(db, 'userLikes', user.uid, 'forums', forum.id)
+    const forumRef = doc(db, "forums", forum.id)
+    const likeRef = doc(db, "forums", forum.id, "likes", user.uid)
+    const userLikeRef = doc(db, "userLikes", user.uid, "forums", forum.id)
 
     const likeDoc = await getDoc(likeRef)
     if (likeDoc.exists()) {
@@ -161,83 +151,50 @@ const ForumsScreen = () => {
     }
   }
 
-  const openComments = (forum) => {
-    setSelectedForum(forum)
-    setIsCommentsModalOpen(true)
-
-    const commentsRef = collection(db, 'forums', forum.id, 'comments')
-    const q = query(commentsRef, orderBy('timestamp', 'asc'))
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      let fetched = []
-      snapshot.forEach((docSnap) => {
-        fetched.push({ id: docSnap.id, ...docSnap.data() })
-      })
-      setComments(fetched)
-    })
-
-    return unsubscribe
-  }
-
-  const addComment = async () => {
-    if (!newComment.trim() || !selectedForum) return
-
-    const commentsRef = collection(db, 'forums', selectedForum.id, 'comments')
-    await addDoc(commentsRef, {
-      content: newComment,
-      authorName: user?.displayName || 'Anonymous',
-      authorPhoto: user?.photoURL || 'https://i.pravatar.cc/100',
-      authorId: user?.uid,
-      timestamp: serverTimestamp(),
-    })
-
-    const forumRef = doc(db, 'forums', selectedForum.id)
-    await updateDoc(forumRef, { commentsCount: increment(1) })
-
-    setNewComment('')
-  }
-
   return (
     <SafeAreaView className="flex-1 bg-[#D9E9DD] h-full p-4">
       <StatusBar barStyle="dark-content" />
       <ScrollView className="h-full">
-        <Grid
-          _extra={{
-            className: 'lg:grid-cols-12 grid-cols-1 auto-rows-auto gap-4 h-full',
-          }}
-        >
-          <GridItem _extra={{ className: 'col-span-8' }}>
+        {/* Header */}
+        <Grid _extra={{ className: "lg:grid-cols-12 grid-cols-1 auto-rows-auto gap-4 h-full" }}>
+          <GridItem _extra={{ className: "col-span-8" }}>
             <Box>
-              <Heading size="5xl" className="mt-6">Ariba</Heading>
+              <Heading size="5xl" className="mt-6">
+                Ariba
+              </Heading>
             </Box>
           </GridItem>
 
-          <GridItem className="flex items-center" _extra={{ className: 'col-span-4' }}>
+          <GridItem className="flex items-center" _extra={{ className: "col-span-4" }}>
             <SearchBar />
           </GridItem>
 
-          <GridItem _extra={{ className: 'col-span-12' }}>
+          <GridItem _extra={{ className: "col-span-12" }}>
             <Box className="bg-white rounded-xl p-6 shadow-sm">
-              <Heading size="3xl">FORUMS</Heading>
-              <Text className="text-gray-500 mt-1">{discussions.length} Discussions</Text>
+              {/* Forums Header + Filters */}
+              <Box className="flex-row items-center justify-between">
+                <Box>
+                  <Heading size="4xl">FORUMS</Heading>
+                  <Text className="text-gray-500 mt-3 mb-3">{discussions.length} Discussions</Text>
+                </Box>
 
-              {/* Filters */}
-              <Box className="flex-row items-center mt-4 mb-4">
-                <Button
-                  variant={filter === 'newest' ? 'solid' : 'outline'}
-                  className="mr-2"
-                  onPress={() => setFilter('newest')}
-                >
-                  Newest
-                </Button>
-                <Button
-                  variant={filter === 'ongoing' ? 'solid' : 'outline'}
-                  className="mr-2"
-                  onPress={() => setFilter('ongoing')}
-                >
-                  Ongoing
-                </Button>
-                <Button variant="outline">Filters</Button>
+                {/* Filters */}
+                <Box className="flex-row items-center">
+                  <Box className="flex-row border border-green-700 rounded-lg overflow-hidden mr-2">
+                    <TouchableOpacity
+                      onPress={() => setFilter("newest")}
+                      className={`px-4 py-2 ${filter === "newest" ? "bg-green-600" : "bg-white"}`}
+                    >
+                      <Text className={`${filter === "newest" ? "text-white" : "text-black"}`}>Newest</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => setFilter("ongoing")}
+                      className={`px-4 py-2 ${filter === "ongoing" ? "bg-green-600" : "bg-white"}`}
+                    >
+                      <Text className={`${filter === "ongoing" ? "text-white" : "text-black"}`}>Ongoing</Text>
+                    </TouchableOpacity>
+                  </Box>
+                </Box>
               </Box>
 
               {/* Forum List */}
@@ -249,48 +206,43 @@ const ForumsScreen = () => {
                   const isOwner = item.authorId === user?.uid
                   return (
                     <Card className="p-5 mb-4 rounded-xl border border-gray-300 bg-white shadow-sm">
-                      <Box className="flex-row items-center mb-3 justify-between">
-                        <Box className="flex-row items-center">
-                          <Image
-                            source={{ uri: item.authorPhoto }}
-                            style={{ width: 35, height: 35, borderRadius: 18, marginRight: 10 }}
-                          />
-                          <Text bold size="md">{item.authorName}</Text>
-                        </Box>
-                        {isOwner && (
-                          <Box className="flex-row">
-                            <TouchableOpacity
-                              onPress={() => {
-                                setSelectedForum(item)
-                                setEditPostText(item.content)
-                                setIsEditPostOpen(true)
-                              }}
-                            >
-                              <Edit size={18} style={{ marginRight: 10 }} />
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={() => deleteDiscussion(item.id)}>
-                              <Trash2 size={18} color="red" />
-                            </TouchableOpacity>
+                      <TouchableOpacity onPress={() => router.push(`/user/(tabs)/${item.id}`)}>
+                        <Box className="flex-row items-center mb-3 justify-between">
+                          <Box className="flex-row items-center">
+                            <Image
+                              source={{ uri: item.authorPhoto }}
+                              style={{ width: 35, height: 35, borderRadius: 18, marginRight: 10 }}
+                            />
+                            <Text bold size="md">
+                              {item.authorName}
+                            </Text>
                           </Box>
-                        )}
-                      </Box>
+                          {isOwner && (
+                            <Box className="flex-row space-x-3">
+                              <TouchableOpacity onPress={() => { setEditingId(item.id); setNewDiscussion(item.content) }}>
+                                <Edit size={18} color="blue" />
+                              </TouchableOpacity>
+                              <TouchableOpacity onPress={() => deleteDiscussion(item.id)}>
+                                <Trash2 size={18} color="red" />
+                              </TouchableOpacity>
+                            </Box>
+                          )}
+                        </Box>
 
-                      <Text size="xs" className="text-gray-500 mb-2">
-                        {item.timestamp?.toDate ? item.timestamp.toDate().toLocaleString() : '...'}
-                      </Text>
+                        <Text size="xs" className="text-gray-500 mb-2">
+                          {item.timestamp?.toDate ? item.timestamp.toDate().toLocaleString() : "..."}
+                        </Text>
 
-                      <Text className="mb-3 leading-5">{item.content}</Text>
+                        <Text className="mb-3 leading-5">{item.content}</Text>
+                      </TouchableOpacity>
 
                       <Box className="flex-row items-center">
                         <TouchableOpacity onPress={() => toggleLike(item)} className="flex-row items-center mr-6">
-                          <Heart
-                            size={20}
-                            color={liked ? 'red' : 'black'}
-                            fill={liked ? 'red' : 'transparent'}
-                          />
+                          <Heart size={20} color={liked ? "red" : "black"} fill={liked ? "red" : "transparent"} />
                           <Text className="ml-1 text-gray-700">{item.likesCount || 0} Likes</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => openComments(item)} className="flex-row items-center">
+
+                        <TouchableOpacity onPress={() => router.push(`/user/(tabs)/${item.id}`)} className="flex-row items-center">
                           <MessageCircle size={20} />
                           <Text className="ml-1 text-gray-700">{item.commentsCount || 0} Comments</Text>
                         </TouchableOpacity>
@@ -300,97 +252,22 @@ const ForumsScreen = () => {
                 }}
               />
 
-              <Button className="mt-4" onPress={() => setIsModalOpen(true)}>
-                + New Discussion
-              </Button>
+              {/* Add or Edit Discussion */}
+              <Box className="flex-row items-center mt-4">
+                <TextInput
+                  placeholder={editingId ? "Edit your discussion..." : "Write a discussion..."}
+                  value={newDiscussion}
+                  onChangeText={setNewDiscussion}
+                  className="flex-1 border border-gray-300 rounded-lg px-3 py-2 mr-2"
+                />
+                <Button className="bg-green-600 text-white" onPress={saveDiscussion}>
+                  {editingId ? "Update" : "+ Add"}
+                </Button>
+              </Box>
             </Box>
           </GridItem>
         </Grid>
       </ScrollView>
-
-      {/* New Discussion Modal */}
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <ModalContent>
-          <ModalHeader>
-            <Text bold>Start a Discussion</Text>
-          </ModalHeader>
-          <ModalBody>
-            <Input>
-              <InputField
-                placeholder="Write your discussion..."
-                value={newDiscussion}
-                onChangeText={setNewDiscussion}
-              />
-            </Input>
-          </ModalBody>
-          <ModalFooter>
-            <Button onPress={addDiscussion}>Post</Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-
-      {/* Edit Discussion Modal */}
-      <Modal isOpen={isEditPostOpen} onClose={() => setIsEditPostOpen(false)}>
-        <ModalContent>
-          <ModalHeader>
-            <Text bold>Edit Post</Text>
-          </ModalHeader>
-          <ModalBody>
-            <Input>
-              <InputField
-                placeholder="Edit your discussion..."
-                value={editPostText}
-                onChangeText={setEditPostText}
-              />
-            </Input>
-          </ModalBody>
-          <ModalFooter>
-            <Button onPress={editDiscussion}>Save</Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-
-      {/* Comments Modal */}
-      <Modal isOpen={isCommentsModalOpen} onClose={() => setIsCommentsModalOpen(false)}>
-        <ModalContent className="h-[70%]">
-          <ModalHeader>
-            <Text bold>Comments</Text>
-          </ModalHeader>
-          <ModalBody>
-            <FlatList
-              data={comments}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item }) => (
-                <Card className="p-3 mb-2 rounded-lg border border-gray-200 bg-gray-50">
-                  <Box className="flex-row items-start">
-                    <Image
-                      source={{ uri: item.authorPhoto }}
-                      style={{ width: 28, height: 28, borderRadius: 14, marginRight: 8 }}
-                    />
-                    <Box className="flex-1">
-                      <Text bold>{item.authorName}</Text>
-                      <Text>{item.content}</Text>
-                      <Text size="xs" className="text-gray-400 mt-1">
-                        {item.timestamp?.toDate ? item.timestamp.toDate().toLocaleString() : '...'}
-                      </Text>
-                    </Box>
-                  </Box>
-                </Card>
-              )}
-            />
-            <Input className="mt-4">
-              <InputField
-                placeholder="Write a comment..."
-                value={newComment}
-                onChangeText={setNewComment}
-              />
-            </Input>
-          </ModalBody>
-          <ModalFooter>
-            <Button onPress={addComment}>Reply</Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
     </SafeAreaView>
   )
 }
