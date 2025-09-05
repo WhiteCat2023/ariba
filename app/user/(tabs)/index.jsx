@@ -268,12 +268,17 @@ const ForumsScreen = () => {
                       <TouchableOpacity onPress={() => router.push(`/user/(tabs)/${item.id}`)}>
                         <Box className="flex-row items-center mb-3 justify-between">
                           <Box className="flex-row items-center">
-                            <Image
-                              source={{ uri: item.authorPhoto }}
-                              style={{ width: 35, height: 35, borderRadius: 18, marginRight: 10 }}
-                            />
-                            <Text bold size="md">{item.authorName}</Text>
-                          </Box>
+  <Image
+    source={{ uri: item.authorPhoto }}
+    style={{ width: 35, height: 35, borderRadius: 18, marginRight: 10 }}
+  />
+  <Box>
+    <Text bold size="md">{item.authorName}</Text>
+    <Text size="xs" className="text-gray-500">
+      {item.timestamp?.toDate ? formatTimeAgo(item.timestamp.toDate(), currentTime) : "..."}
+    </Text>
+  </Box>
+</Box>
                           {isOwner && (
                             <Box className="flex-row space-x-3">
                               <TouchableOpacity onPress={() => { setEditingId(item.id); setNewDiscussion(item.content) }}>
@@ -286,9 +291,7 @@ const ForumsScreen = () => {
                           )}
                         </Box>
 
-                        <Text size="xs" className="text-gray-500 mb-2">
-                          {item.timestamp?.toDate ? formatTimeAgo(item.timestamp.toDate(), currentTime) : "..."}
-                        </Text>
+                        
                         <Text className="mb-3 leading-5">{item.content}</Text>
                       </TouchableOpacity>
 
