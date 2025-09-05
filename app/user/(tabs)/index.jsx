@@ -44,6 +44,16 @@ const ForumsScreen = () => {
   const [filter, setFilter] = useState("newest")
   const [userLikes, setUserLikes] = useState({})
   const [isFilterOpen, setIsFilterOpen] = useState(false)
+  const [currentTime, setCurrentTime] = useState(new Date())
+
+
+  useEffect(() => {
+  const interval = setInterval(() => {
+    setCurrentTime(new Date())
+  }, 60000) // refresh every 60 seconds
+  return () => clearInterval(interval)
+}, [])
+
 
   // Load cached likes
   useEffect(() => {
@@ -138,6 +148,33 @@ const ForumsScreen = () => {
   const deleteDiscussion = async (forumId) => {
     await deleteDoc(doc(db, "forums", forumId))
   }
+
+
+  const formatTimeAgo = (date, now = new Date()) => {
+  if (!date) return "..."
+
+  const diff = now - date
+  const seconds = Math.floor(diff / 1000)
+  const minutes = Math.floor(seconds / 60)
+  const hours = Math.floor(minutes / 60)
+  const days = Math.floor(hours / 24)
+  const weeks = Math.floor(days / 7)
+  const months = Math.floor(days / 30)
+
+  if (seconds < 60) return `${seconds}s ago`
+  if (minutes < 60) return `${minutes}m ago`
+  if (hours < 24) return `${hours}h ago`
+  if (days < 7) return `${days}d ago`
+  if (weeks < 5) return `${weeks}w ago`
+  if (months < 12) return `${months}mo ago`
+
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  })
+}
+
 
   const toggleLike = async (forum) => {
     if (!user) return
@@ -250,9 +287,8 @@ const ForumsScreen = () => {
                         </Box>
 
                         <Text size="xs" className="text-gray-500 mb-2">
-                          {item.timestamp?.toDate ? item.timestamp.toDate().toLocaleString() : "..."}
+                          {item.timestamp?.toDate ? formatTimeAgo(item.timestamp.toDate(), currentTime) : "..."}
                         </Text>
-
                         <Text className="mb-3 leading-5">{item.content}</Text>
                       </TouchableOpacity>
 
