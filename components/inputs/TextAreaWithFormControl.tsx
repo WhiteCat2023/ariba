@@ -1,4 +1,3 @@
-import { View, Text } from 'react-native'
 import React from 'react'
 import { Textarea, TextareaInput } from '../ui/textarea'
 import { FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText, FormControlLabel, FormControlLabelText } from '../ui/form-control'
@@ -23,22 +22,26 @@ const TextAreaWithFormControl: React.FC<TextAreaWithFormControlProps> = ({
     isError = false
 }) => {
   return (
-    <FormControl isInvalid={isError}>
+    <FormControl 
+      isInvalid={isError} 
+      isRequired
+      className='mb-4'>
         <FormControlLabel>
-            <FormControlLabelText>
+            <FormControlLabelText size='lg' bold>
                 {label}
             </FormControlLabelText>
         </FormControlLabel>        
         <Textarea 
             size="md"
-            className="w-64">
+            isInvalid={isError}
+            >
                 <TextareaInput 
-                    className={`${isError ? 'border-red-500' : ''}`}
+                    
                     value={input}
                     onChangeText={(text) => setInput(text)}
                     placeholder={placeholder}/>
         </Textarea>
-        <FormControlError>
+        <FormControlError >
           <FormControlErrorIcon as={AlertCircleIcon} className="text-red-500" />
           <FormControlErrorText className="text-red-500">
             {errorText}

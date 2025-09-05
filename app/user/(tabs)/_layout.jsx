@@ -12,6 +12,11 @@ import { Icon } from "@/components/ui/icon";
 import { Send, X } from "lucide-react-native";
 import SendNewReport from "@/components/modal/SendNewReport";
 import { useState } from "react";
+import { Modal, ModalBackdrop, ModalBody, ModalContent, ModalHeader } from "@/components/ui/modal";
+import { Heading } from "@/components/ui/heading";
+import { Textarea, TextareaInput } from "@/components/ui/textarea";
+import { OverlayProvider } from "@gluestack-ui/overlay";
+import { Text } from "@/components/ui/text";
 
 
 
@@ -41,8 +46,8 @@ const TabLayout = () => {
     
     return(
         <GluestackUIProvider>
-            
-            <Box
+            <OverlayProvider>
+                <Box
                 className={`h-full bg-[#D9E9DD] flex ${hideSidebar && session ? "flex-col":"flex-row"}`}>
 
                     <SideBarH 
@@ -75,6 +80,7 @@ const TabLayout = () => {
                             </LinearGradient>
                             </Button>
                             )}
+                            
                     </Box>
                     
                     <TabH
@@ -84,8 +90,9 @@ const TabLayout = () => {
                         path={path}/>
 
                     <SendNewReport isOpen={isOpen} onClose={() => setOpen(false)} />
+              
             </Box>
-            
+            </OverlayProvider>            
         </GluestackUIProvider>
     )
 }
