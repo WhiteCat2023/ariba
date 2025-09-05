@@ -37,21 +37,24 @@ export function AuthProvider({ children }) {
     }, []);
 
     useEffect(() => {
-      console.log("Auth state changed:", { session, user, userDoc });
-      if (!loading) {
 
-        if (session && (userDoc.role === Role.ADMIN || userDoc.role === Role.SUPERADMIN) && !pathname.startsWith("/admin")) {
-          router.replace("/admin"); 
-        }
-        if (session && userDoc.role === Role.USER && !pathname.startsWith("/user")) {
-          router.replace("/user"); 
-        }
-        if (!session && pathname !== "/") {
-          router.replace("/"); 
-        }
-        
-      }
-    }, [session, loading, pathname, userDoc]);
+  if (loading) return;
+
+
+  // Only redirect if not already on the correct page
+  if (session && userDoc.role === Role.ADMIN && !pathname.startsWith("/admin")) {
+    router.replace("/admin");
+    return;
+  }
+  if (session && userDoc.role === Role.USER && !pathname.startsWith("/user")) {
+    router.replace("/user");
+    return;
+  }
+  if (!session && pathname !== "/") {
+    router.replace("/");
+    return;
+  }
+}, [session, loading, pathname, userDoc?.role]);
 
     const login = async (req) => {
       setLoading(true);
