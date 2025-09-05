@@ -283,9 +283,9 @@ const ForumsScreen = () => {
                   className="flex-1 border border-gray-300 rounded-lg px-3 py-2 mr-2"
                 />
                 <Button className="bg-green-600 text-white" onPress={saveDiscussion}>
-                  
-                    {editingId ? "Update" : "+ Add"}
-                
+                    <Text>
+                      {editingId ? "Update" : "+ Add"}
+                    </Text>                    
                 </Button>
               </Box>
             </Box>

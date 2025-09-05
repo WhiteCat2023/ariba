@@ -1,7 +1,7 @@
 import React from 'react'
 import { FormControl, FormControlLabel, FormControlLabelText, FormControlError, FormControlErrorIcon, FormControlErrorText } from '../ui/form-control'
 import { Input, InputField } from '../ui/input'
-import { AlertCircleIcon } from 'lucide-react-native';
+import { AlertCircleIcon, TrendingUpDown } from 'lucide-react-native';
 
 interface InputWithFormControlProps {
     label?: string;
@@ -23,9 +23,9 @@ const InputWithFormControl: React.FC<InputWithFormControlProps> = ({
     isError
 }) => {
   return (
-    <FormControl isInvalid={isError}>
+    <FormControl isInvalid={isError} isRequired className='mb-4'>
         <FormControlLabel>
-          <FormControlLabelText>
+          <FormControlLabelText size='lg' bold>
             {label}
           </FormControlLabelText>
         </FormControlLabel>
