@@ -273,15 +273,19 @@ const ForumsScreen = () => {
               />
 
               {/* Add or Edit Discussion */}
-              <Box className="flex-row items-center mt-4">
+              <Box  className="flex-row items-center mt-4">
                 <TextInput
+                  id="add-update-form"
+                  name="add-update-form"
                   placeholder={editingId ? "Edit your discussion..." : "Write a discussion..."}
                   value={newDiscussion}
                   onChangeText={setNewDiscussion}
                   className="flex-1 border border-gray-300 rounded-lg px-3 py-2 mr-2"
                 />
                 <Button className="bg-green-600 text-white" onPress={saveDiscussion}>
-                  {editingId ? "Update" : "+ Add"}
+                  
+                    {editingId ? "Update" : "+ Add"}
+                
                 </Button>
               </Box>
             </Box>

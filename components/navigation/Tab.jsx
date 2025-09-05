@@ -10,6 +10,7 @@ import { Button, ButtonText } from '../ui/button'
 import { Send } from 'lucide-react-native'
 import { LinearGradient } from '../ui/lineragradient/LinearGradient'
 import { useAuth } from '@/context/AuthContext'
+import SendNewReport from '../modal/SendNewReport'
 
 const Tab = ({navItem}) => {
   const {user} = useAuth()
@@ -17,7 +18,7 @@ const Tab = ({navItem}) => {
   const path = usePathname()
   const isUser = true
 
-
+  const [isOpen, setOpen] = React.useState(false);
   console.log(user)
 
   return(
@@ -27,7 +28,8 @@ const Tab = ({navItem}) => {
         {isUser && (
             <Button
               onPress={() => {
-                router.push(`/${user.uid}/new-report`)
+                // router.push(`/${user.uid}/new-report`)
+                setOpen(true);
               }}
               className="absolute right-4 bottom-4 p-0 rounded-xl">
               <LinearGradient
@@ -77,6 +79,7 @@ const Tab = ({navItem}) => {
           })}
           
       </HStack>
+      <SendNewReport isOpen={isOpen} onClose={() => setOpen(false)} />
     </Box>
   )
 }
