@@ -10,7 +10,7 @@ interface EditInputWithFormControlProps {
   label: string;
   input: string;
   setInput?: (value: string) => void;
-  isEdit: boolean;
+  isEdit?: boolean;
   placeholder: string;
   fallbackText: string;
 }
@@ -19,7 +19,7 @@ const EditInputWithFormControl: React.FC<EditInputWithFormControlProps> = ({
     label,
     input, 
     setInput = ()=>{},
-    isEdit = true,
+    isEdit,
     placeholder,
     fallbackText
     }) => {

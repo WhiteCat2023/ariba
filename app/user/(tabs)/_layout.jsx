@@ -9,13 +9,18 @@ import { Box } from "@/components/ui/box";
 import { Button, ButtonText } from "@/components/ui/button";
 import { LinearGradient } from "@/components/ui/lineragradient/LinearGradient";
 import { Icon } from "@/components/ui/icon";
-import { Send } from "lucide-react-native";
+import { Send, X } from "lucide-react-native";
+import SendNewReport from "@/components/modal/SendNewReport";
+import { useState } from "react";
+
+
 
 const TabLayout = () => {
 
-    const {session, loading} = useAuth()
+    const {session, user} = useAuth()
     const { width } = useWindowDimensions()
     const hideSidebar = width < 700 ? true: false;
+    const [isOpen, setOpen] = useState(false);
 
     const router = useRouter()
     const path = usePathname()
@@ -36,6 +41,7 @@ const TabLayout = () => {
     
     return(
         <GluestackUIProvider>
+            
             <Box
                 className={`h-full bg-[#D9E9DD] flex ${hideSidebar && session ? "flex-col":"flex-row"}`}>
 
@@ -51,7 +57,7 @@ const TabLayout = () => {
                         {isUser && (
                             <Button
                             onPress={() => {
-                                router.push(`/${user.uid}/new-report`)
+                                setOpen(true);
                             }}
                             className="absolute right-4 bottom-4 p-0 rounded-xl">
                             <LinearGradient
@@ -77,7 +83,9 @@ const TabLayout = () => {
                         router={router}
                         path={path}/>
 
+                    <SendNewReport isOpen={isOpen} onClose={() => setOpen(false)} />
             </Box>
+            
         </GluestackUIProvider>
     )
 }

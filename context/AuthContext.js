@@ -37,7 +37,9 @@ export function AuthProvider({ children }) {
     }, []);
 
     useEffect(() => {
+
   if (loading) return;
+
 
   // Only redirect if not already on the correct page
   if (session && userDoc.role === Role.ADMIN && !pathname.startsWith("/admin")) {
