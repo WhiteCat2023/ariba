@@ -56,6 +56,28 @@ const timeAgo = (date, now) => {
 }
 
 const ForumDetails = () => {
+  // Add reply to a comment
+  const addReply = async (parentId, replyToId = null) => {
+    if (!replyText[parentId]?.trim()) return;
+    // Only allow replies to comments, not to replies
+    const collectionRef = collection(db, "forums", id, "comments", parentId, "replies");
+    await addDoc(collectionRef, {
+      content: replyText[parentId],
+      authorName: user?.displayName || "Anonymous",
+      authorPhoto: user?.photoURL || "https://i.pravatar.cc/100",
+      authorId: user?.uid,
+      likesCount: 0,
+      timestamp: serverTimestamp(),
+    });
+    // Check if parent comment exists before updating
+    const commentRef = doc(db, "forums", id, "comments", parentId);
+    const commentSnap = await getDoc(commentRef);
+    if (commentSnap.exists()) {
+      await updateDoc(commentRef, { repliesCount: increment(1) });
+    }
+    setReplyText((prev) => ({ ...prev, [parentId]: "" }));
+    setReplyVisible((prev) => ({ ...prev, [parentId]: false }));
+  };
   const { id } = useLocalSearchParams()
   const { user } = useAuth()
   const router = useRouter()
