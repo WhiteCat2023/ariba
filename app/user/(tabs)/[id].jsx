@@ -596,7 +596,7 @@ const ForumDetails = () => {
   textAlignVertical="top"
 />
 
-<Box className="flex-row items-center justify-between mb-4 relative z-50">
+<Box className="flex-row items-center justify-between relative z-50">
   {/* Left: Floating Dropdown */}
   <View style={{ position: "relative" }}>
     <TouchableOpacity
