@@ -6,23 +6,19 @@ import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import SideBarH from "@/components/navigation/SideBarH";
 import TabH from "@/components/navigation/TabH";
 import { Box } from "@/components/ui/box";
-import { Button, ButtonText } from "@/components/ui/button";
 import { LinearGradient } from "@/components/ui/lineragradient/LinearGradient";
-import { Icon } from "@/components/ui/icon";
 import { Send, X } from "lucide-react-native";
 import SendNewReport from "@/components/modal/SendNewReport";
 import { useState } from "react";
-import { Modal, ModalBackdrop, ModalBody, ModalContent, ModalHeader } from "@/components/ui/modal";
-import { Heading } from "@/components/ui/heading";
-import { Textarea, TextareaInput } from "@/components/ui/textarea";
 import { OverlayProvider } from "@gluestack-ui/overlay";
-import { Text } from "@/components/ui/text";
+import { Fab, FabIcon, FabLabel } from "@/components/ui/fab";
+import { HStack } from "@/components/ui/hstack";
 
 
 
 const TabLayout = () => {
 
-    const {session, user} = useAuth()
+    const {session, role} = useAuth()
     const { width } = useWindowDimensions()
     const hideSidebar = width < 700 ? true: false;
     const [isOpen, setOpen] = useState(false);
@@ -30,7 +26,7 @@ const TabLayout = () => {
     const router = useRouter()
     const path = usePathname()
 
-    const isUser = true
+    const isUser = role === "user" ? true : false;
 
     // if(hideSidebar && session){
     //     return(
@@ -56,29 +52,27 @@ const TabLayout = () => {
                         router={router}
                         path={path}/>
                     
-                    <Box className="flex-1 relative">
+                    <Box className="flex-1 ">
                         <Slot />
                         
                         {isUser && (
-                            <Button
-                            onPress={() => {
-                                setOpen(true);
-                            }}
-                            className="absolute right-4 bottom-4 p-0 rounded-xl">
-                            <LinearGradient
-                                className="w-full flex-1 items-center py-2 px-5 rounded-xl"
-                                colors={['#FF6348', '#FFA502']}
-                                start={[0, 1]}
-                                end={[3, 3]}>
-                                <ButtonText 
-                                className='flex items-center gap-2'>
-                                <Icon 
-                                    as={Send}
-                                    className='text-white'/>
-                                Send a report
-                                </ButtonText>
-                            </LinearGradient>
-                            </Button>
+                           
+                            <Fab
+                                onPress={() => setOpen(true)}
+                                size="sm"
+                                placement="bottom right"
+                                className="p-0">
+                                    <LinearGradient
+                                        className="w-full flex-1 items-center py-2 px-5 rounded-xl"
+                                        colors={['#FF6348', '#FFA502']}
+                                        start={[0, 1]}
+                                        end={[3, 3]}>
+                                            <HStack className="p-2 items-center">
+                                                <FabIcon as={Send} size="lg"/>
+                                                <FabLabel size="xl" bold>Send a request</FabLabel>
+                                            </HStack>    
+                                    </LinearGradient>
+                            </Fab>
                             )}
                             
                     </Box>
