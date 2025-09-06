@@ -1,4 +1,4 @@
-import { X } from "lucide-react-native";
+import { InfoIcon, X } from "lucide-react-native";
 import { Heading } from "../ui/heading";
 import { Modal, ModalBackdrop, ModalBody, ModalCloseButton, ModalContent, ModalHeader } from "../ui/modal"
 import { Icon } from "../ui/icon";
@@ -16,7 +16,9 @@ import { TierList } from "@/enums/tier";
 import WebMap from "../cards/components/WebMap";
 import { HStack } from "../ui/hstack";
 import { Text } from "../ui/text";
-
+import { Button, ButtonText } from "../ui/button";
+import { Pressable } from "../ui/pressable";
+import * as ImagePicker from "expo-image-picker";
 interface SendNewReportProps {
     isOpen: boolean;
     onClose: (value: boolean) => void;
@@ -128,6 +130,15 @@ const SendNewReport: React.FC<SendNewReportProps> = ({isOpen, onClose}) => {
             images: false
         });
     }
+
+    const pickImage = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ['images', 'videos'],
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        })
+    }
     
     //Under construction
     //To validate input fields on change
@@ -181,10 +192,8 @@ const SendNewReport: React.FC<SendNewReportProps> = ({isOpen, onClose}) => {
                                         placeholder="Write your report description here."
                                         errorText="Description should not be empty"
                                         isError={isError.description}/>
-                                        
-
-                                    <HStack>    
-                                        <SelectInputWithFormControl 
+                               
+                                    <SelectInputWithFormControl 
                                             heading="Report TierList"
                                             subHeading="How urgent the report?"
                                             tier={TierList}
@@ -194,9 +203,14 @@ const SendNewReport: React.FC<SendNewReportProps> = ({isOpen, onClose}) => {
                                             onValueChange={(value) => handleChange("tier", value)}
                                             selectedValue={input.tier}
                                             isError={isError.tier}/>
-                                        
-                                    </HStack>
-                            
+
+                                    <Button className="mb-4" onPress={pickImage}>
+                                        <ButtonText>
+                                            Upload Image
+                                        </ButtonText>
+                                    </Button>
+                                    <HStack></HStack>
+
                                     <SubmitBtn 
                                         onPress={handleSubmit}
                                         label="Submit Report" />

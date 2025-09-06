@@ -17,6 +17,7 @@ export function AuthProvider({ children }) {
     const [session, setSession] = useState(false);
     const [user, setUser] = useState({});
     const [userDoc, setUserDoc] = useState({});
+    const role = userDoc?.role;
     
     const router = useRouter()
     const pathname = usePathname()
@@ -94,7 +95,7 @@ export function AuthProvider({ children }) {
       }
     };
 
-    const contextData = {session, user, login, logout, register, userDoc}
+    const contextData = {session, user, login, logout, register, userDoc, role}
 
     return(
         <AuthContext.Provider value={contextData}>
