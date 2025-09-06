@@ -30,7 +30,7 @@ const SelectInputWithFormControl: React.FC<SelectInputWithFormControlProps> = ({
     onValueChange = () => {}
 }) => {
   return (
-    <FormControl className='mb-4' isInvalid={isError} isRequired>
+    <FormControl className='mb-4 flex-1' isInvalid={isError} isRequired>
         <FormControlLabel>
             <FormControlLabelText>
                 <VStack>

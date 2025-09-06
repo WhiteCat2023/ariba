@@ -16,7 +16,12 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.whitecat2023.ariba"
+      "package": "com.whitecat2023.ariba",
+      "config": {
+        "googleMaps": {
+          "key": "AIzaSyBXEUzzVkNk1BpBESFqbftnG6Om66vNPY0"
+        }
+      }
     },
     "web": {
       "bundler": "metro",
@@ -34,7 +39,14 @@
           "backgroundColor": "#ffffff"
         }
       ],
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-maps",
+          {
+            "requestLocationPermission": true,
+            "locationPermission": "Allow $(PRODUCT_NAME) to use your location"
+          }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
