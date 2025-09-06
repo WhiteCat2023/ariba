@@ -92,7 +92,7 @@ export default function Index() {
 
         {/* Username */}
         <Input
-          placeholder="Username"
+          placeholder="Email"
           value={credentials.email}
           onChangeText={(text) => handleChange("email", text)}
           leftIconName="user"
@@ -196,7 +196,7 @@ export default function Index() {
           </View>
 
           <Input
-            placeholder="Username"
+            placeholder="Email"
             value={credentials.email}
             onChangeText={(text) => handleChange("email", text)}
             leftIconName="user"

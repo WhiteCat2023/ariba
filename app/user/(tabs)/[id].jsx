@@ -25,8 +25,9 @@ import {
   getDoc,
 } from "firebase/firestore"
 import { useAuth } from "@/context/AuthContext"
-import { Heart, ArrowLeft, MoreVertical, Bookmark, MessageCircle, Share2 } from "lucide-react-native"
+import { Heart, ArrowLeft, MoreVertical, Bookmark, MessageCircle, Share2, ChevronDown } from "lucide-react-native"
 import AsyncStorage from "@react-native-async-storage/async-storage"
+import { Share, Alert } from "react-native"
 
 // ✅ Gluestack UI
 import { Reply } from "lucide-react-native";
@@ -78,6 +79,7 @@ const ForumDetails = () => {
     setReplyText((prev) => ({ ...prev, [parentId]: "" }));
     setReplyVisible((prev) => ({ ...prev, [parentId]: false }));
   };
+
   const { id } = useLocalSearchParams()
   const { user } = useAuth()
   const router = useRouter()
@@ -98,12 +100,64 @@ const ForumDetails = () => {
   const [commentLikes, setCommentLikes] = useState({})
   const [searchQuery, setSearchQuery] = useState("")
   const [now, setNow] = useState(new Date())
+  const [bookmarked, setBookmarked] = useState(false)
+  const [filterMenuOpen, setFilterMenuOpen] = useState(false)
+
+  // Comment filter state + dropdown open state
+  const [commentFilter, setCommentFilter] = useState("Most Relevant") // "Most Relevant" | "Newest" | "All Comments"
+  const [filterOpen, setFilterOpen] = useState(false)
+
+  useEffect(() => {
+    if (!user) return
+    const bookmarkRef = doc(db, "users", user.uid, "bookmarks", id)
+    const unsub = onSnapshot(bookmarkRef, snap => {
+      setBookmarked(snap.exists())
+    })
+    return () => unsub()
+  }, [id, user])
 
   // Update current time every second
   useEffect(() => {
     const interval = setInterval(() => setNow(new Date()), 1000)
     return () => clearInterval(interval)
   }, [])
+
+  const toggleBookmark = async () => {
+    if (!user) return Alert.alert("You need to be logged in to bookmark this forum")
+
+    const bookmarkRef = doc(db, "users", user.uid, "bookmarks", id)
+    try {
+      const docSnap = await getDoc(bookmarkRef)
+      if (docSnap.exists()) {
+        await deleteDoc(bookmarkRef)
+        setBookmarked(false)
+      } else {
+        await setDoc(bookmarkRef, {
+          forumId: id,
+          title: forum.title,
+          timestamp: serverTimestamp()
+        })
+        setBookmarked(true)
+      }
+    } catch (err) {
+      console.error("Error updating bookmark:", err)
+      Alert.alert("Error", "Could not update bookmark. Please try again.")
+    }
+  }
+
+  const shareForum = async () => {
+    try {
+      // We'll include a dynamic post link (forum id). You asked for dynamic links earlier.
+      const forumLink = `https://yourapp.example.com/forum/${id}` // replace domain with your live domain or dynamic link
+      await Share.share({
+        message: `Check out this discussion: ${forum.title}\n\n${forum.content}\n\n${forumLink}`,
+        title: forum.title,
+      })
+    } catch (error) {
+      console.error("Error sharing forum:", error)
+      Alert.alert("Error", "Could not share forum. Please try again.")
+    }
+  }
 
   // --- Local Storage Helpers ---
   const loadLikesFromStorage = async () => {
@@ -217,40 +271,40 @@ const ForumDetails = () => {
   }
 
   // --- Toggle comment/reply like (optimistic update) ---
-const toggleCommentLike = async (item) => {
-  if (!user) return
+  const toggleCommentLike = async (item) => {
+    if (!user) return
 
-  const itemId = item.id
-  const currentlyLiked = commentLikes[itemId] || false
+    const itemId = item.id
+    const currentlyLiked = commentLikes[itemId] || false
 
-  // --- Optimistic UI update ---
-  setCommentLikes(prev => {
-    const updated = { ...prev, [itemId]: !currentlyLiked }
-    saveLikesToStorage("commentLikes", updated)
-    return updated
-  })
+    // --- Optimistic UI update ---
+    setCommentLikes(prev => {
+      const updated = { ...prev, [itemId]: !currentlyLiked }
+      saveLikesToStorage("commentLikes", updated)
+      return updated
+    })
 
-  let path = ["comments", itemId]
-  if (item.parentId) path = ["comments", item.parentId, "replies", itemId]
+    let path = ["comments", itemId]
+    if (item.parentId) path = ["comments", item.parentId, "replies", itemId]
 
-  const itemRef = doc(db, "forums", id, ...path)
-  const likeRef = doc(db, "forums", id, ...path, "likes", user.uid)
+    const itemRef = doc(db, "forums", id, ...path)
+    const likeRef = doc(db, "forums", id, ...path, "likes", user.uid)
 
-  try {
-    const likeDoc = await getDoc(likeRef)
-    if (likeDoc.exists()) {
-      await deleteDoc(likeRef)
-      await updateDoc(itemRef, { likesCount: increment(-1) })
-    } else {
-      await setDoc(likeRef, { userId: user.uid })
-      await updateDoc(itemRef, { likesCount: increment(1) })
+    try {
+      const likeDoc = await getDoc(likeRef)
+      if (likeDoc.exists()) {
+        await deleteDoc(likeRef)
+        await updateDoc(itemRef, { likesCount: increment(-1) })
+      } else {
+        await setDoc(likeRef, { userId: user.uid })
+        await updateDoc(itemRef, { likesCount: increment(1) })
+      }
+    } catch (err) {
+      console.error("Error updating like:", err)
+      // Revert UI if there is an error
+      setCommentLikes(prev => ({ ...prev, [itemId]: currentlyLiked }))
     }
-  } catch (err) {
-    console.error("Error updating like:", err)
-    // Revert UI if there is an error
-    setCommentLikes(prev => ({ ...prev, [itemId]: currentlyLiked }))
   }
-}
 
   // --- Add nested reply ---
   const addNestedReply = async (parentId) => {
@@ -285,172 +339,189 @@ const toggleCommentLike = async (item) => {
 
   // --- Recursive render function ---
   const renderCommentThread = (item, level = 0, parentAuthor = null) => {
-  const children = commentMap[item.id] || []
-  const isOwner = item.authorId === user?.uid
-  const isEditing = item.parentId ? editingReply?.[item.id] : editingComment === item.id
+    const children = commentMap[item.id] || []
+    const isOwner = item.authorId === user?.uid
+    const isEditing = item.parentId ? editingReply?.[item.id] : editingComment === item.id
 
-  return (
-    <View key={item.id} style={{ flexDirection: "row", marginBottom: 8 }}>
-      {/* Connector line */}
-      <View style={{ width: 16 * level, alignItems: "center" }}>
-        {level > 0 && <View style={{ width: 2, backgroundColor: "#ccc", flex: 1 }} />}
-      </View>
+    return (
+      <View key={item.id} style={{ flexDirection: "row", marginBottom: 8 }}>
+        {/* Connector line */}
+        <View style={{ width: 16 * level, alignItems: "center" }}>
+          {level > 0 && <View style={{ width: 2, backgroundColor: "#ccc", flex: 1 }} />}
+        </View>
 
-      {/* Comment / Reply Card */}
-      <Card className="p-3 mb-3 bg-white rounded-xl flex-1">
-        {/* Header: Avatar, Name, Timestamp */}
-        <Box className="flex-row justify-between items-start mb-1">
-          <Box className="flex-row items-center">
-            <Image
-              source={{ uri: item.authorPhoto || "https://i.pravatar.cc/100" }}
-              style={{ width: 30, height: 30, borderRadius: 15, marginRight: 6 }}
-            />
-            <Text bold>{item.authorName}</Text>
-            <Text className="text-gray-400 text-sm ml-2">
-              {item.timestamp?.toDate ? timeAgo(item.timestamp.toDate(), now) : "..."}
-            </Text>
+        {/* Comment / Reply Card */}
+        <Card className="p-3 mb-3 bg-white rounded-xl flex-1">
+          {/* Header: Avatar, Name, Timestamp */}
+          <Box className="flex-row justify-between items-start mb-1">
+            <Box className="flex-row items-center">
+              <Image
+                source={{ uri: item.authorPhoto || "https://i.pravatar.cc/100" }}
+                style={{ width: 30, height: 30, borderRadius: 15, marginRight: 6 }}
+              />
+              <Text bold>{item.authorName}</Text>
+              <Text className="text-gray-400 text-sm ml-2">
+                {item.timestamp?.toDate ? timeAgo(item.timestamp.toDate(), now) : "..."}
+              </Text>
+            </Box>
+
+            {/* Menu for Owner */}
+            {isOwner && (
+              <TouchableOpacity
+                onPress={() =>
+                  setMenuVisible(prev => ({ ...(prev || {}), [item.id]: !prev?.[item.id] }))
+                }
+              >
+                <MoreVertical size={18} color="#555" />
+              </TouchableOpacity>
+            )}
           </Box>
 
-          {/* Menu for Owner */}
-          {isOwner && (
-            <TouchableOpacity
-              onPress={() =>
-                setMenuVisible(prev => ({ ...(prev || {}), [item.id]: !prev?.[item.id] }))
-              }
-            >
-              <MoreVertical size={18} color="#555" />
-            </TouchableOpacity>
+          {/* Dropdown menu */}
+          {menuVisible?.[item.id] && (
+            <Box className="absolute top-8 right-3 bg-white shadow-md rounded-md z-10">
+              <TouchableOpacity
+                className="px-4 py-2"
+                onPress={() => {
+                  if (item.parentId) setEditingReply(prev => ({ ...prev, [item.id]: true }))
+                  else setEditingComment(item.id)
+                  setMenuVisible(prev => ({ ...(prev || {}), [item.id]: false }))
+                }}
+              >
+                <Text>Edit</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                className="px-4 py-2"
+                onPress={() => deleteItem(item)}
+              >
+                <Text>Delete</Text>
+              </TouchableOpacity>
+            </Box>
           )}
-        </Box>
 
-        {/* Dropdown menu */}
-        {menuVisible?.[item.id] && (
-          <Box className="absolute top-8 right-3 bg-white shadow-md rounded-md z-10">
-            <TouchableOpacity
-              className="px-4 py-2"
-              onPress={() => {
-                if (item.parentId) setEditingReply(prev => ({ ...prev, [item.id]: true }))
-                else setEditingComment(item.id)
-                setMenuVisible(prev => ({ ...(prev || {}), [item.id]: false }))
-              }}
-            >
-              <Text>Edit</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              className="px-4 py-2"
-              onPress={() => deleteItem(item)}
-            >
-              <Text>Delete</Text>
-            </TouchableOpacity>
-          </Box>
-        )}
+          {/* Replying to */}
+          {parentAuthor && (
+            <Box className="flex-row items-center mb-1">
+              <Reply size={14} color="#555" />
+              <Text className="ml-1 text-sm text-gray-600">
+                Replying to @{parentAuthor}
+              </Text>
+            </Box>
+          )}
 
-        {/* Replying to */}
-        {parentAuthor && (
-          <Box className="flex-row items-center mb-1">
-            <Reply size={14} color="#555" />
-            <Text className="ml-1 text-sm text-gray-600">
-              Replying to @{parentAuthor}
-            </Text>
-          </Box>
-        )}
-
-        {/* Content */}
-        {isEditing ? (
-          <TextInput
-            value={item.parentId ? editReplyText[item.id] : editText}
-            onChangeText={text =>
-              item.parentId
-                ? setEditReplyText(prev => ({ ...prev, [item.id]: text }))
-                : setEditText(text)
-            }
-            className="border border-gray-300 rounded-md p-2 mb-2"
-          />
-        ) : (
-          <Text className="mb-2">{item.content}</Text>
-        )}
-
-        {/* Edit / Save buttons */}
-        {isEditing && (
-          <Box className="flex-row space-x-2 mb-2">
-            <Button
-              className="bg-green-600 px-3"
-              onPress={() => saveEditItem(item)}
-            >
-              <Text className="text-white">Save</Text>
-            </Button>
-            <Button
-              className="bg-gray-300 px-3"
-              onPress={() => {
-                if (item.parentId)
-                  setEditingReply(prev => ({ ...prev, [item.id]: false }))
-                else setEditingComment(null)
-              }}
-            >
-              <Text>Cancel</Text>
-            </Button>
-          </Box>
-        )}
-
-        {/* Actions: Like / Reply */}
-        <Box className="flex-row items-center mt-1">
-          <TouchableOpacity
-            onPress={() => toggleCommentLike(item)}
-            className="flex-row items-center mr-4"
-          >
-            <Heart
-              size={14}
-              color={commentLikes[item.id] ? "red" : "black"}
-              fill={commentLikes[item.id] ? "red" : "transparent"}
-            />
-            <Text className="ml-1 text-sm">{item.likesCount || 0} Likes</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() =>
-              setReplyVisible(prev => ({ ...(prev || {}), [item.id]: !prev?.[item.id] }))
-            }
-            className="flex-row items-center"
-          >
-            <Reply size={14} color="#555" />
-            <Text className="ml-1 text-sm text-gray-600">
-              {replyVisible[item.id] ? "Cancel" : "Reply"}
-            </Text>
-          </TouchableOpacity>
-        </Box>
-
-        {/* Reply input */}
-        {replyVisible[item.id] && (
-          <Box className="mb-2 mt-2">
+          {/* Content */}
+          {isEditing ? (
             <TextInput
-              placeholder="Write a reply..."
-              value={replyText[item.id] || ""}
+              value={item.parentId ? editReplyText[item.id] : editText}
               onChangeText={text =>
-                setReplyText(prev => ({ ...prev, [item.id]: text }))
+                item.parentId
+                  ? setEditReplyText(prev => ({ ...prev, [item.id]: text }))
+                  : setEditText(text)
               }
               className="border border-gray-300 rounded-md p-2 mb-2"
             />
-            <Button className="bg-green-600 px-3" onPress={() => addReply(item.id)}>
-              <Text className="text-white">Reply</Text>
-            </Button>
-          </Box>
-        )}
+          ) : (
+            <Text className="mb-2">{item.content}</Text>
+          )}
 
-        {/* Recursive children */}
-        {children.map(child =>
-          renderCommentThread(child, level + 1, item.authorName)
-        )}
-      </Card>
-    </View>
-  )
-}
+          {/* Edit / Save buttons */}
+          {isEditing && (
+            <Box className="flex-row space-x-2 mb-2">
+              <Button
+                className="bg-green-600 px-3"
+                onPress={() => saveEditItem(item)}
+              >
+                <Text className="text-white">Save</Text>
+              </Button>
+              <Button
+                className="bg-gray-300 px-3"
+                onPress={() => {
+                  if (item.parentId)
+                    setEditingReply(prev => ({ ...prev, [item.id]: false }))
+                  else setEditingComment(null)
+                }}
+              >
+                <Text>Cancel</Text>
+              </Button>
+            </Box>
+          )}
+
+          {/* Actions: Like / Reply */}
+          <Box className="flex-row items-center mt-1">
+            <TouchableOpacity
+              onPress={() => toggleCommentLike(item)}
+              className="flex-row items-center mr-4"
+            >
+              <Heart
+                size={14}
+                color={commentLikes[item.id] ? "red" : "black"}
+                fill={commentLikes[item.id] ? "red" : "transparent"}
+              />
+              <Text className="ml-1 text-sm">{item.likesCount || 0} Likes</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() =>
+                setReplyVisible(prev => ({ ...(prev || {}), [item.id]: !prev?.[item.id] }))
+              }
+              className="flex-row items-center"
+            >
+              <Reply size={14} color="#555" />
+              <Text className="ml-1 text-sm text-gray-600">
+                {replyVisible[item.id] ? "Cancel" : "Reply"}
+              </Text>
+            </TouchableOpacity>
+          </Box>
+
+          {/* Reply input */}
+          {replyVisible[item.id] && (
+            <Box className="mb-2 mt-2">
+              <TextInput
+                placeholder="Write a reply..."
+                value={replyText[item.id] || ""}
+                onChangeText={text =>
+                  setReplyText(prev => ({ ...prev, [item.id]: text }))
+                }
+                className="border border-gray-300 rounded-md p-2 mb-2"
+              />
+              <Button className="bg-green-600 px-3" onPress={() => addReply(item.id)}>
+                <Text className="text-white">Reply</Text>
+              </Button>
+            </Box>
+          )}
+
+          {/* Recursive children */}
+          {children.map(child =>
+            renderCommentThread(child, level + 1, item.authorName)
+          )}
+        </Card>
+      </View>
+    )
+  }
 
   if (!forum) return null
 
-  const filteredComments = allComments.filter(c =>
+  // build filtered list once, then sort according to selected filter
+  const baseFilteredComments = allComments.filter(c =>
     c.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
     c.authorName.toLowerCase().includes(searchQuery.toLowerCase())
   )
+
+  const tsToMillis = (t) => (t && t.toDate ? t.toDate().getTime() : 0)
+
+  let filteredComments = [...baseFilteredComments]
+  if (commentFilter === "Newest") {
+    filteredComments.sort((a, b) => tsToMillis(b.timestamp) - tsToMillis(a.timestamp))
+  } else if (commentFilter === "Most Relevant") {
+    // Sort by likesCount desc, fallback to newest
+    filteredComments.sort((a, b) => {
+      const la = a.likesCount || 0
+      const lb = b.likesCount || 0
+      if (lb !== la) return lb - la
+      return tsToMillis(b.timestamp) - tsToMillis(a.timestamp)
+    })
+  } // "All Comments" keeps the order from query (asc by timestamp) but we already copied it
+
   const forumMatchesSearch =
     forum.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     forum.content?.toLowerCase().includes(searchQuery.toLowerCase())
@@ -474,6 +545,12 @@ const toggleCommentLike = async (item) => {
                 <ArrowLeft size={24} color="black" />
               </TouchableOpacity>
 
+              {forum.reposted && forum.repostedBy && (
+                <Text className="text-sm text-gray-500 mb-2">
+                  Reposted by {forum.repostedBy.name}
+                </Text>
+              )}
+
               <Heading size="4xl" className="mb-1">FORUMS</Heading>
               <Text className="text-2xl font-semibold mb-4">{forum.title || "Discussion Title"}</Text>
 
@@ -496,30 +573,86 @@ const toggleCommentLike = async (item) => {
                   <MessageCircle size={20} />
                   <Text className="ml-2">{forum.commentsCount || 0} Comments</Text>
                 </Box>
+
                 <Box className="flex-row space-x-4">
-                  <Bookmark size={20} />
-                  <Share2 size={20} />
+                  <TouchableOpacity onPress={toggleBookmark}>
+                    <Bookmark size={20} color={bookmarked ? "green" : "black"} />
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={shareForum}>
+                    <Share2 size={20} />
+                  </TouchableOpacity>
                 </Box>
               </Box>
 
-              {/* Comment Input */}
+              {/* Comment Input + Sort Dropdown */}
 <Heading size="xl" className="mb-2">Comments</Heading>
 <TextInput
   placeholder="Write your insights about the discussion..."
   value={newComment}
   onChangeText={setNewComment}
   className="bg-gray-100 border border-gray-300 text-slate-700 rounded-md p-2 mb-2"
-  style={{ height: 80 }} // <-- Increased height
+  style={{ height: 80 }}
   multiline
-  textAlignVertical="top" // <-- Ensures text starts at the top
+  textAlignVertical="top"
 />
-<Box className="flex-row justify-end space-x-2 mb-4">
-  <Button className="bg-green-600 px-4" onPress={addComment}>
-    <Text className="text-white">Comment</Text>
-  </Button>
-  <Button className="bg-gray-300 px-4" onPress={() => setNewComment("")}>
-    <Text className="text-black">Cancel</Text>
-  </Button>
+
+<Box className="flex-row items-center justify-between mb-4 relative z-50">
+  {/* Left: Floating Dropdown */}
+  <View style={{ position: "relative" }}>
+    <TouchableOpacity
+  style={{ flexDirection: "row", alignItems: "center", width: 140 }}
+  onPress={() => setFilterMenuOpen((p) => !p)}
+>
+  <Text style={{ fontWeight: "500", fontSize: 14, marginRight: 4 }}>
+    {commentFilter}
+  </Text>
+  <ChevronDown size={16} color="#555" />
+</TouchableOpacity>
+
+    {/* Floating Dropdown options */}
+    {filterMenuOpen && (
+      <View
+        style={{
+          position: "absolute",
+          top: 28,
+          left: 0,
+          borderWidth: 1,
+          borderColor: "#e5e7eb",
+          backgroundColor: "#fff",
+          borderRadius: 6,
+          elevation: 10,        // Android shadow
+          zIndex: 9999,         // Make sure it's on top
+          shadowColor: "#000",  // iOS shadow
+          shadowOpacity: 0.15,
+          shadowRadius: 6,
+          shadowOffset: { width: 0, height: 2 },
+        }}
+      >
+        {["Most Relevant", "Newest", "All Comments"].map((opt) => (
+          <TouchableOpacity
+            key={opt}
+            style={{ paddingVertical: 10, paddingHorizontal: 12 }}
+            onPress={() => {
+              setCommentFilter(opt)
+              setFilterMenuOpen(false)
+            }}
+          >
+            <Text style={{ fontSize: 14 }}>{opt}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+    )}
+  </View>
+
+  {/* Right: Comment buttons */}
+  <Box className="flex-row space-x-2">
+    <Button className="bg-green-600 px-4" onPress={addComment}>
+      <Text className="text-white">Comment</Text>
+    </Button>
+    <Button className="bg-gray-300 px-4" onPress={() => setNewComment("")}>
+      <Text className="text-black">Cancel</Text>
+    </Button>
+  </Box>
 </Box>
 
               {/* Comments */}
