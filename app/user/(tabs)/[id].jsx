@@ -594,6 +594,11 @@ const ForumDetails = () => {
   style={{ height: 80 }}
   multiline
   textAlignVertical="top"
+  onKeyPress={({ nativeEvent }) => {
+    if (nativeEvent.key === "Enter" && !nativeEvent.shiftKey) {
+      addComment()
+    }
+  }}
 />
 
 <Box className="flex-row items-center justify-between relative z-50">
