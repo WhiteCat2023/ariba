@@ -6,13 +6,13 @@ import { signOut } from '@/api/controller/auth.controller';
 import StatCard from '@/components/cards/StatCard';
 import { Text } from '@/components/ui/text';
 import { Heading } from '@/components/ui/heading';
-import SearchBar from '@/components/inputs/searchbar/SearchBar';
-import BarGraphIcon from '@/components/icons/BarGraphIcon';
 import { Button, ButtonText } from "@/components/ui/button"
 import LatestReportCard from '@/components/cards/LatestReportCard';
 import TierCard from '@/components/cards/TierCard';
 import { Box } from '@/components/ui/box';
 import { Grid, GridItem } from '@/components/ui/grid';
+import SearchBar from '@/components/inputs/searchbar/SearchBar';
+import { BarChart, LineChart } from 'lucide-react-native';
 
 
 
@@ -62,7 +62,8 @@ export default function AdminDashboard() {
                 <StatCard
                   header={"Reports responded this month"}
                   data={102}
-                  icon={<BarGraphIcon/>}/>
+                  icon={BarChart}
+                />
               </GridItem>
               <GridItem
                 _extra={{
@@ -71,6 +72,7 @@ export default function AdminDashboard() {
                 <StatCard
                   header={"Pending Reports"}
                   data={5}
+                  icon={LineChart}
                   />
               </GridItem>
               <GridItem

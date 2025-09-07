@@ -1,5 +1,5 @@
 import { useAuth } from "../../../context/AuthContext"
-import { useWindowDimensions } from "react-native";
+import { Platform, useWindowDimensions } from "react-native";
 import { Slot, usePathname, useRouter } from "expo-router";
 import { UserNavItem } from "@/enums/UserNavItem";
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
@@ -9,7 +9,7 @@ import { Box } from "@/components/ui/box";
 import { LinearGradient } from "@/components/ui/lineragradient/LinearGradient";
 import { Send, X } from "lucide-react-native";
 import SendNewReport from "@/components/modal/SendNewReport";
-import { useState } from "react";
+import React, { useState } from "react";
 import { OverlayProvider } from "@gluestack-ui/overlay";
 import { Fab, FabIcon, FabLabel } from "@/components/ui/fab";
 import { HStack } from "@/components/ui/hstack";
@@ -18,9 +18,10 @@ import { HStack } from "@/components/ui/hstack";
 
 const TabLayout = () => {
 
-    const {session, role} = useAuth()
-    const { width } = useWindowDimensions()
+    const {session, role} = useAuth();
+    const { width } = useWindowDimensions();
     const hideSidebar = width < 700 ? true: false;
+    const isAndroid = Platform.OS === "android";
     const [isOpen, setOpen] = useState(false);
 
     const router = useRouter()
@@ -28,27 +29,18 @@ const TabLayout = () => {
 
     const isUser = role === "user" ? true : false;
 
-    // if(hideSidebar && session){
-    //     return(
-    //     <Tab navItem={UserNavItem}/>
-    //     );
-    // }else if(!hideSidebar && session){
-    //     return(
-    //     <SideBar navItem={UserNavItem}/>
-    //     );
-    // }else{
-    //     return <Redirect  href="/"/>;
-    // }
+
+   
     
     return(
         <GluestackUIProvider>
             <OverlayProvider>
                 <Box
-                className={`h-full bg-[#D9E9DD] flex ${hideSidebar && session ? "flex-col":"flex-row"}`}>
+                className={`h-full bg-[#D9E9DD] flex ${hideSidebar ? "flex-col":"flex-row"}`}>
 
                     <SideBarH 
                         navItem={UserNavItem}
-                        hide={hideSidebar && session}
+                        hide={hideSidebar}
                         router={router}
                         path={path}/>
                     
@@ -79,16 +71,31 @@ const TabLayout = () => {
                     
                     <TabH
                         navItem={UserNavItem}
-                        hide={hideSidebar && session}
+                        hideSideBar={isAndroid && hideSidebar}
                         router={router}
                         path={path}/>
 
-                    <SendNewReport isOpen={isOpen} onClose={() => setOpen(false)} />
-              
-            </Box>
+                    <SendNewReport isOpen={isOpen} onClose={() => setOpen(false)} />    
+                </Box>
             </OverlayProvider>            
         </GluestackUIProvider>
     )
 }
 
 export default TabLayout
+
+
+
+    // if(Platform.OS === "android"){
+    //      if(hideSidebar && session){
+    //         return(
+    //         <Tab navItem={UserNavItem}/>
+    //         );
+    //     }else if(!hideSidebar && session){
+    //         return(
+    //         <SideBar navItem={UserNavItem}/>
+    //         );
+    //     }else{
+    //         return <Redirect  href="/"/>;
+    //     }
+    // }

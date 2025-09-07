@@ -41,6 +41,8 @@ export async function newUserDoc(userCredentials, role) {
       phoneNumber,
       metadata,
       providerData,
+      firstName,
+      lastName
     } = userCredentials.user;
 
     if (!role) throw new Error("Role not specified");
@@ -57,6 +59,8 @@ export async function newUserDoc(userCredentials, role) {
       createdAt: metadata?.creationTime || null,
       lastSignedIn: metadata?.lastSignInTime || null,
       role,
+      firstName: firstName,
+      lastName: lastName
     });
   } catch (error) {
     console.error(`Firestore Error: ${error.message}`);

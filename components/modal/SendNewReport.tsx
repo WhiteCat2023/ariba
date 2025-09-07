@@ -19,215 +19,195 @@ import { Text } from "../ui/text";
 import { Button, ButtonText } from "../ui/button";
 import { Pressable } from "../ui/pressable";
 import * as ImagePicker from "expo-image-picker";
+import { uploadUserReport } from "@/api/controller/storage.controller";
+import { useAuth } from "@/context/AuthContext";
+import { HttpStatus } from "@/enums/status";
+
 interface SendNewReportProps {
-    isOpen: boolean;
-    onClose: (value: boolean) => void;
+  isOpen: boolean;
+  onClose: (value: boolean) => void;
 }
 
 interface ReportInput {
-    title: string;
-    description: string;
-    tier: string;
-    location: number[];
-    timestamp: string;
-    images: string[];
+  title: string;
+  description: string;
+  tier: string;
+  location: number[];
+  timestamp: Date;
+  images: Array<object>;
 }
 
 interface ReportInputError {
-    title: boolean;
-    description: boolean;
-    tier: boolean;
-    location: boolean;
-    timestamp: boolean;
-    images: boolean;
+  title: boolean;
+  description: boolean;
+  tier: boolean;
+  location: boolean;
+  images: boolean;
 }
 
-const SendNewReport: React.FC<SendNewReportProps> = ({isOpen, onClose}) => {
-
-    const [input, setInput] =  useState<ReportInput>({
-        title:"",
+const SendNewReport: React.FC<SendNewReportProps> = ({ isOpen, onClose }) => {
+    const [input, setInput] = useState<ReportInput>({
+        title: "",
         description: "",
         tier: "",
         location: [],
-        timestamp: serverTimestamp() as unknown as string,
-        images: []
+        timestamp: new Date(),
+        images: [],
     });
 
-    const [isError, setError] =  useState<ReportInputError>({
+    const [isError, setError] = useState<ReportInputError>({
         title: false,
         description: false,
         tier: false,
         location: false,
-        timestamp: false,
-        images: false
+        images: false,
     });
 
-    const handleChange = (field: keyof ReportInput, value: string) => {
-        setInput((prev) => ({
-            ...prev,
-            [field]: value,
-        }));
-    }
+    const {user} = useAuth()
 
-    const validateInput = () => {
-        if(input.title === "") {
-            setError((prev) => ({
-                ...prev,
-                title: true,
-            }));
-            
-        }else{
-            setError((prev) => ({
-                ...prev,
-                title: false,
-            }));
-        } 
-        
-        if (input.description === "") {
-            setError((prev) => ({
-                ...prev,
-                description: true,
-            }));
-            
-        }else{
-            setError((prev) => ({
-                ...prev,
-                description: false,
-            }));
-        }
-        
-        if (input.tier === "") {
-            setError((prev) => ({
-                ...prev,        
-                tier: true,
-            }));
-            
-        }else{
-            setError((prev) => ({
-                ...prev,
-                tier: false,
-            }));
-        }
-        
-    }
+    const handleChange = (field: keyof ReportInput, value: any) => {
+        setInput((prev) => ({
+        ...prev,
+        [field]: value,
+        }));
+    };
+
+    const validateInput = (): boolean => {
+        const errors: ReportInputError = {
+            title: input.title === "",
+            description: input.description === "",
+            tier: input.tier === "",
+            location: input.location.length === 0,
+            images: input.images.length === 0,
+        };
+
+        setError(errors);
+
+        // return true if NO errors, false if there are errors
+        return !Object.values(errors).some((val) => val === true);
+        };
 
     const handleOnClose = () => {
         onClose(false);
         setInput({
-            title:"",
-            description: "",
-            tier: "",
-            location: [],
-            timestamp: serverTimestamp() as unknown as string,
-            images: []
+        title: "",
+        description: "",
+        tier: "",
+        location: [],
+        timestamp: new Date(),
+        images: [],
         });
         setError({
-            title: false,
-            description: false,
-            tier: false,
-            location: false,
-            timestamp: false,
-            images: false
+        title: false,
+        description: false,
+        tier: false,
+        location: false,
+        images: false,
         });
-    }
+    };
 
     const pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ['images', 'videos'],
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
-        })
-    }
-    
-    //Under construction
-    //To validate input fields on change
-    // useEffect(() => {
-    //     validateInput();
-    //     console.log("With errors: ", isError);
-    // }, [isError, input]);
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+        allowsMultipleSelection: true,
+        });
 
-    const handleSubmit = () => {
-        validateInput();
+        if (!result.canceled && result.assets) {
+        setInput((prev) => ({ ...prev, images: result.assets }));
+        }
+    };
+
+    const handleSubmit = async () => {
+        if (validateInput()) {
+            const result = await uploadUserReport(input, user);
+            if(result.status === HttpStatus.OK){
+                handleOnClose()
+            }
+        }
+
+        
         console.log("Submitting report: ", input);
         
-    }
-
-    console.log("Modal state: ", isOpen);
+    };
 
     return (
-        <Modal isOpen={isOpen} onClose={() => onClose(false)} size={500}  useRNModal={true}>
-            <ModalBackdrop />
-            <ModalContent className="rounded-lg max-h-[90%]">
-                <ModalHeader>
-                    <Heading size="3xl" bold={true} className="text-center w-full">SUBMIT A REPORT</Heading>
-                    <ModalCloseButton onPress={() => handleOnClose()}>
-                        <Icon as={X}/>
-                    </ModalCloseButton>
-                </ModalHeader>
-                <Divider className="my-4 "/>
-                <ModalBody>
-                    <Grid
-                        _extra={{
-                            className: "lg:grid-cols-2 grid-cols-1 gap-4",
-                        }}>
-                        <GridItem
-                            _extra={{
-                                className: " col-span-1"}}>
-                                <VStack>
+        <Modal isOpen={isOpen} onClose={() => onClose(false)} size={500} useRNModal={true}>
+        <ModalBackdrop />
+        <ModalContent className="rounded-lg max-h-[90%]">
+            <ModalHeader>
+            <Heading size="3xl" bold={true} className="text-center w-full">
+                SUBMIT A REPORT
+            </Heading>
+            <ModalCloseButton onPress={() => handleOnClose()}>
+                <Icon as={X} />
+            </ModalCloseButton>
+            </ModalHeader>
+            <Divider className="my-4 " />
+            <ModalBody>
+            <Grid
+                _extra={{
+                className: "lg:grid-cols-2 grid-cols-1 gap-4",
+                }}
+            >
+                <GridItem
+                _extra={{
+                    className: " col-span-1",
+                }}
+                >
+                <VStack>
+                    <InputWithFormControl
+                    label="Report Title"
+                    input={input.title}
+                    setInput={handleChange.bind(null, "title")}
+                    placeholder="Enter report title"
+                    fallbackText="No title provided"
+                    errorText="Title must not be empty"
+                    isError={isError.title}
+                    />
+                    <TextAreaWithFormControl
+                    label="Report Description"
+                    input={input.description}
+                    setInput={handleChange.bind(null, "description")}
+                    placeholder="Write your report description here."
+                    errorText="Description should not be empty"
+                    isError={isError.description}
+                    />
 
-                                    <InputWithFormControl
-                                        label="Report Title"
-                                        input={input.title}
-                                        setInput={handleChange.bind(null, 'title')}
-                                        placeholder="Enter report title"
-                                        fallbackText="No title provided"
-                                        errorText="Title must not be empty"
-                                        isError={isError.title}
-                                        />
-                                    <TextAreaWithFormControl
-                                        label="Report Description"
-                                        input={input.description}
-                                        setInput={handleChange.bind(null, "description")}
-                                        placeholder="Write your report description here."
-                                        errorText="Description should not be empty"
-                                        isError={isError.description}/>
-                               
-                                    <SelectInputWithFormControl 
-                                            heading="Report TierList"
-                                            subHeading="How urgent the report?"
-                                            tier={TierList}
-                                            placeholder="Select report tier"
-                                            errorText="Please select a tier"
-                                            helperText="This will help us prioritize the report"
-                                            onValueChange={(value) => handleChange("tier", value)}
-                                            selectedValue={input.tier}
-                                            isError={isError.tier}/>
+                    <SelectInputWithFormControl
+                    heading="Report TierList"
+                    subHeading="How urgent the report?"
+                    tier={TierList}
+                    placeholder="Select report tier"
+                    errorText="Please select a tier"
+                    helperText="This will help us prioritize the report"
+                    onValueChange={(value) => handleChange("tier", value)}
+                    selectedValue={input.tier}
+                    isError={isError.tier}
+                    />
 
-                                    <Button className="mb-4" onPress={pickImage}>
-                                        <ButtonText>
-                                            Upload Image
-                                        </ButtonText>
-                                    </Button>
-                                    <HStack></HStack>
+                    <Button className="mb-4" onPress={pickImage}>
+                    <ButtonText>Upload Image</ButtonText>
+                    </Button>
+                    <HStack></HStack>
 
-                                    <SubmitBtn 
-                                        onPress={handleSubmit}
-                                        label="Submit Report" />
-                                </VStack>
-                        </GridItem>
-                        <GridItem
-                            _extra={{
-                                className: "w-[500px] col-span-1"}}>
-                                    {/* <MapWithLocationInput/> */}
-                                    <WebMap
-                                        onChange={handleChange.bind(null, "location")}/>
-                                </GridItem>
-                    </Grid>
-                </ModalBody>
-            </ModalContent>
+                    <SubmitBtn onPress={handleSubmit} label="Submit Report" />
+                </VStack>
+                </GridItem>
+                <GridItem
+                _extra={{
+                    className: "w-[500px] col-span-1",
+                }}
+                >
+                <WebMap onChange={handleChange.bind(null, "location")} />
+                </GridItem>
+            </Grid>
+            </ModalBody>
+        </ModalContent>
         </Modal>
-    )
-}
+    );
+};
 
-export default SendNewReport
+export default SendNewReport;

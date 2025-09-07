@@ -15,7 +15,7 @@ const reports = () => {
           </Heading>
         </Box>
         <Box>
-
+          <FlatList/>
         </Box>
               
       </ScrollView>

@@ -22,6 +22,8 @@ export function AuthProvider({ children }) {
     const router = useRouter()
     const pathname = usePathname()
 
+    const pathCollection = ["/", "/signup", "/forgot-password"]
+
     useEffect(() => {
       const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
 
@@ -51,7 +53,7 @@ export function AuthProvider({ children }) {
     router.replace("/user");
     return;
   }
-  if (!session && pathname !== "/") {
+  if (!session && !pathCollection.includes(pathname)) {
     router.replace("/");
     return;
   }

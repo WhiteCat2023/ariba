@@ -1,7 +1,6 @@
-import { View, Text } from 'react-native'
 import React from 'react'
 import { Input, InputField, InputIcon, InputSlot } from '@/components/ui/input'
-import SearchIcon from '../../icons/SearchIcon'
+import { Search } from 'lucide-react-native'
 
 
 const SearchBar = () => {
@@ -16,7 +15,7 @@ const SearchBar = () => {
     >
       <InputSlot
        className='ms-3'>
-        <SearchIcon/>
+        <InputIcon as={Search}/>
       </InputSlot>
       <InputField 
         placeholder="Search" 
