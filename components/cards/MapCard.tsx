@@ -1,4 +1,5 @@
 
+import React from "react"
 import { Box } from "../ui/box"
 import { Card } from "../ui/card"
 import { Grid, GridItem } from "../ui/grid"
@@ -6,7 +7,6 @@ import { HStack } from "../ui/hstack"
 import { Text } from "../ui/text"
 import { VStack } from "../ui/vstack"
 import ReportPinpointList from "./components/ReportPinpointList"
-
 
 const MapCard = () => {
   return (

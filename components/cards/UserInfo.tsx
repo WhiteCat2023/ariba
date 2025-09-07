@@ -1,3 +1,4 @@
+import React from "react";
 import { Card } from "../ui/card";
 import { Divider } from "../ui/divider";
 import EditUserInfo from "./components/EditUserInfo";

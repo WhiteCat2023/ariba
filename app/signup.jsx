@@ -70,6 +70,23 @@ import { FacebookSignInButton } from "@/components/button/facebookAuthButton";
           </Text>
 
           {/* Input fields */}
+
+          <Input
+            placeholder="First Name"
+            value={credentials.firstName}
+            onChangeText={(t) => handleChange("firstname", t)}
+            leftIconName="mail"
+            className="w-full mb-4 border border-green-500 rounded-lg"
+          />
+
+          <Input
+            placeholder="Last Name"
+            value={credentials.lastName}
+            onChangeText={(t) => handleChange("lastname", t)}
+            leftIconName="mail"
+            className="w-full mb-4 border border-green-500 rounded-lg"
+          />
+
           <Input
             placeholder="Email"
             value={credentials.email}
@@ -77,6 +94,7 @@ import { FacebookSignInButton } from "@/components/button/facebookAuthButton";
             leftIconName="mail"
             className="w-full mb-4 border border-green-500 rounded-lg"
           />
+
           <Input
             placeholder="Password"
             secureTextEntry={!showPassword}
@@ -118,31 +136,26 @@ import { FacebookSignInButton } from "@/components/button/facebookAuthButton";
 
           {/* Social buttons */}
           <View className="flex-row justify-center space-x-6 mt-8">
-            {/* <Button 
-            onPress={() => {}}
-            style={{ marginRight: 20 }} // Add spacing here
-            className="w-12 h-12 rounded-lg bg-white justify-center items-center shadow-md"
-            >
-              <Image
-                source={require("../assets/images/google.png")}
-                style={{ width: 18, height: 18 }}
-                resizeMode="contain"
-              />
-            </Button> */}
             <View
               style={{ marginRight: 20 }} // Add spacing here
               className="w-12 h-12 rounded-lg bg-white justify-center items-center shadow-md">
               <GoogleSignUpButton/>
             </View>
 
+            <View
+              style={{ marginRight: 20 }} // Add spacing here
+              className="w-12 h-12 rounded-lg bg-white justify-center items-center shadow-md">
+              <FacebookSignInButton/>
+            </View>
+
             
-            <Button className="w-12 h-12 rounded-lg bg-white justify-center items-center shadow-md">
+            {/* <Button className="w-12 h-12 rounded-lg bg-white justify-center items-center shadow-md">
               <Image
                 source={require("../assets/images/facebook.png")}
                 style={{ width: 18, height: 18 }}
                 resizeMode="contain"
               />
-            </Button>
+            </Button> */}
           </View>
         </View>
       </SafeAreaView>
@@ -166,7 +179,22 @@ import { FacebookSignInButton } from "@/components/button/facebookAuthButton";
               Welcome Let’s set you up first!
             </Text>
 
-          
+            <Input
+              placeholder="First Name"
+              value={credentials.firstName}
+              onChangeText={(t) => handleChange("firstname", t)}
+              leftIconName="user"
+              className="w-full mb-4 border border-green-500 rounded-lg"
+            />
+
+            <Input
+              placeholder="Last Name"
+              value={credentials.lastName}
+              onChangeText={(t) => handleChange("lastname", t)}
+              leftIconName="user"
+              className="w-full mb-4 border border-green-500 rounded-lg"
+            />
+
             <Input
               placeholder="Email"
               value={credentials.email}
@@ -214,22 +242,10 @@ import { FacebookSignInButton } from "@/components/button/facebookAuthButton";
             </View>
 
             <View className="flex-row justify-center space-x-4">
-              {/* <Button onPress={() => {}} className="w-12 h-12 rounded-lg bg-white justify-center items-center shadow-md">
-              <Image 
-                source={require("../assets/images/google.png")} 
-                style={{ width: 24, height: 24 }}
-                resizeMode="contain" />
-            </Button> */}
+
             <GoogleSignUpButton/>
             <FacebookSignInButton/>
 
-              {/* <Button className="w-12 h-12 rounded-lg bg-white justify-center items-center shadow-md">
-                <Image
-                  source={require("../assets/images/facebook.png")}
-                  style={{ width: 24, height: 24 }}
-                  resizeMode="contain"
-                />
-              </Button> */}
             </View>
             <Text
              className="w-full text-center">

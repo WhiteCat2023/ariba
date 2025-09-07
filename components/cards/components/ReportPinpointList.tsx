@@ -6,7 +6,7 @@ import ReportListItemCard from './ReportListItemCard'
 const ReportPinpointList = () => {
   return (
     <VStack>
-        <ReportListItemCard/>
+        {/* <ReportListItemCard/> */}
     </VStack>
   )
 }

@@ -1,13 +1,14 @@
+import React from "react"
 import { HStack } from "../ui/hstack"
 import { Icon } from "../ui/icon"
 import { Pressable } from "../ui/pressable"
 import { Text } from "../ui/text"
 import { VStack } from "../ui/vstack"
 
-const TabH = ({navItem, hide, router, path}) => {
+const TabH = ({navItem, hideSideBar, router, path}) => {
   return (
     <HStack
-        className={`w-full h-16 border-t bg-white justify-between sticky py-2 px-4 ${hide ? "": "hidden"}`}>
+        className={`w-full h-16 border-t bg-white justify-between sticky py-2 px-4 ${hideSideBar ? "": "hidden"}`}>
           {navItem.map(({icon, name, route}, index) => {
 
             const isActive = path === route

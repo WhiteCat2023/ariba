@@ -1,9 +1,9 @@
 import React from 'react'
 import { FormControl, FormControlLabel, FormControlLabelText, FormControlError, FormControlErrorIcon, FormControlErrorText } from '../ui/form-control'
 import { Input, InputField } from '../ui/input'
-import { AlertCircleIcon, TrendingUpDown } from 'lucide-react-native';
+import { AlertCircleIcon, LucideIcon, TrendingUpDown } from 'lucide-react-native';
 
-interface InputWithFormControlProps {
+type InputWithFormControlProps = {
     label?: string;
     input?: string;
     setInput?: (value: string) => void;
@@ -11,17 +11,19 @@ interface InputWithFormControlProps {
     fallbackText?: string;
     errorText?: string;
     isError?: boolean;
+    icon?: LucideIcon;
 }
 
-const InputWithFormControl: React.FC<InputWithFormControlProps> = ({
+const InputWithFormControl = ({
     label,
     input, 
     setInput = ()=>{},
     placeholder,
     fallbackText,
     errorText,
-    isError
-}) => {
+    isError,
+    icon
+}: InputWithFormControlProps) => {
   return (
     <FormControl isInvalid={isError} isRequired className='mb-4'>
         <FormControlLabel>
@@ -30,6 +32,7 @@ const InputWithFormControl: React.FC<InputWithFormControlProps> = ({
           </FormControlLabelText>
         </FormControlLabel>
         <Input size="md" className={`${isError ? 'border-red-500' : ''}`}>
+
           <InputField
             type="text"
             placeholder={placeholder || fallbackText}

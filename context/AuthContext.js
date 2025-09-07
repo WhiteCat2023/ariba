@@ -22,6 +22,8 @@ export function AuthProvider({ children }) {
     const router = useRouter()
     const pathname = usePathname()
 
+    const pathCollection = ["/", "/signup", "/forgot-password"]
+
     useEffect(() => {
       const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
 
@@ -39,23 +41,23 @@ export function AuthProvider({ children }) {
 
     useEffect(() => {
 
-  if (loading) return;
+      if (loading) return;
 
 
-  // Only redirect if not already on the correct page
-  if (session && userDoc.role === Role.ADMIN && !pathname.startsWith("/admin")) {
-    router.replace("/admin");
-    return;
-  }
-  if (session && userDoc.role === Role.USER && !pathname.startsWith("/user")) {
-    router.replace("/user");
-    return;
-  }
-  if (!session && pathname !== "/") {
-    router.replace("/");
-    return;
-  }
-}, [session, loading, pathname, userDoc?.role]);
+      // Only redirect if not already on the correct page
+      if (session && userDoc.role === Role.ADMIN && !pathname.startsWith("/admin")) {
+        router.replace("/admin");
+        return;
+      }
+      if (session && userDoc.role === Role.USER && !pathname.startsWith("/user")) {
+        router.replace("/user");
+        return;
+      }
+      if (!session && !pathCollection.includes(pathname)) {
+        router.replace("/");
+        return;
+      }
+    }, [session, loading, pathname, userDoc?.role]);
 
     const login = async (req) => {
       setLoading(true);
