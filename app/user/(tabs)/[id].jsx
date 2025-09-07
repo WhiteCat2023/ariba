@@ -43,8 +43,10 @@ import { Grid, GridItem } from "@/components/ui/grid"
 const timeAgo = (date, now) => {
   if (!date) return "..."
   const seconds = Math.floor((now - date) / 1000)
-  if (seconds < 5) return "just now"
-  if (seconds < 60) return `${seconds}s ago`
+
+  // ✅ Show "Just now" for anything less than 60s
+  if (seconds < 60) return "Just now"
+
   const minutes = Math.floor(seconds / 60)
   if (minutes < 60) return `${minutes}m ago`
   const hours = Math.floor(minutes / 60)
