@@ -1,5 +1,5 @@
 import { HttpStatus } from "@/enums/status";
-import { getUserReportsFromFirebase } from "../services/firebase/report.services";
+import { getUserReportsFromFirebase } from "../services/firebase/report.service";
 
 export const getUserReports = async (uid) => {
   try {
