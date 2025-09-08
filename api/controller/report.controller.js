@@ -1,5 +1,5 @@
 import { HttpStatus } from "@/enums/status";
-import { getUserReportsFromFirebase } from "../services/firebase/report.service";
+import { getAllReportsFromFirebase, getUserReportsFromFirebase } from "../services/firebase/report.service";
 
 export const getUserReports = async (uid) => {
   try {
@@ -19,10 +19,10 @@ export const getUserReports = async (uid) => {
 
 export const getAllReports = async () => {
   try {
-    const allReports = await getAllReports()
+    const allReports = await getAllReportsFromFirebase()
     return {
       status: HttpStatus.OK,
-      data: reports,
+      data: allReports,
     };
   } catch (error) {
     return {

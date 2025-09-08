@@ -27,6 +27,7 @@ const Reports = () => {
     }, []);
 
     useEffect(() => {
+        console.log(reports)
         if (searchQuery) {
             const filtered = reports.filter(report => 
                 report.title?.toLowerCase().includes(searchQuery.toLowerCase())
@@ -43,6 +44,7 @@ const Reports = () => {
             const result = await getAllReports();
             if (result.status === 200) {
                 setReports(result.data);
+                console.log(result)
             } else {
                 console.error("Error:", result.message);
             }

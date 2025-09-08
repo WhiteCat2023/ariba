@@ -1,15 +1,15 @@
-  import { useFonts } from "expo-font";
-import { useRouter } from "expo-router";
-import { useState } from "react";
-import { Alert, Image, Platform, SafeAreaView, Text, View } from "react-native";
-import { signUp } from "@/api/controller/auth.controller";
-import "../global.css";
+  import { signUp } from "@/api/controller/auth.controller";
 import Button from "@/components/button/Button";
+import { FacebookSignInButton } from "@/components/button/facebookAuthButton";
 import { GoogleSignUpButton } from "@/components/button/googleAuthButtons";
 import Card from "@/components/cards/Card";
 import Input from "@/components/inputs/Input";
 import { Role } from "@/enums/roles";
-import { FacebookSignInButton } from "@/components/button/facebookAuthButton";
+import { useFonts } from "expo-font";
+import { useRouter } from "expo-router";
+import { useState } from "react";
+import { Alert, Image, Platform, SafeAreaView, Text, View } from "react-native";
+import "../global.css";
 
   export default function SignUp() {
     const [showPassword, setShowPassword] = useState(false);
@@ -74,16 +74,16 @@ import { FacebookSignInButton } from "@/components/button/facebookAuthButton";
           <Input
             placeholder="First Name"
             value={credentials.firstName}
-            onChangeText={(t) => handleChange("firstname", t)}
-            leftIconName="mail"
+            onChangeText={(t) => handleChange("firstName", t)}
+            leftIconName="user"
             className="w-full mb-4 border border-green-500 rounded-lg"
           />
 
           <Input
             placeholder="Last Name"
             value={credentials.lastName}
-            onChangeText={(t) => handleChange("lastname", t)}
-            leftIconName="mail"
+            onChangeText={(t) => handleChange("lastName", t)}
+            leftIconName="user"
             className="w-full mb-4 border border-green-500 rounded-lg"
           />
 
@@ -182,7 +182,7 @@ import { FacebookSignInButton } from "@/components/button/facebookAuthButton";
             <Input
               placeholder="First Name"
               value={credentials.firstName}
-              onChangeText={(t) => handleChange("firstname", t)}
+              onChangeText={(t) => handleChange("firstName", t)}
               leftIconName="user"
               className="w-full mb-4 border border-green-500 rounded-lg"
             />
@@ -190,7 +190,7 @@ import { FacebookSignInButton } from "@/components/button/facebookAuthButton";
             <Input
               placeholder="Last Name"
               value={credentials.lastName}
-              onChangeText={(t) => handleChange("lastname", t)}
+              onChangeText={(t) => handleChange("lastName", t)}
               leftIconName="user"
               className="w-full mb-4 border border-green-500 rounded-lg"
             />

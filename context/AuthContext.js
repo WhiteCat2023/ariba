@@ -17,7 +17,7 @@ export function AuthProvider({ children }) {
     const [session, setSession] = useState(false);
     const [user, setUser] = useState({});
     const [userDoc, setUserDoc] = useState({});
-    const role = userDoc?.role;
+    const [role, setRole] = useState(null)
     
     const router = useRouter()
     const pathname = usePathname()
@@ -42,17 +42,21 @@ export function AuthProvider({ children }) {
     }, []);
 
     useEffect(() => {
+      setRole(userDoc?.role)
+    }, [userDoc])
+
+    useEffect(() => {
 
       if (loading) return;
 
       const currentPath = pathname
 
       // Only redirect if not already on the correct page
-      if (session && userDoc.role === Role.ADMIN && !currentPath.startsWith("/admin")) {
+      if (session && role === Role.ADMIN && !currentPath.startsWith("/admin")) {
         router.replace("/admin");
         return;
       }
-      if (session && userDoc.role === Role.USER && !currentPath.startsWith("/user")) {
+      if (session && role === Role.USER && !currentPath.startsWith("/user")) {
         router.replace("/user");
         return;
       }
@@ -60,7 +64,7 @@ export function AuthProvider({ children }) {
         router.replace("/");
         return;
       }
-    }, [session, loading, pathname, userDoc?.role]);
+    }, [session, loading, pathname, role]);
 
     const login = async (req) => {
       setLoading(true);
