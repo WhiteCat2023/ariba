@@ -18,10 +18,9 @@ import { HStack } from "@/components/ui/hstack";
 
 const TabLayout = () => {
 
-    const {session, role} = useAuth();
+    const {role} = useAuth();
     const { width } = useWindowDimensions();
     const hideSidebar = width < 700 ? true: false;
-    const isAndroid = Platform.OS === "android";
     const [isOpen, setOpen] = useState(false);
 
     const router = useRouter()
@@ -29,26 +28,19 @@ const TabLayout = () => {
 
     const isUser = role === "user" ? true : false;
 
-
-   
-    
     return(
         <GluestackUIProvider>
             <OverlayProvider>
                 <Box
-                className={`h-full bg-[#D9E9DD] flex ${hideSidebar ? "flex-col":"flex-row"}`}>
-
+                    className={`h-full bg-[#D9E9DD] flex ${hideSidebar ? "flex-col":"flex-row"}`}>
                     <SideBarH 
                         navItem={UserNavItem}
                         hide={hideSidebar}
                         router={router}
-                        path={path}/>
-                    
+                        path={path}/>                    
                     <Box className="flex-1 ">
-                        <Slot />
-                        
-                        {isUser && (
-                           
+                        <Slot />                        
+                        {isUser && (                           
                             <Fab
                                 onPress={() => setOpen(true)}
                                 size="sm"
@@ -65,16 +57,13 @@ const TabLayout = () => {
                                             </HStack>    
                                     </LinearGradient>
                             </Fab>
-                            )}
-                            
-                    </Box>
-                    
+                            )}                            
+                    </Box>                  
                     <TabH
                         navItem={UserNavItem}
-                        hideSideBar={isAndroid && hideSidebar}
+                        isMobile={hideSidebar}
                         router={router}
                         path={path}/>
-
                     <SendNewReport isOpen={isOpen} onClose={() => setOpen(false)} />    
                 </Box>
             </OverlayProvider>            

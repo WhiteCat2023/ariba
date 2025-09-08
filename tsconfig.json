@@ -18,6 +18,6 @@
     "**/*.js",
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
-    "nativewind-env.d.ts"
-, "app/user/(tabs)/_layout.jss"  ]
+    "nativewind-env.d.ts"  
+  ]
 }

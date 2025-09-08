@@ -2,6 +2,7 @@ import React from 'react'
 import { Textarea, TextareaInput } from '../ui/textarea'
 import { FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText, FormControlLabel, FormControlLabelText } from '../ui/form-control'
 import { AlertCircleIcon } from 'lucide-react-native';
+import { Icon } from '../ui/icon';
 
 interface TextAreaWithFormControlProps {
     label?: string;
@@ -42,7 +43,7 @@ const TextAreaWithFormControl: React.FC<TextAreaWithFormControlProps> = ({
                     placeholder={placeholder}/>
         </Textarea>
         <FormControlError >
-          <FormControlErrorIcon as={AlertCircleIcon} className="text-red-500" />
+          <Icon className="text-red-500" />
           <FormControlErrorText className="text-red-500">
             {errorText}
           </FormControlErrorText>

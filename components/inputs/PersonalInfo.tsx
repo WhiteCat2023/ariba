@@ -1,6 +1,7 @@
 import { useAuth } from '@/context/AuthContext'
 import { Grid, GridItem } from '../ui/grid'
 import DisplayInput from './DisplayInput'
+import React from 'react'
 
 
 const PersonalInfo = () => {

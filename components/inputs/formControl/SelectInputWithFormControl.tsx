@@ -87,7 +87,7 @@ const SelectInputWithFormControl: React.FC<SelectInputWithFormControlProps> = ({
                 </FormControlHelperText>
             </FormControlHelper>
             <FormControlError>
-                <FormControlErrorIcon as={AlertCircleIcon} />
+                <Icon as={AlertCircleIcon} />
                 <FormControlErrorText>{errorText}</FormControlErrorText>
             </FormControlError>
         </FormControl>

@@ -3,6 +3,7 @@ import { Button, ButtonText } from '@/components/ui/button'
 import { LinearGradient } from '@/components/ui/lineragradient/LinearGradient'
 import { Text } from '@/components/ui/text'
 import { VStack } from '@/components/ui/vstack'
+import React from 'react'
 
 const ProfileDeletionCard = () => {
   return (
@@ -11,7 +12,7 @@ const ProfileDeletionCard = () => {
             Account Deletion
         </Text>
         <Text>
-            If you want to <b>permanently delete</b> this account and all of its data, you can do so below by clicking the <b>“Delete Button”</b>. 
+            If you want to <Text bold>permanently delete</Text> this account and all of its data, you can do so below by clicking the <Text bold>“Delete Button”</Text>. 
         </Text>
         <Button className='w-48 p-0 rounded-xl overflow-hidden'>
             <LinearGradient 

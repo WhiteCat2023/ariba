@@ -6,6 +6,7 @@ import { Text } from "../../ui/text";
 import { VStack } from "../../ui/vstack";
 import { LinearGradient } from "@/components/ui/lineragradient/LinearGradient";
 import { useAuth } from "@/context/AuthContext";
+import React from "react";
 
 interface ProfileHeaderProp {
     user: {

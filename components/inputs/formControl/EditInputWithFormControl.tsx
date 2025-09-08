@@ -4,7 +4,7 @@ import { Input, InputField, InputIcon, InputSlot } from "@/components/ui/input"
 import { Pressable } from "@/components/ui/pressable";
 import { useAuth } from "@/context/AuthContext"
 import { Edit } from "lucide-react-native";
-import { useState } from "react";
+import React, { useState } from "react";
 
 interface EditInputWithFormControlProps {
   label: string;
