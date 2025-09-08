@@ -10,27 +10,13 @@ import Tab from "@/components/navigation/Tab";
 import SideBar from "@/components/navigation/Sidebar";
 import React from "react";
 
-export default function TabLayout() {
+const TabLayout = () => {
   const { session } = useAuth()
   const { width } = useWindowDimensions()
   const hideSidebar = width < 700 ? true: false;
 
   const router = useRouter()
   const path = usePathname()
-
-  const isUser = true
-
-  // if(hideSidebar && session){
-  //   return(
-  //     <Tab navItem={AdminNavItem}/>
-  //   );
-  // }else if(!hideSidebar && session){
-  //   return(
-  //     <SideBar navItem={AdminNavItem}/>
-  //   );
-  // }else{
-  //   return <Redirect  href="/"/>;
-  // }
 
   return (
     <GluestackUIProvider>
@@ -48,10 +34,12 @@ export default function TabLayout() {
 
         <TabH 
           navItem={AdminNavItem} 
-          hide={hideSidebar && session} 
+          isMobile={hideSidebar} 
           router={router}
           path={path}/>
       </Box>
     </GluestackUIProvider>
   );
 }
+
+export default TabLayout;

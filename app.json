@@ -8,10 +8,13 @@
     "icon": "./assets/images/icon.png",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "jsEngine": "hermes",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "jsEngine": "hermes"
     },
     "android": {
+      "jsEngine": "hermes",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -20,7 +23,7 @@
       "package": "com.whitecat2023.ariba",
       "config": {
         "googleMaps": {
-          "key": "AIzaSyBXEUzzVkNk1BpBESFqbftnG6Om66vNPY0"
+          "apiKey": "AIzaSyBXEUzzVkNk1BpBESFqbftnG6Om66vNPY0"
         }
       }
     },

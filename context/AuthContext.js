@@ -7,7 +7,7 @@ import { HttpStatus } from "@/enums/status";
 import { usePathname, useRouter } from "expo-router";
 import { onAuthStateChanged } from "firebase/auth";
 import { createContext, useContext, useEffect, useState } from "react";
-import { Alert, SafeAreaView, Text } from "react-native";
+import { ActivityIndicator, Alert, SafeAreaView, Text } from "react-native";
 
 const AuthContext = createContext()
 
@@ -29,11 +29,13 @@ export function AuthProvider({ children }) {
 
         setUser(currentUser);
         setSession(!!currentUser);
-        setLoading(false);
+        
 
         if (currentUser) {
           getUserDoc(currentUser.uid, setUserDoc);
+          setLoading(false);
         }
+        setLoading(false);
       });
 
       return () => unsubscribe();
@@ -43,17 +45,18 @@ export function AuthProvider({ children }) {
 
       if (loading) return;
 
+      const currentPath = pathname
 
       // Only redirect if not already on the correct page
-      if (session && userDoc.role === Role.ADMIN && !pathname.startsWith("/admin")) {
+      if (session && userDoc.role === Role.ADMIN && !currentPath.startsWith("/admin")) {
         router.replace("/admin");
         return;
       }
-      if (session && userDoc.role === Role.USER && !pathname.startsWith("/user")) {
+      if (session && userDoc.role === Role.USER && !currentPath.startsWith("/user")) {
         router.replace("/user");
         return;
       }
-      if (!session && !pathCollection.includes(pathname)) {
+      if (!session && !pathCollection.includes(currentPath)) {
         router.replace("/");
         return;
       }
@@ -102,8 +105,9 @@ export function AuthProvider({ children }) {
     return(
         <AuthContext.Provider value={contextData}>
             {loading ? (
-                <SafeAreaView>
-                    <Text>Loading</Text>
+                <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <ActivityIndicator size="large" />
+                    <Text>Loading...</Text>
                 </SafeAreaView>
             ): (
                 children

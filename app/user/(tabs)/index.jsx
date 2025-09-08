@@ -216,7 +216,7 @@ const formatTimeAgo = (date, now = new Date()) => {
     <SafeAreaView className="flex-1 bg-[#D9E9DD] h-full p-4">
       <StatusBar barStyle="dark-content" />
 
-      <ScrollView className="h-full">
+            <ScrollView className="h-full">
         <Grid _extra={{ className: "lg:grid-cols-12 grid-cols-1 auto-rows-auto gap-4 h-full" }}>
           {/* Title */}
           <GridItem _extra={{ className: "col-span-8" }}>
@@ -417,3 +417,6 @@ const formatTimeAgo = (date, now = new Date()) => {
 }
 
 export default ForumsScreen
+
+
+
