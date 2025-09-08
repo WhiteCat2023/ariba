@@ -32,7 +32,7 @@ export const signUp = async ( req ) => {
     const { email, password, role } = req;
     try{
         const userCredentials = await createUser(email, password);
-        await newUserDoc(userCredentials, role);
+        await newUserDoc(userCredentials, role, req);
         // const {uid} = userCredentials.user;
         // setRole(uid)
         // console.log(userDoc)

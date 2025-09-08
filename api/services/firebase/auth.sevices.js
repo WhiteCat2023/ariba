@@ -32,7 +32,7 @@ export const signInWithToken = async (credential) => {
 
 
 
-export async function newUserDoc(userCredentials, role) {
+export async function newUserDoc(userCredentials, role, extra) {
   try {
     const {
       uid,
@@ -59,8 +59,8 @@ export async function newUserDoc(userCredentials, role) {
       createdAt: metadata?.creationTime || null,
       lastSignedIn: metadata?.lastSignInTime || null,
       role,
-      firstName: firstName,
-      lastName: lastName
+      firstName: extra.firstName,
+      lastName: extra.lastName
     });
   } catch (error) {
     console.error(`Firestore Error: ${error.message}`);
