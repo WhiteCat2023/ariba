@@ -33,6 +33,16 @@ export const uploadUserReport = async (req, user) => {
       images: urls,
     });
 
+    await addDoc(collection(db, "allReports"), {
+      uid: user.uid,
+      title: req.title,
+      description: req.description,
+      tier: req.tier,
+      location: req.location,
+      timestamp: req.timestamp,
+      images: urls,
+    });
+
     return {
       status: 200,
       message: "Upload Successful!",

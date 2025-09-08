@@ -16,3 +16,18 @@ export const getUserReports = async (uid) => {
     };
   }
 };
+
+export const getAllReports = async () => {
+  try {
+    const allReports = await getAllReports()
+    return {
+      status: HttpStatus.OK,
+      data: reports,
+    };
+  } catch (error) {
+    return {
+      status: HttpStatus.BAD_REQUEST,
+      message: error.message,
+    };
+  }
+}
