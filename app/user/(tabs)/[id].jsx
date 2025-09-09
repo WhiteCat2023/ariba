@@ -554,7 +554,9 @@ const ForumDetails = () => {
               )}
 
               <Heading size="4xl" className="mb-1">FORUMS</Heading>
-              <Text className="text-2xl font-semibold mb-4">{forum.title || "Discussion Title"}</Text>
+              <Text className="text-2xl font-semibold mb-4">
+  {forum.title || "Untitled Discussion"}
+</Text>
 
               <Box className="flex-row items-center mb-2">
                 <Image source={{ uri: forum.authorPhoto }} style={{ width: 35, height: 35, borderRadius: 18, marginRight: 8 }} />

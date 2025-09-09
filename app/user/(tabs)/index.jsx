@@ -132,27 +132,30 @@ const ForumsScreen = () => {
 
   // Save discussion (new or edit)
   const saveDiscussion = async () => {
-    if (!newDiscussion.trim()) return
+  if (!newDiscussion.title.trim() || !newDiscussion.description.trim()) return
 
-    if (editingId) {
-      await updateDoc(doc(db, "forums", editingId), { content: newDiscussion })
-      setEditingId(null)
-    } else {
-      await addDoc(collection(db, "forums"), {
-        title: "Discussion",
-        content: newDiscussion,
-        likesCount: 0,
-        commentsCount: 0,
-        authorName: user?.displayName || "Anonymous",
-        authorPhoto: user?.photoURL || "https://i.pravatar.cc/100",
-        authorId: user?.uid,
-        timestamp: serverTimestamp(),
-      })
-    }
-
-    setNewDiscussion("")
-    setModalVisible(false)
+  if (editingId) {
+    await updateDoc(doc(db, "forums", editingId), {
+      title: newDiscussion.title,
+      content: newDiscussion.description,
+    })
+    setEditingId(null)
+  } else {
+    await addDoc(collection(db, "forums"), {
+      title: newDiscussion.title,
+      content: newDiscussion.description,
+      likesCount: 0,
+      commentsCount: 0,
+      authorName: user?.displayName || "Anonymous",
+      authorPhoto: user?.photoURL || "https://i.pravatar.cc/100",
+      authorId: user?.uid,
+      timestamp: serverTimestamp(),
+    })
   }
+
+  setNewDiscussion({ title: "", description: "" })
+  setModalVisible(false)
+}
 
   const deleteDiscussion = async (forumId) => {
     await deleteDoc(doc(db, "forums", forumId))
@@ -289,37 +292,79 @@ const formatTimeAgo = (date, now = new Date()) => {
 </Box>
 
               {/* Add Discussion Modal */}
-              <Modal visible={modalVisible} transparent animationType="slide">
-                <View className="flex-1 bg-black/50 justify-center items-center">
-                  <View className="bg-white w-11/12 p-6 rounded-lg shadow-lg">
-                    <Heading size="lg" className="mb-4">
-                      {editingId ? "Edit Discussion" : "New Discussion"}
-                    </Heading>
-                    <TextInput
-                      placeholder="Write your discussion..."
-                      value={newDiscussion}
-                      onChangeText={setNewDiscussion}
-                      className="border border-gray-300 rounded-lg px-3 py-2 mb-4"
-                      multiline
-                    />
-                    <Box className="flex-row justify-end space-x-3">
-                      <Button
-                        className="bg-gray-400 px-4 py-2 rounded-lg"
-                        onPress={() => {
-                          setModalVisible(false)
-                          setEditingId(null)
-                          setNewDiscussion("")
-                        }}
-                      >
-                        <Text className="text-white">Cancel</Text>
-                      </Button>
-                      <Button className="bg-green-600 px-4 py-2 rounded-lg" onPress={saveDiscussion}>
-                        <Text className="text-white">{editingId ? "Update" : "Add"}</Text>
-                      </Button>
-                    </Box>
-                  </View>
-                </View>
-              </Modal>
+<Modal visible={modalVisible} transparent animationType="fade">
+  <View className="flex-1 bg-black/50 justify-center items-center">
+    <View className="bg-white w-8/12 h-5/6 rounded-xl shadow-lg p-14 relative">
+      {/* Close Button */}
+      <TouchableOpacity
+        className="absolute top-4 right-4"
+        onPress={() => {
+          setModalVisible(false)
+          setEditingId(null)
+          setNewDiscussion({ title: "", description: "" })
+        }}
+      >
+        <Text className="text-xl font-bold text-gray-600">✕</Text>
+      </TouchableOpacity>
+
+      {/* Title */}
+      <Heading size="4xl" className="text-center mb-4 font-Poppins font-extrabold">
+        START A DISCUSSION
+      </Heading>
+
+      {/* Discussion Title */}
+      <View className="mb-5">
+        <View className="border-t border-black mb-4" />
+        <Text className="text-base font-semibold mb-2 text-black">Discussion Title</Text>
+        <TextInput
+          placeholder="Write your report title here."
+          value={newDiscussion.title}
+          onChangeText={(text) =>
+            setNewDiscussion({ ...newDiscussion, title: text })
+          }
+          className="bg-gray-200 rounded-md px-4 py-3 text-gray-800"
+        />
+      </View>
+
+      {/* Report Description */}
+      <View className="flex-1 mb-6">
+        <Text className="text-base font-semibold mb-2 text-black">Report Description</Text>
+        <TextInput
+          placeholder="Write your report description here."
+          value={newDiscussion.description}
+          onChangeText={(text) =>
+            setNewDiscussion({ ...newDiscussion, description: text })
+          }
+          className="bg-gray-200 rounded-md px-4 py-3 text-gray-800 h-full"
+          multiline
+          textAlignVertical="top"
+        />
+      </View>
+
+      {/* Buttons Bottom Right */}
+      <View className="flex-row justify-end space-x-4 mt-4">
+        <TouchableOpacity
+          className="bg-green-600 px-6 py-3 rounded-md"
+          onPress={saveDiscussion}
+        >
+          <Text className="text-white font-semibold">Confirm</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          className="bg-red-600 px-6 py-3 rounded-md"
+          onPress={() => {
+            setModalVisible(false)
+            setEditingId(null)
+            setNewDiscussion({ title: "", description: "" })
+          }}
+        >
+          <Text className="text-white font-semibold">Cancel</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  </View>
+</Modal>
+
 
               {/* Forum List */}
               <FlatList
@@ -330,81 +375,78 @@ const formatTimeAgo = (date, now = new Date()) => {
                   const isOwner = item.authorId === user?.uid
                   return (
                     <Card className="p-5 mb-4 rounded-xl border border-gray-300 bg-white shadow-sm">
-                      <TouchableOpacity onPress={() => router.push(`/user/(tabs)/${item.id}`)}>
-                        <Box className="flex-row items-center mb-3 justify-between">
-                          {/* Author */}
-                          <Box className="flex-row items-center">
-                            <Image
-                              source={{ uri: item.authorPhoto }}
-                              style={{
-                                width: 35,
-                                height: 35,
-                                borderRadius: 18,
-                                marginRight: 10,
-                              }}
-                            />
-                            <Box>
-                              <Text bold size="md">
-                                {item.authorName}
-                              </Text>
-                              <Text size="xs" className="text-gray-500">
-                                {item.timestamp?.toDate
-                                  ? formatTimeAgo(item.timestamp.toDate(), currentTime)
-                                  : "..."}
-                              </Text>
-                            </Box>
-                          </Box>
+  <TouchableOpacity onPress={() => router.push(`/user/(tabs)/${item.id}`)}>
+    <Box className="flex-row items-center mb-3 justify-between">
+      {/* Author */}
+      <Box className="flex-row items-center">
+        <Image
+          source={{ uri: item.authorPhoto }}
+          style={{
+            width: 35,
+            height: 35,
+            borderRadius: 18,
+            marginRight: 10,
+          }}
+        />
+        <Box>
+          <Text bold size="md">{item.authorName}</Text>
+          <Text size="xs" className="text-gray-500">
+            {item.timestamp?.toDate
+              ? formatTimeAgo(item.timestamp.toDate(), currentTime)
+              : "..."}
+          </Text>
+        </Box>
+      </Box>
 
-                          {/* Owner Actions */}
-                          {isOwner && (
-                            <Box className="flex-row space-x-3">
-                              <TouchableOpacity
-                                onPress={() => {
-                                  setEditingId(item.id)
-                                  setNewDiscussion(item.content)
-                                  setModalVisible(true)
-                                }}
-                              >
-                                <Edit size={18} color="blue" />
-                              </TouchableOpacity>
-                              <TouchableOpacity onPress={() => deleteDiscussion(item.id)}>
-                                <Trash2 size={18} color="red" />
-                              </TouchableOpacity>
-                            </Box>
-                          )}
-                        </Box>
+      {/* Owner Actions */}
+      {isOwner && (
+        <Box className="flex-row space-x-3">
+          <TouchableOpacity
+            onPress={() => {
+              setEditingId(item.id)
+              setNewDiscussion({ title: item.title, description: item.content })
+              setModalVisible(true)
+            }}
+          >
+            <Edit size={18} color="blue" />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => deleteDiscussion(item.id)}>
+            <Trash2 size={18} color="red" />
+          </TouchableOpacity>
+        </Box>
+      )}
+    </Box>
 
-                        {/* Content */}
-                        <Text className="mb-3 leading-5">{item.content}</Text>
-                      </TouchableOpacity>
+    {/* Title + Description */}
+    <Text className="text-lg font-bold mb-2">{item.title}</Text>
+    <Text className="mb-3 leading-5 text-gray-700">{item.content}</Text>
+  </TouchableOpacity>
 
-                      {/* Likes + Comments */}
-                      <Box className="flex-row items-center">
-                        <TouchableOpacity
-                          onPress={() => toggleLike(item)}
-                          className="flex-row items-center mr-6"
-                        >
-                          <Heart
-                            size={20}
-                            color={liked ? "red" : "black"}
-                            fill={liked ? "red" : "transparent"}
-                          />
-                          <Text className="ml-1 text-gray-700">
-                            {item.likesCount || 0} Likes
-                          </Text>
-                        </TouchableOpacity>
+  {/* Likes + Comments */}
+  <Box className="flex-row items-center">
+    <TouchableOpacity
+      onPress={() => toggleLike(item)}
+      className="flex-row items-center mr-6"
+    >
+      <Heart
+        size={20}
+        color={liked ? "red" : "black"}
+        fill={liked ? "red" : "transparent"}
+      />
+      <Text className="ml-1 text-gray-700">{item.likesCount || 0} Likes</Text>
+    </TouchableOpacity>
 
-                        <TouchableOpacity
-                          onPress={() => router.push(`/user/(tabs)/${item.id}`)}
-                          className="flex-row items-center"
-                        >
-                          <MessageCircle size={20} />
-                          <Text className="ml-1 text-gray-700">
-                            {item.commentsCount || 0} Comments
-                          </Text>
-                        </TouchableOpacity>
-                      </Box>
-                    </Card>
+    <TouchableOpacity
+      onPress={() => router.push(`/user/(tabs)/${item.id}`)}
+      className="flex-row items-center"
+    >
+      <MessageCircle size={20} />
+      <Text className="ml-1 text-gray-700">
+        {item.commentsCount || 0} Comments
+      </Text>
+    </TouchableOpacity>
+  </Box>
+</Card>
                   )
                 }}
               />
