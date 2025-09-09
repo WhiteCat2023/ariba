@@ -22,6 +22,7 @@ import * as ImagePicker from "expo-image-picker";
 import { uploadUserReport } from "@/api/controller/storage.controller";
 import { useAuth } from "@/context/AuthContext";
 import { HttpStatus } from "@/enums/status";
+import { Platform } from "react-native";
 
 interface SendNewReportProps {
   isOpen: boolean;
@@ -196,13 +197,16 @@ const SendNewReport: React.FC<SendNewReportProps> = ({ isOpen, onClose }) => {
                     <SubmitBtn onPress={handleSubmit} label="Submit Report" />
                 </VStack>
                 </GridItem>
-                <GridItem
-                _extra={{
-                    className: "w-[500px] col-span-1",
-                }}
-                >
-                <WebMap onChange={handleChange.bind(null, "location")} />
-                </GridItem>
+                {Platform.OS === "web" && (
+                    <GridItem
+                        _extra={{
+                            className: "w-[500px] col-span-1",
+                        }}
+                        >
+                        <WebMap onChange={handleChange.bind(null, "location")} />
+                    </GridItem>
+                )}
+                
             </Grid>
             </ModalBody>
         </ModalContent>

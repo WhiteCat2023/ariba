@@ -4,6 +4,7 @@ import { Button, ButtonText } from '@/components/ui/button'
 import { Grid, GridItem } from '@/components/ui/grid'
 import { Text } from '@/components/ui/text'
 import { VStack } from '@/components/ui/vstack'
+import React from 'react'
 
 interface EditUserInfoProp{
     user: {

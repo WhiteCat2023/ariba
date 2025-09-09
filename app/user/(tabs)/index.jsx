@@ -330,7 +330,7 @@ const formatTimeAgo = (date, now = new Date()) => {
                   const isOwner = item.authorId === user?.uid
                   return (
                     <Card className="p-5 mb-4 rounded-xl border border-gray-300 bg-white shadow-sm">
-                      <TouchableOpacity onPress={() => router.push(`/user/(tabs)/${item.id}`)}>
+                      <TouchableOpacity onPress={() => router.push(`/user/(tabs)/view/${item.id}`)}>
                         <Box className="flex-row items-center mb-3 justify-between">
                           {/* Author */}
                           <Box className="flex-row items-center">
@@ -395,7 +395,7 @@ const formatTimeAgo = (date, now = new Date()) => {
                         </TouchableOpacity>
 
                         <TouchableOpacity
-                          onPress={() => router.push(`/user/(tabs)/${item.id}`)}
+                          onPress={() => router.push(`/user/(tabs)/view/${item.id}`)}
                           className="flex-row items-center"
                         >
                           <MessageCircle size={20} />
