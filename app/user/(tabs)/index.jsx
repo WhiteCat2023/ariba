@@ -174,8 +174,8 @@ const formatTimeAgo = (date, now = new Date()) => {
   const weeks = Math.floor(days / 7)
   const months = Math.floor(days / 30)
 
-  if (seconds < 10) return "Just now"   // ✅ show Just now for <10s
-  if (seconds < 60) return `${seconds}s ago`
+    // ✅ Show "Just now" for anything less than 60s
+  if (seconds < 60) return "Just now"
   if (minutes < 60) return `${minutes}m ago`
   if (hours < 24) return `${hours}h ago`
   if (days < 7) return `${days}d ago`
