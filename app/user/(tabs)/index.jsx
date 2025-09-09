@@ -375,28 +375,30 @@ const formatTimeAgo = (date, now = new Date()) => {
                   const isOwner = item.authorId === user?.uid
                   return (
                     <Card className="p-5 mb-4 rounded-xl border border-gray-300 bg-white shadow-sm">
-  <TouchableOpacity onPress={() => router.push(`/user/(tabs)/${item.id}`)}>
-    <Box className="flex-row items-center mb-3 justify-between">
-      {/* Author */}
-      <Box className="flex-row items-center">
-        <Image
-          source={{ uri: item.authorPhoto }}
-          style={{
-            width: 35,
-            height: 35,
-            borderRadius: 18,
-            marginRight: 10,
-          }}
-        />
-        <Box>
-          <Text bold size="md">{item.authorName}</Text>
-          <Text size="xs" className="text-gray-500">
-            {item.timestamp?.toDate
-              ? formatTimeAgo(item.timestamp.toDate(), currentTime)
-              : "..."}
-          </Text>
-        </Box>
-      </Box>
+                      <TouchableOpacity onPress={() => router.push(`/user/(tabs)/${item.id}`)}>
+                        <Box className="flex-row items-center mb-3 justify-between">
+                          {/* Author */}
+                          <Box className="flex-row items-center">
+                            <Image
+                              source={{ uri: item.authorPhoto }}
+                              style={{
+                                width: 35,
+                                height: 35,
+                                borderRadius: 18,
+                                marginRight: 10,
+                              }}
+                            />
+                            <Box>
+                              <Text bold size="md">
+                                {item.authorName}
+                              </Text>
+                              <Text size="xs" className="text-gray-500">
+                                {item.timestamp?.toDate
+                                  ? formatTimeAgo(item.timestamp.toDate(), currentTime)
+                                  : "..."}
+                              </Text>
+                            </Box>
+                          </Box>
 
       {/* Owner Actions */}
       {isOwner && (
@@ -436,17 +438,17 @@ const formatTimeAgo = (date, now = new Date()) => {
       <Text className="ml-1 text-gray-700">{item.likesCount || 0} Likes</Text>
     </TouchableOpacity>
 
-    <TouchableOpacity
-      onPress={() => router.push(`/user/(tabs)/${item.id}`)}
-      className="flex-row items-center"
-    >
-      <MessageCircle size={20} />
-      <Text className="ml-1 text-gray-700">
-        {item.commentsCount || 0} Comments
-      </Text>
-    </TouchableOpacity>
-  </Box>
-</Card>
+                        <TouchableOpacity
+                          onPress={() => router.push(`/user/(tabs)/${item.id}`)}
+                          className="flex-row items-center"
+                        >
+                          <MessageCircle size={20} />
+                          <Text className="ml-1 text-gray-700">
+                            {item.commentsCount || 0} Comments
+                          </Text>
+                        </TouchableOpacity>
+                      </Box>
+                    </Card>
                   )
                 }}
               />

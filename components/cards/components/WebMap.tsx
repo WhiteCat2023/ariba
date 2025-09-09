@@ -183,7 +183,7 @@ const WebMap: React.FC<WebMapProps> = ({onChange}) => {
       zoom: 15,
       attributionControl: false,
     });
-
+ 
     // Add user marker
     marker.current = new maplibregl.Marker({ color: "red" })
       .setLngLat(userLocation)

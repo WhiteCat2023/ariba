@@ -14,6 +14,8 @@ import { Heading } from '@/components/ui/heading'
 import SearchBar from '@/components/inputs/searchbar/SearchBar'
 import { Grid, GridItem } from '@/components/ui/grid'
 import { Divider } from '@/components/ui/divider'
+import { Pressable } from '@/components/ui/pressable'
+import { useRouter } from 'expo-router'
 
 const Reports = () => {
   const {user} = useAuth();
@@ -22,6 +24,7 @@ const Reports = () => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const router = useRouter()
 
   useEffect(() => {
     loadReports();
@@ -80,15 +83,21 @@ const Reports = () => {
   };
 
   const renderReportItem = ({ item }) => {
+
+    if (!item) return;
+
     const formattedDate = item.timestamp?.toDate
       ? format(item.timestamp.toDate(), "MMM d | h:mma")
       : "";
 
     return (
-      <ReportListItemCard
-        title={item.title}
-        date={formattedDate}
-      />
+      <Pressable
+        onPress={() => router.push(`/user/(tabs)/report/${item.id}`)}>
+        <ReportListItemCard
+          title={item.title}
+          date={formattedDate}
+        />
+      </Pressable>
     );
   };
 
