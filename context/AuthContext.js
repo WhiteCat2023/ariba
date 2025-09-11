@@ -53,11 +53,11 @@ export function AuthProvider({ children }) {
 
       // Only redirect if not already on the correct page
       if (session && role === Role.ADMIN && !currentPath.startsWith("/admin")) {
-        router.replace("/admin");
+        router.replace("/admin/(tabs)");
         return;
       }
       if (session && role === Role.USER && !currentPath.startsWith("/user")) {
-        router.replace("/user");
+        router.replace("/user/(tabs)");
         return;
       }
       if (!session && !pathCollection.includes(currentPath)) {

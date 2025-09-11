@@ -11,19 +11,7 @@ import { VStack } from '@/components/ui/vstack'
 import { AlertCircleIcon, ChevronDownIcon, InfoIcon } from 'lucide-react-native'
 import React, { useState } from 'react'
 
-interface SelectInputWithFormControlProps {
-    heading?: string;
-    subHeading?: string;
-    placeholder?: string;
-    errorText?: string;
-    helperText?: string;
-    isError?: boolean;
-    tier?: { label: string; value: string }[];
-    selectedValue?: string;
-    onValueChange?: (value: string) => void;
-}
-
-const SelectInputWithFormControl: React.FC<SelectInputWithFormControlProps> = ({
+const SelectInputWithFormControl = ({
     heading,
     subHeading,
     placeholder,
@@ -67,8 +55,8 @@ const SelectInputWithFormControl: React.FC<SelectInputWithFormControlProps> = ({
                             <SelectDragIndicatorWrapper>
                             <SelectDragIndicator />
                             </SelectDragIndicatorWrapper>
-                            {tier.map((item: { label: string; value: string }, index: React.Key) => (
-                                <SelectItem key={index} label={item.label} value={item.value} />
+                            {tier.map(({ label, value }, index ) => (
+                                <SelectItem key={index} label={label} value={value} />
                             ))}
                         </SelectContent>
                     </SelectPortal>

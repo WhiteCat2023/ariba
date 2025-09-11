@@ -1,53 +1,27 @@
-import { InfoIcon, X } from "lucide-react-native";
-import { Heading } from "../ui/heading";
-import { Modal, ModalBackdrop, ModalBody, ModalCloseButton, ModalContent, ModalHeader } from "../ui/modal"
-import { Icon } from "../ui/icon";
-import { Divider } from "../ui/divider";
-import { Grid, GridItem } from "../ui/grid";
-import { useState } from "react";
-import InputWithFormControl from "../inputs/InputWithFormControl";
-import TextAreaWithFormControl from "../inputs/TextAreaWithFormControl";
-import { VStack } from "../ui/vstack";
-import { serverTimestamp } from "firebase/firestore";
-import React from "react";
-import SubmitBtn from "../button/SubmitBtn";
-import SelectInputWithFormControl from "../inputs/formControl/SelectInputWithFormControl";
-import { TierList } from "@/enums/tier";
-import WebMap from "../cards/components/WebMap";
-import { HStack } from "../ui/hstack";
-import { Text } from "../ui/text";
-import { Button, ButtonText } from "../ui/button";
-import { Pressable } from "../ui/pressable";
-import * as ImagePicker from "expo-image-picker";
 import { uploadUserReport } from "@/api/controller/storage.controller";
 import { useAuth } from "@/context/AuthContext";
 import { HttpStatus } from "@/enums/status";
+import { TierList } from "@/enums/tier";
+import * as ImagePicker from "expo-image-picker";
+import { X } from "lucide-react-native";
+import React, { useState } from "react";
 import { Platform } from "react-native";
+import SubmitBtn from "../button/SubmitBtn";
+import WebMap from "../cards/components/WebMap";
+import SelectInputWithFormControl from "../inputs/formControl/SelectInputWithFormControl";
+import InputWithFormControl from "../inputs/InputWithFormControl";
+import TextAreaWithFormControl from "../inputs/TextAreaWithFormControl";
+import { Button, ButtonText } from "../ui/button";
+import { Divider } from "../ui/divider";
+import { Grid, GridItem } from "../ui/grid";
+import { Heading } from "../ui/heading";
+import { HStack } from "../ui/hstack";
+import { Icon } from "../ui/icon";
+import { Modal, ModalBackdrop, ModalBody, ModalCloseButton, ModalContent, ModalHeader } from "../ui/modal";
+import { VStack } from "../ui/vstack";
 
-interface SendNewReportProps {
-  isOpen: boolean;
-  onClose: (value: boolean) => void;
-}
-
-interface ReportInput {
-  title: string;
-  description: string;
-  tier: string;
-  location: number[];
-  timestamp: Date;
-  images: Array<object>;
-}
-
-interface ReportInputError {
-  title: boolean;
-  description: boolean;
-  tier: boolean;
-  location: boolean;
-  images: boolean;
-}
-
-const SendNewReport: React.FC<SendNewReportProps> = ({ isOpen, onClose }) => {
-    const [input, setInput] = useState<ReportInput>({
+const SendNewReport = ({ isOpen, onClose }) => {
+    const [input, setInput] = useState({
         title: "",
         description: "",
         tier: "",
@@ -56,7 +30,7 @@ const SendNewReport: React.FC<SendNewReportProps> = ({ isOpen, onClose }) => {
         images: [],
     });
 
-    const [isError, setError] = useState<ReportInputError>({
+    const [isError, setError] = useState({
         title: false,
         description: false,
         tier: false,
@@ -66,15 +40,15 @@ const SendNewReport: React.FC<SendNewReportProps> = ({ isOpen, onClose }) => {
 
     const {user} = useAuth()
 
-    const handleChange = (field: keyof ReportInput, value: any) => {
+    const handleChange = (field, value) => {
         setInput((prev) => ({
-        ...prev,
-        [field]: value,
+            ...prev,
+            [field]: value,
         }));
     };
 
-    const validateInput = (): boolean => {
-        const errors: ReportInputError = {
+    const validateInput = () => {
+        const errors = {
             title: input.title === "",
             description: input.description === "",
             tier: input.tier === "",

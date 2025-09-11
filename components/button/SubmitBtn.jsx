@@ -4,12 +4,7 @@ import { LinearGradient } from '../ui/lineragradient/LinearGradient';
 import { Icon } from '../ui/icon';
 import { Send } from 'lucide-react-native';
 
-interface SubmitBtnProps {
-    onPress?: () => void;
-    label?: string;
-}
-
-const SubmitBtn: React.FC<SubmitBtnProps> = ({onPress, label}) => {
+const SubmitBtn = ({onPress, label}) => {
   return (
     <Button
       onPress={() => {

@@ -11,7 +11,7 @@ const TierCard = () => {
   return (
     <Card 
     size='lg'
-    className='border-2 rounded-xl'>
+    className='lg:border-2 rounded-xl'>
         <Box className='flex flex-row justify-between'>
             <Heading>Reports by tier list</Heading>
             <Link 

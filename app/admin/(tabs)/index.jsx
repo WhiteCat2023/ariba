@@ -28,6 +28,7 @@ export default function AdminDashboard() {
         <StatusBar barStyle="dark-content" />
           <ScrollView className='p-4'>
             <Grid 
+              className='gap-4 pb-8'
              _extra={{
               className: "lg:grid-cols-12 grid-cols-1 auto-rows-auto gap-4 h-full"
              }}>

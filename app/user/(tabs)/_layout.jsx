@@ -29,7 +29,6 @@ const TabLayout = () => {
     const isUser = role === "user" ? true : false;
 
     return(
-        <GluestackUIProvider>
             <OverlayProvider>
                 <Box
                     className={`h-full bg-[#D9E9DD] flex ${hideSidebar ? "flex-col":"flex-row"}`}>
@@ -67,7 +66,6 @@ const TabLayout = () => {
                     <SendNewReport isOpen={isOpen} onClose={() => setOpen(false)} />    
                 </Box>
             </OverlayProvider>            
-        </GluestackUIProvider>
     )
 }
 

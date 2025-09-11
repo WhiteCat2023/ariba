@@ -10,29 +10,13 @@ import { HttpStatus } from "@/enums/status";
 import ProfileSaveButton from "../button/ProfileSaveButton";
 import ProfileCancelButton from "../button/ProfileCancelButton";
 
-interface InputState {
-  name: string;
-  email: string;
-  phone: string;
-}
-
-interface EditPersonalInfoInputProps {
-  isEdit: boolean;
-  setEdit?: (value: boolean) => void;
-} 
-
-interface NewCredentials {
-  name?: string,
-  phone?:string,
-}
-
-const EditPersonalInfoInput: React.FC<EditPersonalInfoInputProps> = ({
+const EditPersonalInfoInput = ({
   isEdit,
   setEdit = () => {},
 }) => {
 
   const { user } = useAuth() 
-  const [input, setInput] = useState<InputState>({
+  const [input, setInput] = useState({
     name: "",
     email: "",
     phone: ""
@@ -40,7 +24,7 @@ const EditPersonalInfoInput: React.FC<EditPersonalInfoInputProps> = ({
   const [isSave, setSave] = useState(false);
   const [isLoading, setLoading] = useState(false);
 
-  const handleSave = (input: NewCredentials) => {
+  const handleSave = (inputs) => {
     const newCredentials = {
       uid: user.uid,
       name: input.name
@@ -53,7 +37,7 @@ const EditPersonalInfoInput: React.FC<EditPersonalInfoInputProps> = ({
     return false;
   }
 
-  const handleInputChange = (field: keyof InputState, value: string) => {
+  const handleInputChange = (field, value) => {
     setInput(prev => ({
       ...prev,
       [field]: value

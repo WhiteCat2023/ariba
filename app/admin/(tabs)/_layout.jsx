@@ -1,6 +1,6 @@
 import { useAuth } from "../../../context/AuthContext"
 import { useWindowDimensions } from "react-native";
-import { Redirect, Slot, usePathname, useRouter } from "expo-router";
+import { Redirect, Slot, Tabs, usePathname, useRouter } from "expo-router";
 import { AdminNavItem } from "@/enums/AdminNavItem";
 import SideBarH from "@/components/navigation/SideBarH";
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
@@ -11,35 +11,37 @@ import SideBar from "@/components/navigation/Sidebar";
 import React from "react";
 
 const TabLayout = () => {
-  const { session } = useAuth()
-  const { width } = useWindowDimensions()
-  const hideSidebar = width < 700 ? true: false;
+  // const { session } = useAuth()
+  // const { width } = useWindowDimensions()
+  // const hideSidebar = width < 700 ? true: false;
 
-  const router = useRouter()
-  const path = usePathname()
+  // const router = useRouter()
+  // const path = usePathname()
 
-  return (
-    <GluestackUIProvider>
-      <Box
-       className={`h-full bg-[#D9E9DD] flex ${hideSidebar && session ? "flex-col":"flex-row"}`}>
-        <SideBarH 
-          navItem={AdminNavItem} 
-          hide={hideSidebar && session}
-          router={router}
-          path={path}/>
+  // return (
+  //     <Box
+  //      className={`h-full bg-[#D9E9DD] flex ${hideSidebar && session ? "flex-col":"flex-row"}`}>
 
-        <Box className="flex-1 relative">
-          <Slot />
-        </Box>
+  //       <SideBarH 
+  //         navItem={AdminNavItem} 
+  //         hide={hideSidebar && session}
+  //         router={router}
+  //         path={path}/>
 
-        <TabH 
-          navItem={AdminNavItem} 
-          isMobile={hideSidebar} 
-          router={router}
-          path={path}/>
-      </Box>
-    </GluestackUIProvider>
-  );
+  //       {/* <Box className="flex-1 relative">
+  //         <Slot />
+  //       </Box> */}
+
+  //       <TabH 
+  //         navItem={AdminNavItem} 
+  //         isMobile={hideSidebar} 
+  //         router={router}
+  //         path={path}/>
+  //     </Box>
+    
+  // );
+
+  return <Tabs/>
 }
 
 export default TabLayout;

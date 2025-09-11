@@ -2,13 +2,7 @@ import React from "react"
 import { FormControl, FormControlLabel, FormControlLabelText } from "../ui/form-control"
 import { Input, InputField } from "../ui/input"
 
-interface DisplayInputProps {
-    label: string,
-    value: string,
-    fallback: string
-}
-
-const DisplayInput: React.FC<DisplayInputProps> = ({
+const DisplayInput = ({
     label,
     value,
     fallback
