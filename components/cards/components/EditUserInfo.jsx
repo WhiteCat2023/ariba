@@ -6,28 +6,116 @@ import EditInputWithFormControl from "@/components/inputs/formControl/EditInputW
 import { HStack } from "@/components/ui/hstack"
 import { Pressable } from "@/components/ui/pressable"
 import { Icon } from "@/components/ui/icon"
-import { ChevronLeft, X } from "lucide-react-native"
+import { ChevronLeft, Eye, EyeOff, X } from "lucide-react-native"
 import { Heading } from "@/components/ui/heading"
 import { useAuth } from "@/context/AuthContext"
-import { Modal, ModalBackdrop, ModalBody, ModalCloseButton, ModalContent, ModalHeader } from "@/components/ui/modal"
+import { Modal, ModalBackdrop, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader } from "@/components/ui/modal"
 import InputWithFormControl from "@/components/inputs/InputWithFormControl"
 import { Divider } from "@/components/ui/divider"
 import { Text } from "@/components/ui/text"
 
 const EditUserInfo = ({user}) => {
 
+    const {logout} = useAuth();
+    
     const [isPersonalInfo, setPersonalInfo] = useState(false);
     const [isEditPI, setEditPI] = useState(false);
     const [isSecuritySettings, setSecuritySettings] = useState(false);
     const [isChangePass, setChangePass] = useState(false)
+    const [isDeleteAcc, setDeleteAcc] = useState(false)
+    const [passwordMatchError, setPasswordMatchError] = useState(false)
     const [input, setInput] = useState({
         firstName: "",
         lastName: ""
     })
-    console.log
 
-    
+    const [isViewPassword, setViewPassword] = useState({
+        currentPass: false,
+        newPass: false,
+        confirmNewPass: false
+    })
 
+    // Input state for change pass inputs
+    const [changePassInput, setChangePassInput] = useState({
+        currentPass: "",
+        newPass: "",
+        confirmNewPass: ""
+    })
+
+    // Error state for change pass inputs
+    const [changePassInputError, setChangePassInputError] = useState({
+        currentPass: false,
+        newPass: false,
+        confirmNewPass: false
+    })
+
+
+    // validates changePassInput
+    const validateChangePassInput = () => {
+
+        const errors = {
+            currentPass: changePassInput.currentPass === "",
+            newPass: changePassInput.newPass === "",
+            confirmNewPass: changePassInput.confirmNewPass === ""
+        }
+        setChangePassInputError(errors)
+
+        return !Object.values(errors).some((val) => val === true);
+    }
+
+    // handles change password submission
+    const handleChangePassSubmit = () => {
+        if(validateChangePassInput()){
+            if(changePassInput.newPass.trim() === changePassInput.confirmNewPass.trim()){
+                //updates password
+            }else{
+                setPasswordMatchError(true)
+            }
+        }
+        
+    }
+
+    // handles on modal close for change pass
+    const handleOnCloseModal = () => {
+        setChangePass(false);
+        setChangePassInput({
+            currentPass: "",
+            newPass: "",
+            confirmNewPass: ""
+        })
+        setChangePassInputError({
+            currentPass: false,
+            newPass: false,
+            confirmNewPass: false
+        })
+    }
+
+    // handles on close delete account model
+    const handleOnCloseDelAccModal = () => {
+        setDeleteAcc(false)
+    }
+
+    const matchErrorText = () => {
+        if(changePassInputError.newPass | changePassInputError.confirmNewPass) return "This field must not be blank"
+        if(matchErrorText) return "Password does not match"   
+    }
+
+    // handes on change input state
+    const onChangePassInputChange = (field, value) => {
+        setChangePassInput((prev)=> ({
+            ...prev, 
+            [field]: value
+        }))
+    }
+
+    const onViewPassword = (field) => {
+        setViewPassword((prev)=> ({
+            ...prev, 
+            [field]: !prev[field]
+        }))
+    }
+
+    // renders personal information
     const personalInformation = () => {
         return(
             <VStack>
@@ -42,6 +130,7 @@ const EditUserInfo = ({user}) => {
                     </Heading>
                 </HStack>
                 <Grid
+                    className="lg:w-2/5"
                     _extra={{
                         className: "grid-cols-1 gap-4"
                     }}>
@@ -84,6 +173,7 @@ const EditUserInfo = ({user}) => {
         )
     }
 
+    // renders security settings options
     const securitySettings = () => {
         return(
             <VStack className="gap-4">
@@ -104,6 +194,7 @@ const EditUserInfo = ({user}) => {
                     If you want to <Text bold>change your password</Text> click the <Text bold>“Change Password”</Text> button. 
                 </Text>
                 <Button
+                    className="lg:w-1/5"
                     onPress={() => setChangePass(true)}>
                     <ButtonText>
                         Change Password
@@ -117,7 +208,8 @@ const EditUserInfo = ({user}) => {
                     If you want to <Text bold>permanently</Text> delete this account and all of its data, you can do so below by clicking the <Text bold>“Delete Button”</Text>. 
                 </Text>
                 <Button
-                    className="bg-red-500">
+                    onPress={() => setDeleteAcc(true)}
+                    className="bg-red-500 lg:w-1/5">
                     <ButtonText>
                         Delete Account
                     </ButtonText>
@@ -126,12 +218,113 @@ const EditUserInfo = ({user}) => {
         )
     }
 
+    // modal for change pass
+    const changePassModal = () => {
+        return(
+            <Modal isOpen={isChangePass} onClose={() => handleOnCloseModal()} useRNModal>
+                <ModalBackdrop/>
+                <ModalContent>
+                    <ModalHeader>
+                        <Heading>Change Password</Heading>  
+                        <ModalCloseButton>
+                            <Icon as={X}/>
+                        </ModalCloseButton>  
+                    </ModalHeader> 
+                    <ModalBody>
+
+                        <InputWithFormControl
+                            label="Current Password"
+                            placeholder="Current Password"
+                            input={changePassInput.currentPass}
+                            setInput={(current) => onChangePassInputChange("currentPass", current)}
+                            isError={changePassInputError.currentPass}
+                            errorText={"This field must not be blank"}
+                            type={isViewPassword.currentPass ? "text":"password"}
+                            icon={isViewPassword.currentPass ? EyeOff: Eye}
+                            onIconPress={() => onViewPassword("currentPass")}/>
+
+                        <InputWithFormControl
+                            label="New Password"
+                            placeholder="New Password"
+                            input={changePassInput.newPass}
+                            setInput={(newPass) => onChangePassInputChange("newPass", newPass)}
+                            isError={changePassInputError.newPass | passwordMatchError}
+                            errorText={"This field must not be blank"}
+                            type={isViewPassword.newPass ? "text":"password"}
+                            icon={isViewPassword.newPass ? EyeOff: Eye}
+                            onIconPress={() => onViewPassword("newPass")}/>
+
+                        <InputWithFormControl
+                            label="Confirm New Password"
+                            placeholder="Confirm New Password"
+                            input={changePassInput.confirmNewPass}
+                            setInput={(confirmNewPass) => onChangePassInputChange("confirmNewPass", confirmNewPass)}
+                            isError={changePassInputError.confirmNewPass | passwordMatchError}
+                            errorText={matchErrorText()}
+                            type={isViewPassword.confirmNewPass ? "text":"password"}
+                            icon={isViewPassword.confirmNewPass ? EyeOff: Eye}
+                            onIconPress={() => onViewPassword("confirmNewPass")}/>
+
+                    </ModalBody>   
+                    <ModalFooter>
+                        <Button 
+                            onPress={() => handleChangePassSubmit()}>
+                            <ButtonText>
+                                Change Password
+                            </ButtonText>
+                        </Button>
+                    </ModalFooter>
+                </ModalContent> 
+            </Modal>
+        )
+    }
+
+    // modal for delete acc
+    const deleteAccModal = () => {
+        return(
+            <Modal size="lg" isOpen={isDeleteAcc} onClose={() => handleOnCloseDelAccModal()} useRNModal>
+                <ModalBackdrop/>
+                <ModalContent>
+                    <ModalHeader>
+                        <Heading>
+                            Account Deletion
+                        </Heading>
+                        <ModalCloseButton>
+                            <Icon as={X}/>
+                        </ModalCloseButton>
+                    </ModalHeader>
+                    <ModalBody>
+                        <Text>
+                            Are your sure you want to <Text>Permanently Delete</Text> your account?
+                        </Text>
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button
+                            className="bg-red-500">
+                            <ButtonText>
+                                Delete Account
+                            </ButtonText>
+                        </Button>
+                        <Button
+                            onPress={() => handleOnCloseDelAccModal()}>
+                            <ButtonText>
+                                Cancel
+                            </ButtonText>
+                        </Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
+        )
+    }
+
     return(
         <>
             {isSecuritySettings && (securitySettings())}
+            {isChangePass && (changePassModal())}
+            {isDeleteAcc && (deleteAccModal())}
             {isPersonalInfo && (personalInformation())}
             <VStack
-                className={`lg:w-1/5 gap-6 ${isPersonalInfo || isSecuritySettings ? "hidden": "flex"}`}>
+                className={`lg:w-2/5 gap-6 ${isPersonalInfo || isSecuritySettings ? "hidden": "flex"}`}>
                 <Button
                     onPress={() => setPersonalInfo(true)}
                     variant="outline"
@@ -157,6 +350,7 @@ const EditUserInfo = ({user}) => {
                     </Button>
                 <Divider/>
                 <Button
+                    onPress={() => logout()}
                     variant="solid"
                     >
                         <ButtonText>
@@ -165,22 +359,7 @@ const EditUserInfo = ({user}) => {
                     </Button>
 
             </VStack>
-            <Modal isOpen={isChangePass} onClose={() => setChangePass(false)} useRNModal>
-                <ModalBackdrop/>
-                <ModalContent>
-                    <ModalHeader>
-                        <Heading>Change Password</Heading>  
-                        <ModalCloseButton>
-                            <Icon as={X}/>
-                        </ModalCloseButton>  
-                    </ModalHeader> 
-                    <ModalBody>
-                        <InputWithFormControl
-                            label="Current Password"
-                            placeholder="Current Password"/>
-                    </ModalBody>   
-                </ModalContent> 
-            </Modal>
+            
         </>
     )
 }

@@ -11,35 +11,35 @@ import SideBar from "@/components/navigation/Sidebar";
 import React from "react";
 
 const TabLayout = () => {
-  // const { session } = useAuth()
-  // const { width } = useWindowDimensions()
-  // const hideSidebar = width < 700 ? true: false;
+  const { session } = useAuth()
+  const { width } = useWindowDimensions()
+  const hideSidebar = width < 700 ? true: false;
 
-  // const router = useRouter()
-  // const path = usePathname()
+  const router = useRouter()
+  const path = usePathname()
 
-  // return (
-  //     <Box
-  //      className={`h-full bg-[#D9E9DD] flex ${hideSidebar && session ? "flex-col":"flex-row"}`}>
+  return (
+      <Box
+       className={`h-full bg-[#D9E9DD] flex ${hideSidebar && session ? "flex-col":"flex-row"}`}>
 
-  //       <SideBarH 
-  //         navItem={AdminNavItem} 
-  //         hide={hideSidebar && session}
-  //         router={router}
-  //         path={path}/>
+        <SideBarH 
+          navItem={AdminNavItem} 
+          hide={hideSidebar && session}
+          router={router}
+          path={path}/>
 
-  //       {/* <Box className="flex-1 relative">
-  //         <Slot />
-  //       </Box> */}
+        <Box className="flex-1 relative">
+          <Slot />
+        </Box>
 
-  //       <TabH 
-  //         navItem={AdminNavItem} 
-  //         isMobile={hideSidebar} 
-  //         router={router}
-  //         path={path}/>
-  //     </Box>
+        <TabH 
+          navItem={AdminNavItem} 
+          isMobile={hideSidebar} 
+          router={router}
+          path={path}/>
+      </Box>
     
-  // );
+  );
 
   return <Tabs/>
 }

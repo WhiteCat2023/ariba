@@ -34,11 +34,11 @@ const ProfileHeader = ({user}) => {
                         size="sm">
                         {user?.email}
                         </Text>
-                        <Text 
+                        {/* <Text 
                         size="md"
                         bold={true}>
                         ROLE
-                        </Text>
+                        </Text> */}
                         <Badge>
                             <BadgeText>Verified</BadgeText>
                             <BadgeIcon as={GlobeIcon}/>
