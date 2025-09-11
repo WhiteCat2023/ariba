@@ -1,4 +1,4 @@
-  import { signUp } from "@/api/controller/auth.controller";
+import { signUp } from "@/api/controller/auth.controller";
 import Button from "@/components/button/Button";
 import { FacebookSignInButton } from "@/components/button/facebookAuthButton";
 import { GoogleSignUpButton } from "@/components/button/googleAuthButtons";
@@ -11,72 +11,82 @@ import { useState } from "react";
 import { Alert, Image, Platform, SafeAreaView, Text, View } from "react-native";
 import "../global.css";
 
-  export default function SignUp() {
-    const [showPassword, setShowPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const [credentials, setCredentials] = useState({
-      firstName: "",
-      lastName: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-      role: Role.USER,
-    });
+export default function SignUp() {
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [credentials, setCredentials] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    role: Role.USER,
+  });
 
-    const router = useRouter();
+  const router = useRouter();
 
-    const [fontsLoaded] = useFonts({
-      Pacifico: require("../assets/fonts/Pacifico-Regular.ttf"),
-      Roboto: require("../assets/fonts/Roboto-Bold.ttf"),
-    });
+  const [fontsLoaded] = useFonts({
+    Pacifico: require("../assets/fonts/Pacifico-Regular.ttf"),
+    Roboto: require("../assets/fonts/Roboto-Bold.ttf"),
+  });
 
-    const handleChange = (field, value) => {
-      setCredentials((prev) => ({
-        ...prev,
-        [field]: value,
-      }));
-    };
-    
+  const [showErrors, setShowErrors] = useState(false);
 
-    const handleSubmit = async () => {
-      if (credentials.password !== credentials.confirmPassword) {
-        Alert.alert("Passwords do not match");
-        return;
-      }
-      await signUp(credentials);
-      Alert.alert("Account created successfully");
-    };
+  const handleChange = (field, value) => {
+    setCredentials((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
 
-    if (!fontsLoaded) return;
+ const handleSubmit = async () => {
+  setShowErrors(true); // force error display
+  if (
+    !credentials.firstName ||
+    !credentials.lastName ||
+    !credentials.email ||
+    credentials.password !== credentials.confirmPassword
+  ) {
+    Alert.alert("Please fix the errors before submitting.");
+    return;
+  }
+  await signUp(credentials);
+  Alert.alert("Account created successfully");
+};
 
-    const isWeb = Platform.OS === "web";
+  if (!fontsLoaded) return;
 
-    // Mobile layout
+  const isWeb = Platform.OS === "web";
+
+  // 📱 Mobile layout
   if (!isWeb) {
     return (
-      <SafeAreaView className="flex-1 bg-white px-6">
-        <View className="flex-1 justify-center">
+    <SafeAreaView className="flex-1 bg-white">
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View className="flex-1 justify-center px-6">
           {/* Logo */}
-          <Text className="text-green-600 text-[64px] text-center font-[Pacifico]">
-            Ariba
-          </Text>
-          <Text className="text-[16px] text-black font-[Roboto] text-center -mt-6">
-            Locate - Report- Connect
-          </Text>
+          <View className="items-center mb-6">
+            <Image
+              source={require("../assets/images/signup_logo.png")} // replace with your green logo
+              style={{ width: 120, height: 120, resizeMode: "contain" }}
+            />
+          </View>
 
           {/* Greeting */}
-          <Text className="text-[18px] text-green-600 text-lg font-bold text-center mt-4 mb-16">
+          <Text className="text-[18px] text-green-600 font-bold text-center mb-8">
             Welcome Let’s Get you Started!
           </Text>
 
           {/* Input fields */}
-
           <Input
             placeholder="First Name"
             value={credentials.firstName}
             onChangeText={(t) => handleChange("firstName", t)}
             leftIconName="user"
-            className="w-full mb-4 border border-green-500 rounded-lg"
+            showErrors={showErrors}
           />
 
           <Input
@@ -84,7 +94,7 @@ import "../global.css";
             value={credentials.lastName}
             onChangeText={(t) => handleChange("lastName", t)}
             leftIconName="user"
-            className="w-full mb-4 border border-green-500 rounded-lg"
+            showErrors={showErrors}
           />
 
           <Input
@@ -92,7 +102,7 @@ import "../global.css";
             value={credentials.email}
             onChangeText={(t) => handleChange("email", t)}
             leftIconName="mail"
-            className="w-full mb-4 border border-green-500 rounded-lg"
+            showErrors={showErrors}
           />
 
           <Input
@@ -103,8 +113,10 @@ import "../global.css";
             leftIconName="key"
             icon={showPassword ? "eye-off" : "eye"}
             onIconPress={() => setShowPassword(!showPassword)}
-            className="w-full mb-4 border border-green-500 rounded-lg"
+            type="password"
+            showErrors={showErrors}
           />
+
           <Input
             placeholder="Confirm Password"
             secureTextEntry={!showConfirmPassword}
@@ -112,10 +124,10 @@ import "../global.css";
             onChangeText={(t) => handleChange("confirmPassword", t)}
             leftIconName="check"
             icon={showConfirmPassword ? "eye-off" : "eye"}
-            onIconPress={() =>
-              setShowConfirmPassword(!showConfirmPassword)
-            }
-            className="w-full mb-6 border border-green-500 rounded-lg"
+            onIconPress={() => setShowConfirmPassword(!showConfirmPassword)}
+            type="confirmPassword"
+            compareWith={credentials.password}
+            showErrors={showErrors}
           />
 
           {/* Confirm button */}
@@ -135,147 +147,128 @@ import "../global.css";
           </View>
 
           {/* Social buttons */}
-          <View className="flex-row justify-center space-x-6 mt-8">
-            <View
-              style={{ marginRight: 20 }} // Add spacing here
-              className="w-12 h-12 rounded-lg bg-white justify-center items-center shadow-md">
-              <GoogleSignUpButton/>
-            </View>
-
-            <View
-              style={{ marginRight: 20 }} // Add spacing here
-              className="w-12 h-12 rounded-lg bg-white justify-center items-center shadow-md">
-              <FacebookSignInButton/>
-            </View>
-
-            
-            {/* <Button className="w-12 h-12 rounded-lg bg-white justify-center items-center shadow-md">
-              <Image
-                source={require("../assets/images/facebook.png")}
-                style={{ width: 18, height: 18 }}
-                resizeMode="contain"
-              />
-            </Button> */}
+          <View className="flex-row justify-center space-x-6">
+            <GoogleSignUpButton />
+            <FacebookSignInButton />
           </View>
         </View>
-      </SafeAreaView>
-    );
-  }
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
 
+  // 💻 Web layout
+  return (
+    <SafeAreaView className="flex-1 flex-row bg-white">
+      {/* Form Section */}
+      <View className="flex-1 justify-center items-center z-10 top-3">
+        <Card className="w-[90%] max-w-md rounded-2xl shadow-lg p-8">
+          <Text className="text-green-600 font-[Pacifico] text-2xl text-center">
+            Ariba
+          </Text>
+          <Text className="text-green-600 text-xl font-bold text-center mt-2">
+            Greetings!
+          </Text>
+          <Text className="text-green-600 text-base text-center mb-6">
+            Welcome Let’s set you up first!
+          </Text>
 
-    // Web layout
-    return (
-      <SafeAreaView className="flex-1 flex-row bg-white">
-        {/* Form Section (Left) */}
-        <View className="flex-1 justify-center items-center z-10 top-3">
-          <Card className="w-[90%] max-w-md rounded-2xl shadow-lg p-8">
-            <Text className="text-green-600 font-[Pacifico] text-2xl text-center">
-              Ariba
-            </Text>
-            <Text className="text-green-600 text-xl font-bold text-center mt-2">
-              Greetings!
-            </Text>
-            <Text className="text-green-600 text-base text-center mb-6">
-              Welcome Let’s set you up first!
-            </Text>
+          <Input
+            placeholder="First Name"
+            value={credentials.firstName}
+            onChangeText={(t) => handleChange("firstName", t)}
+            leftIconName="user"
+            showErrors={showErrors}
+          />
 
-            <Input
-              placeholder="First Name"
-              value={credentials.firstName}
-              onChangeText={(t) => handleChange("firstName", t)}
-              leftIconName="user"
-              className="w-full mb-4 border border-green-500 rounded-lg"
-            />
+          <Input
+            placeholder="Last Name"
+            value={credentials.lastName}
+            onChangeText={(t) => handleChange("lastName", t)}
+            leftIconName="user"
+            showErrors={showErrors}
+          />
 
-            <Input
-              placeholder="Last Name"
-              value={credentials.lastName}
-              onChangeText={(t) => handleChange("lastName", t)}
-              leftIconName="user"
-              className="w-full mb-4 border border-green-500 rounded-lg"
-            />
+          <Input
+            placeholder="Email"
+            value={credentials.email}
+            onChangeText={(t) => handleChange("email", t)}
+            leftIconName="mail"
+            showErrors={showErrors}
+          />
 
-            <Input
-              placeholder="Email"
-              value={credentials.email}
-              onChangeText={(t) => handleChange("email", t)}
-              leftIconName="mail"
-              className="mb-4"
-            />
-            <Input
-              placeholder="Password"
-              secureTextEntry={!showPassword}
-              value={credentials.password}
-              onChangeText={(t) => handleChange("password", t)}
-              leftIconName="key"
-              icon={showPassword ? "eye-off" : "eye"}
-              onIconPress={() => setShowPassword(!showPassword)}
-              className="mb-4"
-            />
-            <Input
-              placeholder="Confirm Password"
-              secureTextEntry={!showConfirmPassword}
-              value={credentials.confirmPassword}
-              onChangeText={(t) => handleChange("confirmPassword", t)}
-              leftIconName="key"
-              icon={showConfirmPassword ? "eye-off" : "eye"}
-              onIconPress={() =>
-                setShowConfirmPassword(!showConfirmPassword)
-              }
-              className="mb-6"
-            />
+          <Input
+            placeholder="Password"
+            secureTextEntry={!showPassword}
+            value={credentials.password}
+            onChangeText={(t) => handleChange("password", t)}
+            leftIconName="key"
+            icon={showPassword ? "eye-off" : "eye"}
+            onIconPress={() => setShowPassword(!showPassword)}
+            type="password"
+            showErrors={showErrors}
+          />
 
-            <Button
-              title="Sign Up"
-              onPress={handleSubmit}
-              className="w-full py-3 rounded-lg mb-4"
-              textStyle={{ color: "white" }}
-              style={{
-                backgroundColor: "#FF7A00",
-              }}
-            />
+          <Input
+            placeholder="Confirm Password"
+            secureTextEntry={!showConfirmPassword}
+            value={credentials.confirmPassword}
+            onChangeText={(t) => handleChange("confirmPassword", t)}
+            leftIconName="check"
+            icon={showConfirmPassword ? "eye-off" : "eye"}
+            onIconPress={() => setShowConfirmPassword(!showConfirmPassword)}
+            type="confirmPassword"
+            compareWith={credentials.password}
+            showErrors={showErrors}
+          />
 
-            <View className="flex-row items-center my-6">
-              <View className="flex-1 h-px bg-black" />
-              <Text className="mx-2 text-gray-600 mb-1">or</Text>
-              <View className="flex-1 h-px bg-black" />
-            </View>
+          <Button
+            title="Sign Up"
+            onPress={handleSubmit}
+            className="w-full py-3 rounded-lg mb-4"
+            textStyle={{ color: "white" }}
+            style={{ backgroundColor: "#FF7A00" }}
+          />
 
-            <View className="flex-row justify-center space-x-4">
+          <View className="flex-row items-center my-6">
+            <View className="flex-1 h-px bg-black" />
+            <Text className="mx-2 text-gray-600 mb-1">or</Text>
+            <View className="flex-1 h-px bg-black" />
+          </View>
 
-            <GoogleSignUpButton/>
-            <FacebookSignInButton/>
+          <View className="flex-row justify-center space-x-4">
+            <GoogleSignUpButton />
+            <FacebookSignInButton />
+          </View>
 
-            </View>
+          <Text className="w-full text-center mt-4">
+            Already have an account?{" "}
             <Text
-             className="w-full text-center">
-              Already have an account?&nbsp; 
-              <Text 
-                onPress={() => router.replace("/")}
-                className="font-semibold text-decoration: underline">Sign In</Text>
+              onPress={() => router.replace("/")}
+              className="font-semibold underline"
+            >
+              Sign In
             </Text>
-          </Card>
+          </Text>
+        </Card>
+      </View>
+
+      {/* Illustration */}
+      <View className="flex-1 relative">
+        <View className="absolute top-[-10px] left-[-90px]">
+          <Text className="text-green-600 text-[80px] font-[Pacifico]">Ariba</Text>
+          <Text className="text-black text-[20px] font-[Roboto] mt-[-30px] ml-[-13px]">
+            Locate - Report - Connect
+          </Text>
         </View>
-
-        {/* Illustration Section (Right) */}
-  <View className="flex-1 relative">
-    <View className="absolute top-[-10px] left-[-90px]">
-      <Text className="text-green-600 text-[80px] font-[Pacifico]">
-        Ariba
-      </Text>
-      <Text className="text-black text-[20px] text-lg font-[Roboto] mt-[-30px] ml-[-13px]">
-        Locate - Report - Connect
-      </Text>
-    </View>
-
-    <View className="flex-1 justify-center items-center">
-      <Image
-        source={require("../assets/images/signup_illustration.png")}
-        className="w-[600px] h-[600px] mt-80 ml-[-470px]"
-        resizeMode="contain"
-      />
-    </View>
-  </View>
-      </SafeAreaView>
-    );
-  }
+        <View className="flex-1 justify-center items-center">
+          <Image
+            source={require("../assets/images/signup_illustration.png")}
+            className="w-[600px] h-[600px] mt-80 ml-[-470px]"
+            resizeMode="contain"
+          />
+        </View>
+      </View>
+    </SafeAreaView>
+  );
+}

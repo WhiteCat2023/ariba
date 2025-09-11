@@ -28,6 +28,8 @@ import { useAuth } from "@/context/AuthContext"
 import { Heart, ArrowLeft, MoreVertical, Bookmark, MessageCircle, Share2, ChevronDown } from "lucide-react-native"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { Share, Alert } from "react-native"
+import * as Clipboard from "expo-clipboard"
+import { Copy } from "lucide-react-native"
 
 // ✅ Gluestack UI
 import { Reply } from "lucide-react-native";
@@ -104,9 +106,10 @@ const ForumDetails = () => {
   const [now, setNow] = useState(new Date())
   const [bookmarked, setBookmarked] = useState(false)
   const [filterMenuOpen, setFilterMenuOpen] = useState(false)
+  const [copied, setCopied] = useState(false)
 
-  // Comment filter state + dropdown open state
-  const [commentFilter, setCommentFilter] = useState("Most Relevant") // "Most Relevant" | "Newest" | "All Comments"
+// Comment filter state
+const [commentFilter, setCommentFilter] = useState("Newest") // "Newest" | "Oldest"
   const [filterOpen, setFilterOpen] = useState(false)
 
   useEffect(() => {
@@ -504,25 +507,19 @@ const ForumDetails = () => {
   if (!forum) return null
 
   // build filtered list once, then sort according to selected filter
-  const baseFilteredComments = allComments.filter(c =>
-    c.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    c.authorName.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+const baseFilteredComments = allComments.filter(c =>
+  c.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  c.authorName.toLowerCase().includes(searchQuery.toLowerCase())
+)
 
-  const tsToMillis = (t) => (t && t.toDate ? t.toDate().getTime() : 0)
+const tsToMillis = (t) => (t && t.toDate ? t.toDate().getTime() : 0)
 
-  let filteredComments = [...baseFilteredComments]
-  if (commentFilter === "Newest") {
-    filteredComments.sort((a, b) => tsToMillis(b.timestamp) - tsToMillis(a.timestamp))
-  } else if (commentFilter === "Most Relevant") {
-    // Sort by likesCount desc, fallback to newest
-    filteredComments.sort((a, b) => {
-      const la = a.likesCount || 0
-      const lb = b.likesCount || 0
-      if (lb !== la) return lb - la
-      return tsToMillis(b.timestamp) - tsToMillis(a.timestamp)
-    })
-  } // "All Comments" keeps the order from query (asc by timestamp) but we already copied it
+let filteredComments = [...baseFilteredComments]
+if (commentFilter === "Newest") {
+  filteredComments.sort((a, b) => tsToMillis(b.timestamp) - tsToMillis(a.timestamp))
+} else if (commentFilter === "Oldest") {
+  filteredComments.sort((a, b) => tsToMillis(a.timestamp) - tsToMillis(b.timestamp))
+}
 
   const forumMatchesSearch =
     forum.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -555,8 +552,8 @@ const ForumDetails = () => {
 
               <Heading size="4xl" className="mb-1">FORUMS</Heading>
               <Text className="text-2xl font-semibold mb-4">
-                {forum.title || "Untitled Discussion"}
-              </Text>
+  {forum.title || "Untitled Discussion"}
+</Text>
 
               <Box className="flex-row items-center mb-2">
                 <Image source={{ uri: forum.authorPhoto }} style={{ width: 35, height: 35, borderRadius: 18, marginRight: 8 }} />
@@ -579,13 +576,30 @@ const ForumDetails = () => {
                 </Box>
 
                 <Box className="flex-row space-x-4">
-                  <TouchableOpacity onPress={toggleBookmark}>
-                    <Bookmark size={20} color={bookmarked ? "green" : "black"} />
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={shareForum}>
-                    <Share2 size={20} />
-                  </TouchableOpacity>
-                </Box>
+  <TouchableOpacity onPress={toggleBookmark}>
+    <Bookmark size={20} color={bookmarked ? "green" : "black"} />
+  </TouchableOpacity>
+
+  {/* ✅ Copy Button */}
+  <TouchableOpacity
+  onPress={async () => {
+    try {
+      await Clipboard.setStringAsync(`${forum.title}\n\n${forum.content}`)
+      setCopied(true)   // ✅ Show indicator
+      setTimeout(() => setCopied(false), 2000) // Hide after 2s
+    } catch (err) {
+      console.error("Error copying:", err)
+      Alert.alert("Error", "Could not copy content. Try again.")
+    }
+  }}
+>
+  <Copy size={20} color="black" />
+</TouchableOpacity>
+
+  <TouchableOpacity onPress={shareForum}>
+    <Share2 size={20} />
+  </TouchableOpacity>
+</Box>
               </Box>
 
               {/* Comment Input + Sort Dropdown */}
@@ -619,38 +633,38 @@ const ForumDetails = () => {
 </TouchableOpacity>
 
     {/* Floating Dropdown options */}
-    {filterMenuOpen && (
-      <View
-        style={{
-          position: "absolute",
-          top: 28,
-          left: 0,
-          borderWidth: 1,
-          borderColor: "#e5e7eb",
-          backgroundColor: "#fff",
-          borderRadius: 6,
-          elevation: 10,        // Android shadow
-          zIndex: 9999,         // Make sure it's on top
-          shadowColor: "#000",  // iOS shadow
-          shadowOpacity: 0.15,
-          shadowRadius: 6,
-          shadowOffset: { width: 0, height: 2 },
+{filterMenuOpen && (
+  <View
+    style={{
+      position: "absolute",
+      top: 28,
+      left: 0,
+      borderWidth: 1,
+      borderColor: "#e5e7eb",
+      backgroundColor: "#fff",
+      borderRadius: 6,
+      elevation: 10,
+      zIndex: 9999,
+      shadowColor: "#000",
+      shadowOpacity: 0.15,
+      shadowRadius: 6,
+      shadowOffset: { width: 0, height: 2 },
+    }}
+  >
+    {["Newest", "Oldest"].map((opt) => (
+      <TouchableOpacity
+        key={opt}
+        style={{ paddingVertical: 10, paddingHorizontal: 12 }}
+        onPress={() => {
+          setCommentFilter(opt)
+          setFilterMenuOpen(false)
         }}
       >
-        {["Most Relevant", "Newest", "All Comments"].map((opt) => (
-          <TouchableOpacity
-            key={opt}
-            style={{ paddingVertical: 10, paddingHorizontal: 12 }}
-            onPress={() => {
-              setCommentFilter(opt)
-              setFilterMenuOpen(false)
-            }}
-          >
-            <Text style={{ fontSize: 14 }}>{opt}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-    )}
+        <Text style={{ fontSize: 14 }}>{opt}</Text>
+      </TouchableOpacity>
+    ))}
+  </View>
+)}
   </View>
 
   {/* Right: Comment buttons */}
@@ -670,6 +684,28 @@ const ForumDetails = () => {
           ) : <Text className="text-center text-gray-500 py-10">No results found for "{searchQuery}"</Text>}
         </Box>
       </ScrollView>
+      {copied && (
+  <View
+    style={{
+      position: "absolute",
+      bottom: 40,
+      left: 0,
+      right: 0,
+      alignItems: "center",
+    }}
+  >
+    <View
+      style={{
+        backgroundColor: "black",
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        borderRadius: 20,
+      }}
+    >
+      <Text style={{ color: "white" }}>✅ Copied to clipboard</Text>
+    </View>
+  </View>
+)}
     </SafeAreaView>
   )
 }

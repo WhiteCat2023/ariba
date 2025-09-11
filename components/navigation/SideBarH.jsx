@@ -14,7 +14,7 @@ const SideBarH = ({navItem, hide, router, path}) => {
           <VStack space="4xl" className="w-72 p-4 hover:text-white border bg-white h-full rounded-xl m-4">
             <Box>
               <Text size="5xl" bold>Ariba</Text>
-              <Text size="sm">Admin Dashboard</Text>
+              <Text size="sm">Dashboard</Text>
             </Box>
             
             <Box className="gap-y-4">
