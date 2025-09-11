@@ -9,7 +9,7 @@ import { LineChartIcon } from 'lucide-react-native'
 
 const StatCard = ({header, data, icon}) => {
   return (
-    <Card size="md" variant="elevated" className="flex flex-row justify-between items-center border-2 rounded-xl">
+    <Card size="md" variant="elevated" className="flex flex-row justify-between items-center lg:border-2 rounded-xl">
         <View>
             <Heading size="xs" className="mb-1">
                 {header}

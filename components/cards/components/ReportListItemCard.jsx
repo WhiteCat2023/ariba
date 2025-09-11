@@ -5,12 +5,7 @@ import { Text } from "@/components/ui/text"
 import { VStack } from "@/components/ui/vstack"
 import React from "react"
 
-type Props = {
-    title:string,
-    date: string
-}
-
-const ReportListItemCard = ({title, date}: Props) => {
+const ReportListItemCard = ({title, date}) => {
     return (
         <Card className="p-2">
             <HStack space="sm">

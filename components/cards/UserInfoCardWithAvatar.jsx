@@ -13,13 +13,9 @@ import DeleteAccountBtn from "../button/DeleteAccountBtn"
 import PersonalInfo from "../inputs/PersonalInfo"
 import { getUserInfoFromFirestore } from "@/api/controller/users.controller"
 
-interface UserInfoCardWithAvatarProp{
-  user: Object;
-} 
+const UserInfoCardWithAvatar = ({user}) => {
 
-const UserInfoCardWithAvatar: React.FC<UserInfoCardWithAvatarProp> = ({user}) => {
-
-  const [isEdit, setEdit] = useState<boolean>(false)
+  const [isEdit, setEdit] = useState(false)
 
   return (
     <Card className="">

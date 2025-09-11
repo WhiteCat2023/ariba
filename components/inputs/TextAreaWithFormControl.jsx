@@ -4,17 +4,7 @@ import { FormControl, FormControlError, FormControlErrorIcon, FormControlErrorTe
 import { AlertCircleIcon } from 'lucide-react-native';
 import { Icon } from '../ui/icon';
 
-interface TextAreaWithFormControlProps {
-    label?: string;
-    input?: string;
-    setInput?: (value: string) => void;
-    placeholder?: string;
-    fallbackText?: string;
-    errorText?: string;
-    isError?: boolean;
-}
-
-const TextAreaWithFormControl: React.FC<TextAreaWithFormControlProps> = ({
+const TextAreaWithFormControl = ({
     label,
     input, 
     setInput = ()=>{},
