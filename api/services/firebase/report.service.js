@@ -18,7 +18,15 @@ export const getUserReportsFromFirebase = async (uid) => {
   }
 };
 
-export const getAllReportsFromFirebase = async () => {
+
+/**
+ * This function gets all the reports from the allReports collection in the firestore
+ * @param {string} statusFilter 
+ * @returns 
+ * 
+ * return an array or objects
+ */
+export const getAllReportsFromFirebase = async (statusFilter = null) => {
   try {
     const reportsRef = collection(db, "allReports");
     const snapshot = await getDocs(reportsRef);
@@ -27,6 +35,46 @@ export const getAllReportsFromFirebase = async () => {
       id: doc.id,
       ...doc.data(),
     }));
+
+    // Filter by status if provided
+    if (statusFilter) {
+      const filteredReports = reports.filter(
+        (report) => report.status?.toLowerCase() === statusFilter.toLowerCase()
+      );
+      return filteredReports;
+    }
+
+    return reports;
+  } catch (error) {
+    console.error("Error fetching user reports:", error);
+    throw error;
+  }
+};
+
+/**
+ * This function gets all the reports by the tier in the collections
+ * @param {string} statusFilter 
+ * @returns 
+ * 
+ * an array or objects
+ */
+export const getAllTierReportsFromFirebase = async (statusFilter = null) => {
+  try {
+    const reportsRef = collection(db, "allReports");
+    const snapshot = await getDocs(reportsRef);
+
+    const reports = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    // Filter by status if provided
+    if (statusFilter) {
+      const filteredReports = reports.filter(
+        (report) => report.tier?.toLowerCase() === statusFilter.toLowerCase()
+      );
+      return filteredReports;
+    }
 
     return reports;
   } catch (error) {

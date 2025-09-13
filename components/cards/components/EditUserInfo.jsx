@@ -88,6 +88,7 @@ const EditUserInfo = ({user}) => {
             newPass: false,
             confirmNewPass: false
         })
+        setPasswordMatchError(false)
     }
 
     // handles on close delete account model
@@ -249,7 +250,7 @@ const EditUserInfo = ({user}) => {
                             input={changePassInput.newPass}
                             setInput={(newPass) => onChangePassInputChange("newPass", newPass)}
                             isError={changePassInputError.newPass | passwordMatchError}
-                            errorText={"This field must not be blank"}
+                            errorText={matchErrorText()}
                             type={isViewPassword.newPass ? "text":"password"}
                             icon={isViewPassword.newPass ? EyeOff: Eye}
                             onIconPress={() => onViewPassword("newPass")}/>
@@ -295,7 +296,7 @@ const EditUserInfo = ({user}) => {
                     </ModalHeader>
                     <ModalBody>
                         <Text>
-                            Are your sure you want to <Text>Permanently Delete</Text> your account?
+                            Are your sure you want to <Text bold>Permanently Delete</Text> your account?
                         </Text>
                     </ModalBody>
                     <ModalFooter>
@@ -325,6 +326,7 @@ const EditUserInfo = ({user}) => {
             {isPersonalInfo && (personalInformation())}
             <VStack
                 className={`lg:w-2/5 gap-6 ${isPersonalInfo || isSecuritySettings ? "hidden": "flex"}`}>
+                <Heading>Profile Settings</Heading>
                 <Button
                     onPress={() => setPersonalInfo(true)}
                     variant="outline"
