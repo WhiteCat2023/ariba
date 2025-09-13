@@ -576,8 +576,13 @@ if (commentFilter === "Newest") {
                 </Box>
 
                 <Box className="flex-row space-x-4">
+  {/* ✅ Bookmark Toggle */}
   <TouchableOpacity onPress={toggleBookmark}>
-    <Bookmark size={20} color={bookmarked ? "green" : "black"} />
+    <Bookmark
+      size={20}
+      color={bookmarked ? "#22c55e" : "black"}   // Tailwind green-500
+      fill={bookmarked ? "#22c55e" : "transparent"} // ✅ Fill when bookmarked
+    />
   </TouchableOpacity>
 
   {/* ✅ Copy Button */}
@@ -629,7 +634,7 @@ if (commentFilter === "Newest") {
   <Text style={{ fontWeight: "500", fontSize: 14, marginRight: 4 }}>
     {commentFilter}
   </Text>
-  <ChevronDown size={16} color="#555" />
+  <ChevronDown size={16} color="#555" style={{ marginTop: "3"}}/>
 </TouchableOpacity>
 
     {/* Floating Dropdown options */}
