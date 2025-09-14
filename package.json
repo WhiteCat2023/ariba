@@ -11,7 +11,7 @@
     "lint": "expo lint"
   },
   "dependencies": {
-    "@expo/html-elements": "^0.4.2",
+    "@expo/html-elements": "^0.12.5",
     "@expo/vector-icons": "^14.1.0",
     "@gluestack-ui/button": "^1.0.14",
     "@gluestack-ui/core": "^3.0.2",
@@ -45,6 +45,7 @@
     "expo": "^53.0.22",
     "expo-auth-session": "~6.2.1",
     "expo-blur": "~14.1.5",
+    "expo-clipboard": "~7.1.5",
     "expo-constants": "~17.1.7",
     "expo-dev-client": "~5.2.4",
     "expo-font": "~13.3.2",
@@ -81,8 +82,7 @@
     "react-native-web": "^0.20.0",
     "react-native-webview": "13.13.5",
     "tailwind-merge": "^3.3.1",
-    "tailwind-variants": "^3.1.1",
-    "expo-clipboard": "~7.1.5"
+    "tailwind-variants": "^3.1.1"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

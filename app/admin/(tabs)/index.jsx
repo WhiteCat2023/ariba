@@ -12,6 +12,7 @@ import SearchBar from "@/components/inputs/searchbar/SearchBar";
 import { BarChart, LineChart } from "lucide-react-native";
 import { getAllReports, getAllReportsWithFilter } from "@/api/controller/report.controller";
 import { HttpStatus } from "@/enums/status";
+import ProfileCard from "@/components/cards/ProfileCard";
 
 export default function AdminDashboard() {
 
@@ -127,13 +128,14 @@ export default function AdminDashboard() {
           >
             <TierCard tier={"High"}/>
           </GridItem>
-          {/* <GridItem
+          <GridItem
             _extra={{
               className: "lg:col-span-4",
             }}
           >
-            <TierCard />
-          </GridItem> */}
+            {/* <TierCard /> */}
+            <ProfileCard/>
+          </GridItem>
         </Grid>
         {/* <Button 
               onPress={() => signOut(user)}
