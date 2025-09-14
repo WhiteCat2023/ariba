@@ -40,6 +40,7 @@ import {
 } from "@/components/ui/modal";
 import { Card } from "@/components/ui/card";
 import { Pressable } from "@/components/ui/pressable";
+import { Icon } from "@/components/ui/icon";
 
 const Reports = () => {
   const { user } = useAuth();
@@ -457,13 +458,13 @@ const Reports = () => {
       </Grid>
 
       {/* Report Details Modal */}
-      <Modal isOpen={isModalOpen} onClose={closeReportModal} size="lg">
+      <Modal isOpen={isModalOpen} onClose={closeReportModal} size="lg" useRNModal>
         <ModalBackdrop />
         <ModalContent>
           <ModalHeader>
             <Heading size="xl">Report Details</Heading>
             <ModalCloseButton onPress={closeReportModal}>
-              <ButtonIcon as={X} />
+              <Icon as={X} />
             </ModalCloseButton>
           </ModalHeader>
           <ModalBody>
@@ -536,13 +537,13 @@ const Reports = () => {
       </Modal>
 
       {/* Image View Modal */}
-      <Modal isOpen={imageModalOpen} onClose={closeImageModal} size="lg">
+      <Modal isOpen={imageModalOpen} onClose={closeImageModal} size="lg" useRNModal>
         <ModalBackdrop />
         <ModalContent>
           <ModalHeader>
             <Heading size="lg">Image Preview</Heading>
             <ModalCloseButton onPress={closeImageModal}>
-              <ButtonIcon as={X} />
+              <Icon as={X}/>
             </ModalCloseButton>
           </ModalHeader>
           <ModalBody>
