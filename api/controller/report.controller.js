@@ -1,5 +1,5 @@
 import { HttpStatus } from "@/enums/status";
-import { getAllReportsFromFirebase, getAllTierReportsFromFirebase, getUserReportsFromFirebase } from "../services/firebase/report.service";
+import { getAllReportsFromFirebase, getAllReportsFromFirebaseAsNofications, getAllTierReportsFromFirebase, getUserReportsFromFirebase } from "../services/firebase/report.service";
 
 export const getUserReports = async (uid) => {
   try {
@@ -31,6 +31,21 @@ export const getAllReports = async () => {
     };
   }
 }
+
+export const getAllReportsAsNotifications = async () => {
+  try {
+    const allReports = await getAllReportsFromFirebaseAsNofications();
+    return {
+      status: HttpStatus.OK,
+      data: allReports,
+    };
+  } catch (error) {
+    return {
+      status: HttpStatus.BAD_REQUEST,
+      message: error.message,
+    };
+  }
+};
 
 export const getAllReportsWithFilter = async ( req = null ) => {
   try {

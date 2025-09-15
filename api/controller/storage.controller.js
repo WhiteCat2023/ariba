@@ -35,12 +35,16 @@ export const uploadUserReport = async (req, user) => {
 
     await addDoc(collection(db, "allReports"), {
       uid: user.uid,
+      reportName: user.displayName,
       title: req.title,
       description: req.description,
       tier: req.tier,
       location: req.location,
       timestamp: req.timestamp,
       images: urls,
+      type: "report",
+      read: false,
+      status: "pending"
     });
 
     return {
