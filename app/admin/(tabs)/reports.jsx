@@ -24,6 +24,8 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
+  SortAsc,
+  SortDesc,
   X,
   ArrowUpDown,
 } from "lucide-react-native";
@@ -407,11 +409,11 @@ const handleIgnore = async (docId) => {
 
                 {/* Sort Button */}
                 <Button variant="outline" size="sm" onPress={toggleSortOrder}>
-                  <ButtonIcon as={ArrowUpDown} size={16} className="mr-2" />
-                  <ButtonText>
-                    {sortOrder === "desc" ? "Newest First" : "Oldest First"}
-                  </ButtonText>
-                </Button>
+  <ButtonIcon
+    as={sortOrder === "desc" ? SortDesc : SortAsc}
+    size={18}
+  />
+</Button>
               </HStack>
             </Box>
 
