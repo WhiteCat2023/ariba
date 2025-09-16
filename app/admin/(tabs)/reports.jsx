@@ -194,6 +194,13 @@ const Reports = () => {
     });
   };
 
+  const handleIgnore = (docId) => {
+    updateReport({
+      docId: docId,
+      status: "ignored",
+    });
+  };
+
   const goToPage = (page) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
@@ -409,12 +416,7 @@ const Reports = () => {
                               size="sm"
                               variant="solid"
                               action="negative"
-                              onPress={() =>
-                                handleReportAction(
-                                  report.id || report._id,
-                                  "ignore"
-                                )
-                              }
+                              onPress={() => handleIgnore(report.id)}
                             >
                               <ButtonText>Ignore</ButtonText>
                             </Button>
