@@ -65,7 +65,7 @@ export default function AdminDashboard() {
         >
           <GridItem
             _extra={{
-              className: "lg:col-span-8",
+              className: "lg:col-span-12",
             }}
           >
             <Box>
@@ -74,14 +74,14 @@ export default function AdminDashboard() {
             </Box>
           </GridItem>
 
-          <GridItem
+          {/* <GridItem
             className="flex items-end "
             _extra={{
               className: "lg:col-span-4",
             }}
           >
             <SearchBar />
-          </GridItem>
+          </GridItem> */}
 
           <GridItem
             _extra={{

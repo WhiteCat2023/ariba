@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { Box } from "@/components/ui/box";
 import { Heading } from "@/components/ui/heading";
-import { getAllReports } from "@/api/controller/report.controller";
+import { getAllReports, updateReport } from "@/api/controller/report.controller";
 import SearchBar from "@/components/inputs/searchbar/SearchBar";
 import { Grid, GridItem } from "@/components/ui/grid";
 import { useAuth } from "@/context/AuthContext";
@@ -184,9 +184,11 @@ const Reports = () => {
     setImageModalOpen(false);
   };
 
-  const handleReportAction = (reportId, action) => {
-    console.log(`Action: ${action} on report: ${reportId}`);
-    // Implement your action logic here
+  const handleRespond = (docId) => {
+    updateReport({
+      docId: docId,
+      status: "responded"
+    })
   };
 
   const goToPage = (page) => {
@@ -397,10 +399,7 @@ const Reports = () => {
                               variant="solid"
                               action="positive"
                               onPress={() =>
-                                handleReportAction(
-                                  report.id || report._id,
-                                  "respond"
-                                )
+                                handleRespond(report.id)
                               }
                             >
                               <ButtonText>Respond</ButtonText>

@@ -1,6 +1,37 @@
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../config/firebase.config";
 
+export function reportDocRef(collection, docId) {
+  const docRef = doc(db, collection, docId)
+  return docRef
+}
+
+export async function updateReportDoc(collection, docId, field, value) {
+  const userCollection = userDocRef(collection, docId)
+  if(!collection && !uid && !field && !value) throw new Error("Missing required values: collection, uid, field, value")
+  const docSnapshot = await getDoc(userCollection)
+  if(!docSnapshot.exists()) throw new Error("User doenst Exist")
+  await updateDoc(userCollection,{
+    [field]: value,
+    updatedAt: serverTimestamp()
+  })
+}
+
+export async function updateReportStatus(credentials){
+  try {
+    const { docId, status } = credentials;
+    console.log(docId);
+    if (!docId) throw new Error("User not found");
+
+    updateUserDoc("allReports", docId, "status", status);
+
+    return docId;
+  } catch (error) {
+    console.error(`Firestore Error: ${error.message}`);
+    throw error;
+  };
+};
+
 export const getUserReportsFromFirebase = async (uid) => {
   try {
     const reportsRef = collection(db, "reports", uid, "reportCollection");
