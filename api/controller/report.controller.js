@@ -1,22 +1,28 @@
 import { HttpStatus } from "@/enums/status";
-import { getAllReportsFromFirebase, getAllReportsFromFirebaseAsNofications, getAllTierReportsFromFirebase, getUserReportsFromFirebase, updateReportDoc } from "../services/firebase/report.service";
+import {
+  getAllReportsFromFirebase,
+  getAllReportsFromFirebaseAsNofications,
+  getAllTierReportsFromFirebase,
+  getUserReportsFromFirebase,
+  updateReportStatus,
+} from "../services/firebase/report.service";
 
-export const updateReport =  async ( req ) => {
-    try {
-        await updateReportDoc(req)
+export const updateReport = async (req) => {
+  try {
+    await updateReportStatus(req);
 
-        return { 
-            status: HttpStatus.OK, 
-            message: "Report updated successfully" 
-        };
-    } catch (error) {
-        console.error(`Report update Error: ${error.message}`);
-        return { 
-            status: HttpStatus.BAD_REQUEST, 
-            message: error.message 
-        };
-    }
-}
+    return {
+      status: HttpStatus.OK,
+      message: "Report updated successfully",
+    };
+  } catch (error) {
+    console.error(`Report update Error: ${error.message}`);
+    return {
+      status: HttpStatus.BAD_REQUEST,
+      message: error.message,
+    };
+  }
+};
 
 export const getUserReports = async (uid) => {
   try {
@@ -36,7 +42,7 @@ export const getUserReports = async (uid) => {
 
 export const getAllReports = async () => {
   try {
-    const allReports = await getAllReportsFromFirebase()
+    const allReports = await getAllReportsFromFirebase();
     return {
       status: HttpStatus.OK,
       data: allReports,
@@ -47,7 +53,7 @@ export const getAllReports = async () => {
       message: error.message,
     };
   }
-}
+};
 
 export const getAllReportsAsNotifications = async () => {
   try {
@@ -64,9 +70,9 @@ export const getAllReportsAsNotifications = async () => {
   }
 };
 
-export const getAllReportsWithFilter = async ( req = null ) => {
+export const getAllReportsWithFilter = async (req = null) => {
   try {
-    const allReports = await getAllReportsFromFirebase( req );
+    const allReports = await getAllReportsFromFirebase(req);
     return {
       status: HttpStatus.OK,
       data: allReports,

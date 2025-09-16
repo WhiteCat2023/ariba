@@ -1,7 +1,10 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { Box } from "@/components/ui/box";
 import { Heading } from "@/components/ui/heading";
-import { getAllReports, updateReport } from "@/api/controller/report.controller";
+import {
+  getAllReports,
+  updateReport,
+} from "@/api/controller/report.controller";
 import SearchBar from "@/components/inputs/searchbar/SearchBar";
 import { Grid, GridItem } from "@/components/ui/grid";
 import { useAuth } from "@/context/AuthContext";
@@ -187,8 +190,8 @@ const Reports = () => {
   const handleRespond = (docId) => {
     updateReport({
       docId: docId,
-      status: "responded"
-    })
+      status: "responded",
+    });
   };
 
   const goToPage = (page) => {
@@ -398,9 +401,7 @@ const Reports = () => {
                               size="sm"
                               variant="solid"
                               action="positive"
-                              onPress={() =>
-                                handleRespond(report.id)
-                              }
+                              onPress={() => handleRespond(report.id)}
                             >
                               <ButtonText>Respond</ButtonText>
                             </Button>
@@ -457,7 +458,12 @@ const Reports = () => {
       </Grid>
 
       {/* Report Details Modal */}
-      <Modal isOpen={isModalOpen} onClose={closeReportModal} size="lg" useRNModal>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={closeReportModal}
+        size="lg"
+        useRNModal
+      >
         <ModalBackdrop />
         <ModalContent>
           <ModalHeader>
@@ -536,13 +542,18 @@ const Reports = () => {
       </Modal>
 
       {/* Image View Modal */}
-      <Modal isOpen={imageModalOpen} onClose={closeImageModal} size="lg" useRNModal>
+      <Modal
+        isOpen={imageModalOpen}
+        onClose={closeImageModal}
+        size="lg"
+        useRNModal
+      >
         <ModalBackdrop />
         <ModalContent>
           <ModalHeader>
             <Heading size="lg">Image Preview</Heading>
             <ModalCloseButton onPress={closeImageModal}>
-              <Icon as={X}/>
+              <Icon as={X} />
             </ModalCloseButton>
           </ModalHeader>
           <ModalBody>
