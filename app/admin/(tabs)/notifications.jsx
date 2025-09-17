@@ -73,7 +73,7 @@ const Notifications = () => {
       const result = await getAllReportsAsNotifications();
       if (result.status === 200) {
         setNotifications(result.data);
-        setFilteredNotifications(result.data);
+        // setFilteredNotifications(result.data);
       } else {
         console.error("Error:", result.message);
       }
@@ -97,9 +97,13 @@ const Notifications = () => {
     if (searchQuery) {
       filtered = filtered.filter(
         (item) =>
-          item.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          item.status?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          item.tier?.toLowerCase().includes(searchQuery.toLowerCase())
+          (item.title?.toLowerCase() || "").includes(
+            searchQuery.toLowerCase()
+          ) ||
+          (item.status?.toLowerCase() || "").includes(
+            searchQuery.toLowerCase()
+          ) ||
+          (item.tier?.toLowerCase() || "").includes(searchQuery.toLowerCase())
       );
     }
 
@@ -107,10 +111,10 @@ const Notifications = () => {
     filtered.sort((a, b) => {
       const dateA = a.timestamp?.toDate
         ? a.timestamp.toDate()
-        : new Date(a.timestamp);
+        : new Date(a.timestamp || 0);
       const dateB = b.timestamp?.toDate
         ? b.timestamp.toDate()
-        : new Date(b.timestamp);
+        : new Date(b.timestamp || 0);
 
       return sortOrder === "desc"
         ? dateB.getTime() - dateA.getTime()
@@ -225,6 +229,7 @@ const Notifications = () => {
         className="mx-1"
         disabled={currentPage === 1}
         onPress={() => goToPage(1)}
+        accessibilityLabel="Go to first page"
       >
         <ButtonIcon as={ChevronsLeft} size={16} />
       </Button>
@@ -238,6 +243,7 @@ const Notifications = () => {
         className="mx-1"
         disabled={currentPage === 1}
         onPress={() => goToPage(currentPage - 1)}
+        accessibilityLabel="Go to previous page"
       >
         <ButtonIcon as={ChevronLeft} size={16} />
       </Button>
@@ -251,6 +257,7 @@ const Notifications = () => {
           size="sm"
           className="mx-1 min-w-[40px]"
           onPress={() => goToPage(page)}
+          accessibilityLabel={`Go to page ${page}`}
         >
           <ButtonText>{page}</ButtonText>
         </Button>
@@ -265,6 +272,7 @@ const Notifications = () => {
         className="mx-1"
         disabled={currentPage === totalPages}
         onPress={() => goToPage(currentPage + 1)}
+        accessibilityLabel="Go to next page"
       >
         <ButtonIcon as={ChevronRight} size={16} />
       </Button>
@@ -278,6 +286,7 @@ const Notifications = () => {
         className="mx-1"
         disabled={currentPage === totalPages}
         onPress={() => goToPage(totalPages)}
+        accessibilityLabel="Go to last page"
       >
         <ButtonIcon as={ChevronsRight} size={16} />
       </Button>
@@ -313,66 +322,67 @@ const Notifications = () => {
   }
 
   return (
-    <SafeAreaView>
+    <SafeAreaView className="flex-1">
       <StatusBar />
-      <Grid
-        _extra={{
-          className: "lg:grid-cols-12 grid-cols-1 p-4",
-        }}
+      <ScrollView
+        className="flex-1"
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
       >
-        <GridItem
+        <Grid
           _extra={{
-            className: "lg:col-span-8",
+            className: "lg:grid-cols-12 grid-cols-1 p-4",
           }}
         >
-          <Box>
-            <Heading size="5xl" className="mt-6 text-gray-800">
-              Notifications
-            </Heading>
-          </Box>
-        </GridItem>
-
-        <GridItem
-          className="items-end flex mt-6 lg:mt-0"
-          _extra={{
-            className: "lg:col-span-4",
-          }}
-        >
-          <SearchBar
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            placeholder="Search notifications..."
-          />
-        </GridItem>
-
-        <GridItem
-          _extra={{
-            className: "lg:col-span-12 py-6",
-          }}
-        >
-          <Box className="flex-row justify-between items-center mb-4">
-            <Text className="text-sm text-gray-600">
-              {filteredNotifications.length} reports found
-            </Text>
-            <HStack space="lg">
-              <Button variant="outline" size="sm" onPress={markAllAsRead}>
-                <ButtonIcon as={CheckCircle} size={16} className="mr-2" />
-                <ButtonText>Mark all as Read</ButtonText>
-              </Button>
-              <Button variant="outline" size="sm" onPress={toggleSortOrder}>
-                <ButtonIcon as={ArrowUpDown} size={16} className="mr-2" />
-                <ButtonText>
-                  {sortOrder === "desc" ? "Newest First" : "Oldest First"}
-                </ButtonText>
-              </Button>
-            </HStack>
-          </Box>
-
-          <ScrollView
-            refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }
+          <GridItem
+            _extra={{
+              className: "lg:col-span-8",
+            }}
           >
+            <Box>
+              <Heading size="5xl" className="mt-6 text-gray-800">
+                Notifications
+              </Heading>
+            </Box>
+          </GridItem>
+
+          <GridItem
+            className="items-end flex mt-6 lg:mt-0"
+            _extra={{
+              className: "lg:col-span-4",
+            }}
+          >
+            <SearchBar
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              placeholder="Search notifications..."
+            />
+          </GridItem>
+
+          <GridItem
+            _extra={{
+              className: "lg:col-span-12 py-6",
+            }}
+          >
+            <Box className="flex-row justify-between items-center mb-4">
+              <Text className="text-sm text-gray-600">
+                {filteredNotifications.length} reports found
+              </Text>
+              <HStack space="lg">
+                <Button variant="outline" size="sm" onPress={markAllAsRead}>
+                  <ButtonIcon as={CheckCircle} size={16} className="mr-2" />
+                  <ButtonText>Mark all as Read</ButtonText>
+                </Button>
+                <Button variant="outline" size="sm" onPress={toggleSortOrder}>
+                  <ButtonIcon as={ArrowUpDown} size={16} className="mr-2" />
+                  <ButtonText>
+                    {sortOrder === "desc" ? "Newest First" : "Oldest First"}
+                  </ButtonText>
+                </Button>
+              </HStack>
+            </Box>
+
             <Box className="rounded-lg overflow-hidden w-full">
               <Table className="w-full">
                 <TableHeader>
@@ -489,18 +499,22 @@ const Notifications = () => {
                 </Box>
               </Box>
             )}
-          </ScrollView>
-        </GridItem>
-      </Grid>
+          </GridItem>
+        </Grid>
+      </ScrollView>
 
       {/* Report Detail Modal */}
-      <Modal isOpen={isModalOpen} onClose={() => setModalOpen(false)} useRNModal>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setModalOpen(false)}
+        useRNModal
+      >
         <ModalBackdrop />
         <ModalContent>
           <ModalHeader>
             <Heading>Report Details</Heading>
-            <ModalCloseButton onPress={() => setModalOpen(false)} >
-              <Icon as={X}/>
+            <ModalCloseButton onPress={() => setModalOpen(false)}>
+              <Icon as={X} />
             </ModalCloseButton>
           </ModalHeader>
           <ModalBody>
@@ -608,13 +622,17 @@ const Notifications = () => {
       </Modal>
 
       {/* Image Modal */}
-      <Modal isOpen={imageModalOpen} onClose={() => setImageModalOpen(false)} useRNModal>
+      <Modal
+        isOpen={imageModalOpen}
+        onClose={() => setImageModalOpen(false)}
+        useRNModal
+      >
         <ModalBackdrop />
         <ModalContent>
           <ModalHeader>
             <Heading>Image Preview</Heading>
-            <ModalCloseButton onPress={() => setImageModalOpen(false)} >
-              <Icon as={X}/>
+            <ModalCloseButton onPress={() => setImageModalOpen(false)}>
+              <Icon as={X} />
             </ModalCloseButton>
           </ModalHeader>
           <ModalBody>
