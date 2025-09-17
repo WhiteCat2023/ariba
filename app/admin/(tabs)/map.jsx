@@ -35,7 +35,6 @@ const MapScreen = () => {
   const [sortOrder, setSortOrder] = useState("desc");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-  const coordinates = []
 
   useEffect(() => {
     loadReports();
@@ -153,7 +152,12 @@ const MapScreen = () => {
     return buttons;
   };
 
-  const reportCoordinates = reports.map((report) => coordinates.push(report.location));
+  // Extract coordinate arrays from reports
+  const reportCoordinates = reports
+    .filter((report) => report.location && Array.isArray(report.location))
+    .map((report) => report.location);
+
+  console.log("Report coordinates:", reportCoordinates);
 
   return (
     <SafeAreaView className="flex-1 bg-[#D9E9DD] h-full">
@@ -215,11 +219,10 @@ const MapScreen = () => {
                 <Box className="lg:w-1/2 w-full mb-4 lg:mb-0 lg:pr-4">
                   <Heading className="mb-4">Reports Overview</Heading>
                   <Table className="w-full">
-                    
                     <TableBody>
                       {paginatedReports.map((report) => (
-                        <TableRow>
-                          <TableData key={report.id || report._id}>
+                        <TableRow key={report.id || report._id}>
+                          <TableData>
                             <Card variant="outline" className="p-3">
                               <VStack space="sm">
                                 <Text size="lg" className="font-semibold">
@@ -248,6 +251,13 @@ const MapScreen = () => {
                                     {report.longitude.toFixed(4)}
                                   </Text>
                                 )}
+                                {report.location &&
+                                  Array.isArray(report.location) && (
+                                    <Text size="xs" className="text-gray-500">
+                                      Location: [{report.location[0].toFixed(4)}
+                                      , {report.location[1].toFixed(4)}]
+                                    </Text>
+                                  )}
                               </VStack>
                             </Card>
                           </TableData>
@@ -288,7 +298,7 @@ const MapScreen = () => {
                 <Box className="lg:w-1/2 w-full">
                   <Heading className="mb-4">Reports Map</Heading>
                   <Card variant="outline" className="h-96">
-                    <WebMapWithMarks coordinates={coordinates} />
+                    <WebMapWithMarks coordinates={reportCoordinates} />
                   </Card>
                   <Text className="mt-2 text-sm text-gray-600 text-center">
                     Showing {reportCoordinates.length} report locations on map
