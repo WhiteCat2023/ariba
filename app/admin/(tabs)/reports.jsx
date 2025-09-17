@@ -24,6 +24,8 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
+  SortAsc,
+  SortDesc,
   X,
   ArrowUpDown,
 } from "lucide-react-native";
@@ -62,6 +64,9 @@ const Reports = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [imageModalOpen, setImageModalOpen] = useState(false);
 
+  // ✅ NEW: filter state
+  const [statusFilter, setStatusFilter] = useState("pending"); // default "Pending"
+
   useEffect(() => {
     loadReports();
   }, []);
@@ -81,8 +86,17 @@ const Reports = () => {
 
     setSortedReports(sorted);
 
+    let tempReports = sorted;
+
+    // ✅ Apply status filter
+    if (statusFilter) {
+      tempReports = tempReports.filter(
+        (report) => (report.status || "pending").toLowerCase() === statusFilter
+      );
+    }
+
     if (searchQuery) {
-      const filtered = sorted.filter(
+      const filtered = tempReports.filter(
         (report) =>
           report.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
           report.description
@@ -93,9 +107,9 @@ const Reports = () => {
       setFilteredReports(filtered);
       setCurrentPage(1);
     } else {
-      setFilteredReports(sorted);
+      setFilteredReports(tempReports);
     }
-  }, [searchQuery, reports, sortOrder]);
+  }, [searchQuery, reports, sortOrder, statusFilter]);
 
   // Helper function to extract timestamp from various field names
   const getTimestamp = (report) => {
@@ -131,7 +145,6 @@ const Reports = () => {
       const result = await getAllReports();
       if (result.status === 200) {
         setReports(result.data);
-        // Don't set filteredReports here, let the useEffect handle sorting
       } else {
         console.error("Error:", result.message);
       }
@@ -152,7 +165,6 @@ const Reports = () => {
   const formatDate = (timestamp) => {
     if (!timestamp) return "N/A";
     try {
-      // Handle both Firebase timestamps and regular date strings/objects
       const date = timestamp?.toDate ? timestamp.toDate() : new Date(timestamp);
       return format(date, "MMM d, yyyy | h:mma");
     } catch (error) {
@@ -167,7 +179,6 @@ const Reports = () => {
   };
 
   const openReportModal = (report) => {
-    console.log("Opening modal for report:", report);
     setSelectedReport(report);
     setModalOpen(true);
   };
@@ -187,19 +198,51 @@ const Reports = () => {
     setImageModalOpen(false);
   };
 
-  const handleRespond = (docId) => {
-    updateReport({
+  const handleRespond = async (docId) => {
+  try {
+    await updateReport({
       docId: docId,
       status: "responded",
     });
-  };
 
-  const handleIgnore = (docId) => {
-    updateReport({
+    // ✅ Update local state immediately
+    setReports((prevReports) =>
+      prevReports.map((report) =>
+        report.id === docId || report._id === docId
+          ? { ...report, status: "responded" }
+          : report
+      )
+    );
+
+    // ✅ Re-fetch from server to stay in sync
+    loadReports();
+  } catch (error) {
+    console.error("Failed to update report:", error);
+  }
+};
+
+const handleIgnore = async (docId) => {
+  try {
+    await updateReport({
       docId: docId,
       status: "ignored",
     });
-  };
+
+    // ✅ Update local state immediately
+    setReports((prevReports) =>
+      prevReports.map((report) =>
+        report.id === docId || report._id === docId
+          ? { ...report, status: "ignored" }
+          : report
+      )
+    );
+
+    // ✅ Re-fetch from server to stay in sync
+    loadReports();
+  } catch (error) {
+    console.error("Failed to update report:", error);
+  }
+};
 
   const goToPage = (page) => {
     if (page >= 1 && page <= totalPages) {
@@ -334,16 +377,45 @@ const Reports = () => {
           }}
         >
           <Box className="flex-row justify-between items-center mb-4">
-            <Text className="text-sm text-gray-600">
-              {filteredReports.length} reports found
-            </Text>
-            <Button variant="outline" size="sm" onPress={toggleSortOrder}>
-              <ButtonIcon as={ArrowUpDown} size={16} className="mr-2" />
-              <ButtonText>
-                {sortOrder === "desc" ? "Newest First" : "Oldest First"}
-              </ButtonText>
-            </Button>
-          </Box>
+              <Text className="text-sm text-gray-600">
+                {filteredReports.length} reports found
+              </Text>
+              <HStack space="sm" className="items-center">
+  {/* ✅ Filter Tabs */}
+  <HStack className="border border-gray-600 rounded-lg overflow-hidden">
+    {["pending", "responded", "ignored"].map((status) => (
+      <Pressable
+        key={status}
+        onPress={() => {
+          setStatusFilter(status);
+          setCurrentPage(1);
+        }}
+        className={`px-4 py-2 items-center ${
+          statusFilter === status ? "bg-green-500" : "bg-transparent"
+        }`}
+      >
+        <Text
+          className={`${
+            statusFilter === status
+              ? "text-white font-semibold"
+              : "text-black"
+          }`}
+        >
+          {status.charAt(0).toUpperCase() + status.slice(1)}
+        </Text>
+      </Pressable>
+    ))}
+  </HStack>
+
+                {/* Sort Button */}
+                <Button variant="outline" size="sm" onPress={toggleSortOrder}>
+  <ButtonIcon
+    as={sortOrder === "desc" ? SortDesc : SortAsc}
+    size={18}
+  />
+</Button>
+              </HStack>
+            </Box>
 
           <ScrollView
             refreshControl={
@@ -396,32 +468,38 @@ const Reports = () => {
                           </Text>
                         </TableData>
                         <TableData>
-                          <HStack space="md">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onPress={() => openReportModal(report)}
-                            >
-                              <ButtonText>View</ButtonText>
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="solid"
-                              action="positive"
-                              onPress={() => handleRespond(report.id)}
-                            >
-                              <ButtonText>Respond</ButtonText>
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="solid"
-                              action="negative"
-                              onPress={() => handleIgnore(report.id)}
-                            >
-                              <ButtonText>Ignore</ButtonText>
-                            </Button>
-                          </HStack>
-                        </TableData>
+  <HStack space="md">
+    <Button
+      size="sm"
+      variant="outline"
+      onPress={() => openReportModal(report)}
+    >
+      <ButtonText>View</ButtonText>
+    </Button>
+
+    {/* ✅ Only show Respond/Ignore if status is pending */}
+    {report.status?.toLowerCase() === "pending" && (
+      <>
+        <Button
+          size="sm"
+          variant="solid"
+          action="positive"
+          onPress={() => handleRespond(report.id)}
+        >
+          <ButtonText>Respond</ButtonText>
+        </Button>
+        <Button
+          size="sm"
+          variant="solid"
+          action="negative"
+          onPress={() => handleIgnore(report.id)}
+        >
+          <ButtonText>Ignore</ButtonText>
+        </Button>
+      </>
+    )}
+  </HStack>
+</TableData>
                       </TableRow>
                     ))
                   )}
