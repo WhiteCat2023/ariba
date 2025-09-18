@@ -47,6 +47,7 @@ import { format } from "date-fns";
 import { useAuth } from "@/context/AuthContext";
 import { Icon } from "@/components/ui/icon";
 import { Pressable } from "@/components/ui/pressable";
+import { useRouter } from "expo-router";
 
 const Notifications = () => {
   const { user } = useAuth();
@@ -57,6 +58,7 @@ const Notifications = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
+  const router = useRouter(); // ✅ now you can use router.push
 
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedReport, setSelectedReport] = useState(null);
@@ -405,16 +407,13 @@ const Notifications = () => {
                         </TableData>
                         <TableData>
                           <Button
-                            size="sm"
-                            variant="outline"
-                            onPress={() => {
-                              setSelectedReport(report);
-                              setModalOpen(true);
-                            }}
-                          >
-                            <ButtonIcon as={Eye} size={16} />
-                            <ButtonText>View</ButtonText>
-                          </Button>
+                          size="sm"
+                          variant="outline"
+                          onPress={() => router.push(`/user/(tabs)/notifications/${report.id}`)}
+                        >
+                          <ButtonIcon as={Eye} size={16} />
+                          <ButtonText>View</ButtonText>
+                        </Button>
                         </TableData>
                       </TableRow>
                     ))
