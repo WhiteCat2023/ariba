@@ -42,7 +42,7 @@
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "dom-helpers": "^6.0.1",
-    "expo": "^53.0.22",
+    "expo": "^54.0.9",
     "expo-auth-session": "~6.2.1",
     "expo-blur": "~14.1.5",
     "expo-clipboard": "~7.1.5",
