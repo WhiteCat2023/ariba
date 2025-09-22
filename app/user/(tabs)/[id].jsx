@@ -1,45 +1,45 @@
-import React, { useEffect, useState } from "react"
-import {
-  SafeAreaView,
-  FlatList,
-  Image,
-  ScrollView,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native"
-import { useLocalSearchParams, useRouter } from "expo-router"
 import { db } from "@/api/config/firebase.config"
+import { useAuth } from "@/context/AuthContext"
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import * as Clipboard from "expo-clipboard"
+import { useLocalSearchParams, useRouter } from "expo-router"
 import {
-  collection,
   addDoc,
-  updateDoc,
-  doc,
-  onSnapshot,
+  collection,
   deleteDoc,
+  doc,
+  getDoc,
   increment,
+  onSnapshot,
   orderBy,
   query,
   serverTimestamp,
   setDoc,
-  getDoc,
+  updateDoc,
 } from "firebase/firestore"
-import { useAuth } from "@/context/AuthContext"
-import { Heart, ArrowLeft, MoreVertical, Bookmark, MessageCircle, Share2, ChevronDown } from "lucide-react-native"
-import AsyncStorage from "@react-native-async-storage/async-storage"
-import { Share, Alert } from "react-native"
-import * as Clipboard from "expo-clipboard"
-import { Copy } from "lucide-react-native"
+import { ArrowLeft, Bookmark, ChevronDown, Copy, Heart, MessageCircle, MoreVertical, Share2 } from "lucide-react-native"
+import React, { useEffect, useState } from "react"
+import {
+  Alert,
+  Image,
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  Share,
+  TextInput,
+  TouchableOpacity,
+  View
+} from "react-native"
 
 // ✅ Gluestack UI
-import { Reply } from "lucide-react-native";
+import SearchBar from "@/components/inputs/searchbar/SearchBar"
 import { Box } from "@/components/ui/box"
-import { Text } from "@/components/ui/text"
-import { Heading } from "@/components/ui/heading"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import SearchBar from "@/components/inputs/searchbar/SearchBar"
 import { Grid, GridItem } from "@/components/ui/grid"
+import { Heading } from "@/components/ui/heading"
+import { Text } from "@/components/ui/text"
+import { Reply } from "lucide-react-native"
 
 // ⏱️ Helper: format timestamp into relative time
 const timeAgo = (date, now) => {
@@ -87,6 +87,7 @@ const ForumDetails = () => {
   const { id } = useLocalSearchParams()
   const { user } = useAuth()
   const router = useRouter()
+  const isWeb = Platform.OS === "web"
 
   const [forum, setForum] = useState(null)
   const [allComments, setAllComments] = useState([])
@@ -524,6 +525,119 @@ if (commentFilter === "Newest") {
   const forumMatchesSearch =
     forum.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     forum.content?.toLowerCase().includes(searchQuery.toLowerCase())
+
+
+   // ========== MOBILE (Expo Go) ==========
+if (!isWeb) {
+  return (
+    <SafeAreaView className="flex-1 bg-[#D9E9DD] p-4">
+      <ScrollView className="h-full">
+       {/* HEADER */}
+             <Box className="flex-row items-center justify-between mt-4 mb-6">
+               <Box className="flex-row items-center">
+                 <Image
+                   source={require("@/assets/images/ariba-logo.png")} // <-- place your Ariba logo asset here
+                   style={{ width: 60, height: 60, marginRight: 3 }}
+                   resizeMode="contain"
+                 />
+                 <Text className="text-green-700 text-3xl font-[Pacifico]">
+                   Ariba
+                 </Text>
+               </Box>
+               <Box className="w-[140px] mt-5">
+               <SearchBar
+                 value={searchQuery}
+                 onChangeText={(text) => setSearchQuery(text)}
+                 placeholder="Search"
+                 className="w-[140px]"
+               />
+               </Box>
+             </Box>
+
+        <Box className="bg-white rounded-xl p-6 shadow-sm flex-1">
+          {forumMatchesSearch ? (
+            <>
+              <TouchableOpacity onPress={() => router.back()} className="mb-4">
+                <ArrowLeft size={24} color="black" />
+              </TouchableOpacity>
+
+              <Heading size="4xl" className="mb-1">FORUMS</Heading>
+
+              {/* ✅ Title row with Bookmark + Share */}
+              <Box className="flex-row items-center justify-between mb-4">
+                <Text className="text-2xl font-semibold flex-1 mr-2">
+                  {forum.title || "Untitled Discussion"}
+                </Text>
+
+                <Box className="flex-row items-center space-x-3">
+                  <TouchableOpacity onPress={toggleBookmark}>
+                    <Bookmark
+                      size={20}
+                      color={bookmarked ? "#22c55e" : "black"}
+                      fill={bookmarked ? "#22c55e" : "transparent"}
+                    />
+                  </TouchableOpacity>
+
+                  <TouchableOpacity onPress={shareForum}>
+                    <Share2 size={20} color="black" />
+                  </TouchableOpacity>
+                </Box>
+              </Box>
+
+              <Box className="flex-row items-center mb-2">
+                <Image source={{ uri: forum.authorPhoto }} style={{ width: 35, height: 35, borderRadius: 18, marginRight: 8 }} />
+                <Text bold>{forum.authorName}</Text>
+                <Text className="text-gray-500 ml-2 text-sm">
+                  {forum.timestamp?.toDate ? timeAgo(forum.timestamp.toDate(), now) : "..."}
+                </Text>
+              </Box>
+
+              <Text className="text-base text-gray-700 mb-5">{forum.content}</Text>
+
+              <Box className="flex-row items-center justify-between border-b border-gray-300 pb-3 mb-5">
+                <TouchableOpacity onPress={() => {}} className="flex-row items-center">
+                  <Heart size={20} color={userLikes[id] ? "red" : "black"} fill={userLikes[id] ? "red" : "transparent"} />
+                  <Text className="ml-2">{forum.likesCount || 0} Likes</Text>
+                </TouchableOpacity>
+                <Box className="flex-row items-center">
+                  <MessageCircle size={20} />
+                  <Text className="ml-2">{forum.commentsCount || 0} Comments</Text>
+                </Box>
+              </Box>
+
+              <Heading size="xl" className="mb-2">Comments</Heading>
+              <TextInput
+                placeholder="Write your insights about the discussion..."
+                value={newComment}
+                onChangeText={setNewComment}
+                className="bg-gray-100 border border-gray-300 text-slate-700 rounded-md p-2 mb-2"
+                style={{ height: 80 }}
+                multiline
+                textAlignVertical="top"
+                returnKeyType="send"
+                blurOnSubmit={true}
+                onSubmitEditing={() => addComment()}
+              />
+
+              {/* ✅ Removed Submit button completely */}
+
+              {filteredComments.map(c => renderCommentThread(c))}
+            </>
+          ) : <Text className="text-center text-gray-500 py-10">No results found for "{searchQuery}"</Text>}
+        </Box>
+      </ScrollView>
+      {copied && (
+        <View style={{ position: "absolute", bottom: 40, left: 0, right: 0, alignItems: "center" }}>
+          <View style={{ backgroundColor: "black", paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20 }}>
+            <Text style={{ color: "white" }}>✅ Copied to clipboard</Text>
+          </View>
+        </View>
+      )}
+    </SafeAreaView>
+  )
+}
+
+
 
   return (
     <SafeAreaView className="flex-1 bg-[#D9E9DD] p-4">
