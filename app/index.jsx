@@ -14,9 +14,9 @@ export default function Index() {
   const [showPassword, setShowPassword] = useState(false);
   const [credentials, setCredentials] = useState({
     email: "",
-    password: ""
+    password: "",
   });
-  const router = useRouter()
+  const router = useRouter();
   // const { login, session } = useAuth()
 
   // useEffect(() => {
@@ -25,7 +25,7 @@ export default function Index() {
   //   }
   // }, [session]);
 
-   const [fontsLoaded] = useFonts({
+  const [fontsLoaded] = useFonts({
     Pacifico: require("../assets/fonts/Pacifico-Regular.ttf"),
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
     Roboto: require("../assets/fonts/Roboto-Bold.ttf"),
@@ -43,9 +43,9 @@ export default function Index() {
       await signIn(credentials);
       // Alert.alert("You're logged in");
     } catch (error) {
-      Alert.alert(`Login failed: ${error.message}`)
+      Alert.alert(`Login failed: ${error.message}`);
     }
-  }
+  };
 
   if (!fontsLoaded) return null;
 
@@ -70,13 +70,12 @@ export default function Index() {
 
         {/* Social buttons */}
         <View className="flex-row justify-center mb-6 space-x-6">
-      
           <View
             style={{ marginRight: 20 }}
-            className="w-12 h-2 rounded-lg bg-white justify-center items-center">
-            <GoogleSignUpButton/>
+            className="w-12 h-2 rounded-lg bg-white justify-center items-center"
+          >
+            <GoogleSignUpButton />
           </View>
-          
 
           <Button
             onPress={() => {}}
@@ -113,11 +112,11 @@ export default function Index() {
 
         {/* Forget Password text */}
         <Text
-          className="text-right text-xs text-black mb-14 -mt-12"
+          className="text-right text-xs text-black mb-14 mt-1"
           onPress={() => router.push("/forgot-password")}
         >
-        Forget Password?
-      </Text>
+          Forget Password?
+        </Text>
 
         {/* Login button */}
         <Button
@@ -175,13 +174,13 @@ export default function Index() {
           </Text>
 
           <View className="flex-row justify-center mb-5 space-x-4">
-     
             <View
               style={{ marginRight: 20 }} // Add spacing here
-              className="w-12 h-12 rounded-lg bg-white justify-center items-center">
-                <GoogleSignUpButton/>
+              className="w-12 h-12 rounded-lg bg-white justify-center items-center"
+            >
+              <GoogleSignUpButton />
             </View>
-            
+
             <Button
               onPress={() => {}}
               className="w-12 h-12 rounded-lg bg-white justify-center items-center shadow-md"
@@ -215,8 +214,9 @@ export default function Index() {
           />
 
           <Text
-          onPress={() => router.push("/forgot-password")}
-          className="text-right text-xs text-black 	text-decoration: underline mb-6 -mt-3 font-bold">
+            onPress={() => router.push("/forgot-password")}
+            className="text-right text-xs text-black 	text-decoration: underline mb-6 -mt-3 font-bold"
+          >
             Forgot Password?
           </Text>
 

@@ -1,7 +1,7 @@
-import React, { useEffect, useRef } from "react";
+import { Box } from "@/components/ui/box";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import { Box } from "@/components/ui/box";
+import React, { useEffect, useRef } from "react";
 
 interface WebMapWithMarksProps {
   coordinates: Array<[number, number]>; // Array of [longitude, latitude] pairs
@@ -69,11 +69,15 @@ const WebMapWithMarks: React.FC<WebMapWithMarksProps> = ({
     });
     markers.current = [];
 
-    // Add new coordinate markers
+    // Add new coordinate markers at the exact coordinates
     validCoordinates.forEach((coords, index) => {
       const marker = new maplibregl.Marker({ color: "blue" })
-        .setLngLat(coords)
-        .setPopup(new maplibregl.Popup().setText(`Location ${index + 1}`))
+        .setLngLat([Number(coords[0]), Number(coords[1])]) // ensure exact numbers
+        .setPopup(
+          new maplibregl.Popup().setText(
+            `Location ${index + 1}: [${coords[0]}, ${coords[1]}]`
+          )
+        )
         .addTo(map.current!);
 
       markers.current.push(marker);
@@ -82,7 +86,9 @@ const WebMapWithMarks: React.FC<WebMapWithMarksProps> = ({
     // Fit map to show all markers if there are any
     if (validCoordinates.length > 0) {
       const bounds = new maplibregl.LngLatBounds();
-      validCoordinates.forEach((coord) => bounds.extend(coord));
+      validCoordinates.forEach((coord) =>
+        bounds.extend([Number(coord[0]), Number(coord[1])])
+      );
 
       map.current.fitBounds(bounds, {
         padding: 50,

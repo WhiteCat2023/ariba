@@ -1,31 +1,28 @@
-import {
-  SafeAreaView,
-  StatusBar,
-  ScrollView,
-  RefreshControl,
-} from "react-native";
-import React, { useEffect, useState } from "react";
+import { getAllReports } from "@/api/controller/report.controller";
+import WebMapWithMarks from "@/components/cards/components/WebMapWithMarks";
+import SearchBar from "@/components/inputs/searchbar/SearchBar";
 import { Box } from "@/components/ui/box";
+import { Button, ButtonText } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Grid, GridItem } from "@/components/ui/grid";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
-import { Card } from "@/components/ui/card";
-import { getAllReports } from "@/api/controller/report.controller";
 import {
   Table,
   TableBody,
   TableData,
-  TableHead,
-  TableHeader,
-  TableRow,
+  TableRow
 } from "@/components/ui/table";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
-import { Divider } from "@/components/ui/divider";
-import WebMapWithMarks from "@/components/cards/components/WebMapWithMarks";
-import { Grid, GridItem } from "@/components/ui/grid";
-import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
-import { ArrowUpDown } from "lucide-react-native";
-import SearchBar from "@/components/inputs/searchbar/SearchBar";
+import React, { useEffect, useState } from "react";
+import {
+  Pressable,
+  RefreshControl,
+  SafeAreaView,
+  ScrollView,
+  StatusBar
+} from "react-native";
 
 const MapScreen = () => {
   const [reports, setReports] = useState([]);
@@ -34,6 +31,7 @@ const MapScreen = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOrder, setSortOrder] = useState("desc");
   const [currentPage, setCurrentPage] = useState(1);
+  const [statusFilter, setStatusFilter] = useState("pending");
   const itemsPerPage = 10;
 
   useEffect(() => {
@@ -66,20 +64,42 @@ const MapScreen = () => {
     setSortOrder(sortOrder === "desc" ? "asc" : "desc");
   };
 
-  // Filter reports based on search query
+  // Filter reports based on search query and status filter
   const filteredReports = reports.filter((report) => {
     const searchLower = searchQuery.toLowerCase();
-    return (
+    // Ensure location is always a string for searching
+    let locationString = "";
+    if (Array.isArray(report.location)) {
+      locationString = report.location.join(", ");
+    } else if (typeof report.location === "string") {
+      locationString = report.location;
+    }
+
+    const matchesSearch =
       (report.title || "").toLowerCase().includes(searchLower) ||
-      (report.location || "").toLowerCase().includes(searchLower) ||
-      (report.status || "").toLowerCase().includes(searchLower)
-    );
+      locationString.toLowerCase().includes(searchLower) ||
+      (report.status || "").toLowerCase().includes(searchLower);
+
+    const matchesStatus =
+      statusFilter === "all" ||
+      (report.status && report.status.toLowerCase() === statusFilter);
+
+    return matchesSearch && matchesStatus;
   });
 
   // Sort reports based on sortOrder
   const sortedReports = [...filteredReports].sort((a, b) => {
-    const dateA = new Date(a.createdAt || a.date || 0);
-    const dateB = new Date(b.createdAt || b.date || 0);
+    // Parse dates robustly, fallback to 0 if missing
+    const dateA = a.createdAt
+      ? new Date(a.createdAt).getTime()
+      : a.date
+      ? new Date(a.date).getTime()
+      : 0;
+    const dateB = b.createdAt
+      ? new Date(b.createdAt).getTime()
+      : b.date
+      ? new Date(b.date).getTime()
+      : 0;
     return sortOrder === "desc" ? dateB - dateA : dateA - dateB;
   });
 
@@ -197,17 +217,7 @@ const MapScreen = () => {
             className: "lg:col-span-12 py-6",
           }}
         >
-          <Box className="flex-row justify-between items-center mb-4">
-            <Text className="text-sm text-gray-600">
-              {filteredReports.length} reports found
-            </Text>
-            <Button variant="outline" size="sm" onPress={toggleSortOrder}>
-              <ButtonIcon as={ArrowUpDown} size={16} className="mr-2" />
-              <ButtonText>
-                {sortOrder === "desc" ? "Newest First" : "Oldest First"}
-              </ButtonText>
-            </Button>
-          </Box>
+
 
           <ScrollView
             refreshControl={
@@ -218,51 +228,87 @@ const MapScreen = () => {
               <HStack className="flex-col lg:flex-row">
                 <Box className="lg:w-1/2 w-full mb-4 lg:mb-0 lg:pr-4">
                   <Heading className="mb-4">Reports Overview</Heading>
+                  {/* ✅ Filter Tabs */}
+                  <HStack className="border w-min border-gray-600 rounded-lg overflow-hidden mb-4">
+                    {["pending", "responded", "ignored"].map((status) => (
+                      <Pressable
+                        key={status}
+                        onPress={() => {
+                          setStatusFilter(status);
+                          setCurrentPage(1);
+                        }}
+                        className={`px-4 py-2 items-center ${
+                          statusFilter === status ? "bg-green-500" : "bg-transparent"
+                        }`}
+                      >
+                        <Text
+                          className={`${
+                            statusFilter === status
+                              ? "text-white font-semibold"
+                              : "text-black"
+                          }`}
+                        >
+                          {status.charAt(0).toUpperCase() + status.slice(1)}
+                        </Text>
+                      </Pressable>
+                    ))}
+                  </HStack>
+                  
+                  
+                  {/* End Filter Tabs */}
                   <Table className="w-full">
                     <TableBody>
-                      {paginatedReports.map((report) => (
-                        <TableRow key={report.id || report._id}>
-                          <TableData>
-                            <Card variant="outline" className="p-3">
-                              <VStack space="sm">
-                                <Text size="lg" className="font-semibold">
-                                  {report.title || "Untitled Report"}
-                                </Text>
-                                <Text size="sm" className="text-gray-600">
-                                  {report.location || "Unknown location"}
-                                </Text>
-                                <Text
-                                  size="sm"
-                                  className={
-                                    report.status === "completed"
-                                      ? "text-green-600"
-                                      : report.status === "pending"
-                                      ? "text-yellow-600"
-                                      : report.status === "failed"
-                                      ? "text-red-600"
-                                      : "text-gray-600"
-                                  }
-                                >
-                                  Status: {report.status || "unknown"}
-                                </Text>
-                                {report.latitude && report.longitude && (
-                                  <Text size="xs" className="text-gray-500">
-                                    Coordinates: {report.latitude.toFixed(4)},{" "}
-                                    {report.longitude.toFixed(4)}
+                      {/* ...existing code for paginatedReports... */}
+                      <ScrollView style={{ maxHeight: 400, width: "100%" }}>
+                        {paginatedReports.map((report) => (
+                          <TableRow
+                            className="p-0"
+                            key={report.id || report._id}
+                          >
+                            <TableData className="p-0">
+                              <Card className="p-2">
+                                <VStack space="sm">
+                                  <Text size="lg" className="font-semibold">
+                                    {report.title || "Untitled Report"}
                                   </Text>
-                                )}
-                                {report.location &&
-                                  Array.isArray(report.location) && (
+                                  <Text size="sm" className="text-gray-600">
+                                    {report.location || "Unknown location"}
+                                  </Text>
+                                  <Text
+                                    size="sm"
+                                    className={
+                                      report.status === "completed"
+                                        ? "text-green-600"
+                                        : report.status === "pending"
+                                        ? "text-yellow-600"
+                                        : report.status === "failed"
+                                        ? "text-red-600"
+                                        : "text-gray-600"
+                                    }
+                                  >
+                                    Status: {report.status || "unknown"}
+                                  </Text>
+                                  {report.latitude && report.longitude && (
                                     <Text size="xs" className="text-gray-500">
-                                      Location: [{report.location[0].toFixed(4)}
-                                      , {report.location[1].toFixed(4)}]
+                                      Coordinates: {report.latitude.toFixed(4)},{" "}
+                                      {report.longitude.toFixed(4)}
                                     </Text>
                                   )}
-                              </VStack>
-                            </Card>
-                          </TableData>
-                        </TableRow>
-                      ))}
+                                  {report.location &&
+                                    Array.isArray(report.location) && (
+                                      <Text size="xs" className="text-gray-500">
+                                        Location: [
+                                        {report.location[0].toFixed(4)},{" "}
+                                        {report.location[1].toFixed(4)}]
+                                      </Text>
+                                    )}
+                                </VStack>
+                              </Card>
+                            </TableData>
+                          </TableRow>
+                        ))}
+                      </ScrollView>
+                      {/* ...existing code... */}
                       {reports.length === 0 && !loading && (
                         <TableRow>
                           <TableData>
@@ -274,6 +320,7 @@ const MapScreen = () => {
                       )}
                     </TableBody>
                   </Table>
+                  {/* ...existing code... */}
                   {filteredReports.length > 0 && (
                     <Box className="mt-6 flex-row justify-between items-center">
                       <Text className="text-sm text-gray-600">
@@ -294,7 +341,7 @@ const MapScreen = () => {
                     </Box>
                   )}
                 </Box>
-
+                {/* ...existing code... */}
                 <Box className="lg:w-1/2 w-full">
                   <Heading className="mb-4">Reports Map</Heading>
                   <Card variant="outline" className="h-96">
