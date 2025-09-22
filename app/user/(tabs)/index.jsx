@@ -1,51 +1,53 @@
-import React, { useEffect, useState } from "react"
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFonts } from "expo-font";
+import { useRouter } from "expo-router";
+import React, { useEffect, useState } from "react";
 import {
+  FlatList,
+  Image,
+  Modal,
+  Platform,
   SafeAreaView,
   ScrollView,
   StatusBar,
-  FlatList,
-  TouchableOpacity,
-  Image,
-  View,
-  Modal,
   TextInput,
-} from "react-native"
-import AsyncStorage from "@react-native-async-storage/async-storage"
-import { useRouter } from "expo-router"
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 // UI Components
-import { Box } from "@/components/ui/box"
-import { Text } from "@/components/ui/text"
-import { Heading } from "@/components/ui/heading"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { Grid, GridItem } from "@/components/ui/grid"
-import SearchBar from "@/components/inputs/searchbar/SearchBar"
+import SearchBar from "@/components/inputs/searchbar/SearchBar";
+import { Box } from "@/components/ui/box";
+import { Card } from "@/components/ui/card";
+import { Grid, GridItem } from "@/components/ui/grid";
+import { Heading } from "@/components/ui/heading";
+import { Text } from "@/components/ui/text";
 
 // Firebase
-import { db } from "@/api/config/firebase.config"
+import { db } from "@/api/config/firebase.config";
 import {
-  collection,
   addDoc,
-  updateDoc,
+  collection,
+  deleteDoc,
   doc,
+  getDoc,
   increment,
   onSnapshot,
-  setDoc,
-  deleteDoc,
-  getDoc,
   serverTimestamp,
-} from "firebase/firestore"
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
 
 // Context
-import { useAuth } from "@/context/AuthContext"
+import { useAuth } from "@/context/AuthContext";
 
 // Icons
-import { Plus, Heart, MessageCircle, Trash2, Edit, SortAsc, SortDesc } from "lucide-react-native"
+import { Edit, Heart, MessageCircle, Plus, SortAsc, SortDesc, Trash2 } from "lucide-react-native";
 
 const ForumsScreen = () => {
   const { user } = useAuth()
   const router = useRouter()
+  const isWeb = Platform.OS === "web"
 
   // States
   const [modalVisible, setModalVisible] = useState(false)
@@ -233,6 +235,222 @@ const ForumsScreen = () => {
       saveLikesToCache(updatedLikes)
     }
   }
+
+  const [fontsLoaded] = useFonts({
+    Pacifico: require("../../../assets/fonts/Pacifico-Regular.ttf"),
+    SpaceMono: require("../../../assets/fonts/SpaceMono-Regular.ttf"),
+    Roboto: require("../../../assets/fonts/Roboto-Bold.ttf"),
+    Poppins: require("../../../assets/fonts/Poppins-Bold.ttf"),
+  });
+
+  if (!fontsLoaded) return null;
+
+
+  // ====== MOBILE VERSION (Expo Go) ======
+if (!isWeb) {
+  return (
+    <SafeAreaView className="flex-1 bg-[#D9E9DD] px-3">
+      <StatusBar barStyle="dark-content" />
+
+      {/* HEADER */}
+      <Box className="flex-row items-center justify-between mt-4 mb-6">
+        <Box className="flex-row items-center">
+          <Image
+            source={require("@/assets/images/ariba-logo.png")} // <-- place your Ariba logo asset here
+            style={{ width: 60, height: 60, marginRight: 3 }}
+            resizeMode="contain"
+          />
+          <Text className="text-green-700 text-3xl font-[Pacifico]">
+            Ariba
+          </Text>
+        </Box>
+        <Box className="w-[140px] mt-5">
+        <SearchBar
+          value={searchQuery}
+          onChangeText={(text) => setSearchQuery(text)}
+          placeholder="Search"
+          className="w-[140px]"
+        />
+        </Box>
+      </Box>
+
+      {/* FORUMS HEADER */}
+      <Box className="bg-white rounded-2xl p-4 shadow-sm">
+        <Box className="flex-row items-center justify-between mb-4">
+          {/* Left: Title + Count */}
+          <Box>
+            <Text size="4xl" className="font-[Poppins] mb-1">
+              FORUMS
+            </Text>
+            <Text className="text-gray-600">{discussions.length} Discussions</Text>
+          </Box>
+
+          {/* Right: Add + Filter Buttons */}
+          <Box className="flex-row items-center">
+            {/* Add Button */}
+            <TouchableOpacity
+              onPress={() => {
+                setModalVisible(true)
+                setEditingId(null)
+                setNewDiscussion({ title: "", description: "" })
+              }}
+              className="bg-green-600 w-9 h-9 items-center justify-center rounded-md mr-1 mt-11"
+            >
+              <Plus size={20} color="white" />
+            </TouchableOpacity>
+
+            {/* Toggle Buttons */}
+            <TouchableOpacity
+              onPress={() => setFilter("newest")}
+              className={`px-2 py-1 border border-green-600 rounded-l-md mt-11 ${
+                filter === "newest" ? "bg-green-600" : "bg-white"
+              }`}
+            >
+              <Text className={filter === "newest" ? "text-white" : "text-black"}>
+                Newest
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setFilter("ongoing")}
+              className={`px-2 py-1 border border-green-600 rounded-r-md mt-11 ${
+                filter === "ongoing" ? "bg-green-600" : "bg-white"
+              }`}
+            >
+              <Text className={filter === "ongoing" ? "text-white" : "text-black"}>
+                Ongoing
+              </Text>
+            </TouchableOpacity>
+          </Box>
+        </Box>
+
+        {/* DISCUSSION LIST */}
+<FlatList
+  data={filteredDiscussions}
+  keyExtractor={(item) => item.id}
+  renderItem={({ item }) => {
+    const liked = userLikes[item.id] || false
+    const isOwner = item.authorId === user?.uid
+    return (
+      <Card className="p-4 mb-4 rounded-xl border border-gray-300 bg-white">
+        <TouchableOpacity onPress={() => router.push(`/user/(tabs)/${item.id}`)}>
+          {/* Title + Timestamp Row */}
+          <Box className="flex-row items-center mb-2">
+            <Text className="text-lg font-bold">{item.title}</Text>
+            <Text className="mx-2 text-gray-400">•</Text>
+            <Text className="text-xs text-gray-500">
+              {item.timestamp?.toDate
+                ? formatTimeAgo(item.timestamp.toDate(), currentTime)
+                : "..."}
+            </Text>
+          </Box>
+
+          {/* Content */}
+          <Text numberOfLines={2} className="text-gray-700 mb-3">
+            {item.content}
+          </Text>
+        </TouchableOpacity>
+
+        {/* Likes + Comments */}
+        <Box className="flex-row items-center">
+          <TouchableOpacity
+            onPress={() => toggleLike(item)}
+            className="flex-row items-center mr-6"
+          >
+            <Heart
+              size={18}
+              color={liked ? "red" : "black"}
+              fill={liked ? "red" : "transparent"}
+            />
+            <Text className="ml-1 text-gray-700">{item.likesCount || 0} Likes</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => router.push(`/user/(tabs)/${item.id}`)}
+            className="flex-row items-center"
+          >
+            <MessageCircle size={18} />
+            <Text className="ml-1 text-gray-700">
+              {item.commentsCount || 0} Comments
+            </Text>
+          </TouchableOpacity>
+        </Box>
+      </Card>
+    )
+  }}
+  contentContainerStyle={{ paddingBottom: 150 }}
+/>
+
+        {/* Add Discussion Modal (MOBILE) */}
+        <Modal visible={modalVisible} transparent animationType="fade">
+          <View className="flex-1 bg-black/40 justify-center items-center px-4">
+            <View className="bg-white w-full rounded-2xl shadow-lg p-6">
+              {/* Back Button */}
+              <TouchableOpacity
+                onPress={() => {
+                  setModalVisible(false)
+                  setEditingId(null)
+                  setNewDiscussion({ title: "", description: "" })
+                }}
+              >
+                <Text className="text-sm font-bold text-black mb-2">BACK</Text>
+              </TouchableOpacity>
+
+              {/* Title */}
+              <Text className="text-xl font-[Poppins] text-center mb-2">
+                START A DISCUSSION
+              </Text>
+              <View className="border-t border-gray-300 mb-4" />
+
+              {/* Discussion Title */}
+              <Text className="font-semibold text-black mb-2">Discussion Title</Text>
+              <TextInput
+                placeholder="Write your report title here."
+                value={newDiscussion.title}
+                onChangeText={(text) =>
+                  setNewDiscussion((prev) => ({ ...prev, title: text }))
+                }
+                className="bg-gray-200 rounded-md px-4 py-3 mb-4 text-gray-800"
+              />
+
+              {/* Report Description */}
+              <Text className="font-semibold text-black mb-2">Report Description</Text>
+              <TextInput
+                placeholder="Write your report description here."
+                value={newDiscussion.description}
+                onChangeText={(text) =>
+                  setNewDiscussion((prev) => ({ ...prev, description: text }))
+                }
+                className="bg-gray-200 rounded-md px-4 py-3 text-gray-800 mb-6 h-32"
+                multiline
+                textAlignVertical="top"
+              />
+
+              {/* Buttons */}
+              <View className="flex-row justify-between mt-2">
+                <TouchableOpacity
+                  className="flex-1 bg-green-600 py-3 rounded-md mr-2 items-center"
+                  onPress={saveDiscussion}
+                >
+                  <Text className="text-white font-semibold">Confirm</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  className="flex-1 bg-red-600 py-3 rounded-md ml-2 items-center"
+                  onPress={() => {
+                    setModalVisible(false)
+                    setEditingId(null)
+                    setNewDiscussion({ title: "", description: "" })
+                  }}
+                >
+                  <Text className="text-white font-semibold">Cancel</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+      </Box>
+    </SafeAreaView>
+  )
+}
 
   return (
     <SafeAreaView className="flex-1 bg-[#D9E9DD] h-full p-4">
