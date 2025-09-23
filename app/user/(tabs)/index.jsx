@@ -377,7 +377,7 @@ if (!isWeb) {
       </Card>
     )
   }}
-  contentContainerStyle={{ paddingBottom: 150 }}
+  contentContainerStyle={{ paddingBottom: 160 }}
 />
 
         {/* Add Discussion Modal (MOBILE) */}

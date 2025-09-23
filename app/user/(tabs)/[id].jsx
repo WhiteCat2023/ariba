@@ -530,10 +530,10 @@ if (commentFilter === "Newest") {
    // ========== MOBILE (Expo Go) ==========
 if (!isWeb) {
   return (
-    <SafeAreaView className="flex-1 bg-[#D9E9DD] p-4">
+    <SafeAreaView className="flex-1 bg-[#D9E9DD] p-3">
       <ScrollView className="h-full">
        {/* HEADER */}
-             <Box className="flex-row items-center justify-between mt-4 mb-6">
+             <Box className="flex-row items-center justify-between mt-2 mb-6">
                <Box className="flex-row items-center">
                  <Image
                    source={require("@/assets/images/ariba-logo.png")} // <-- place your Ariba logo asset here
